@@ -22,11 +22,11 @@ public class User implements Serializable {
     @ApiModelProperty("用户id")
     private Long uid;
     /**
-    * 用户名
+    * 用户名，必须字母开头，可作为登录凭证
     */
-    @NotBlank(message="[用户名]不能为空")
+    @NotBlank(message="[用户名，必须字母开头，可作为登录凭证]不能为空")
     @Size(max= 20,message="编码长度不能超过20")
-    @ApiModelProperty("用户名")
+    @ApiModelProperty("用户名，必须字母开头，可作为登录凭证")
     @Length(max= 20,message="编码长度不能超过20")
     private String username;
     /**
@@ -37,6 +37,19 @@ public class User implements Serializable {
     @ApiModelProperty("密码")
     @Length(max= 20,message="编码长度不能超过20")
     private String password;
+    /**
+    * 手机号码，可作为登录凭证
+    */
+    @NotNull(message="[手机号码，可作为登录凭证]不能为空")
+    @ApiModelProperty("手机号码，可作为登录凭证")
+    private String phone;
+    /**
+    * 昵称
+    */
+    @Size(max= 20,message="编码长度不能超过20")
+    @ApiModelProperty("昵称")
+    @Length(max= 20,message="编码长度不能超过20")
+    private String nickname;
     /**
     * 用户头像
     */
@@ -61,7 +74,7 @@ public class User implements Serializable {
     }
 
     /**
-    * 用户名
+    * 用户名，必须字母开头，可作为登录凭证
     */
     private void setUsername(String username){
     this.username = username;
@@ -72,6 +85,20 @@ public class User implements Serializable {
     */
     private void setPassword(String password){
     this.password = password;
+    }
+
+    /**
+    * 手机号码，可作为登录凭证
+    */
+    private void setPhone(String phone){
+    this.phone = phone;
+    }
+
+    /**
+    * 昵称
+    */
+    private void setNickname(String nickname){
+    this.nickname = nickname;
     }
 
     /**
@@ -97,7 +124,7 @@ public class User implements Serializable {
     }
 
     /**
-    * 用户名
+    * 用户名，必须字母开头，可作为登录凭证
     */
     private String getUsername(){
     return this.username;
@@ -108,6 +135,20 @@ public class User implements Serializable {
     */
     private String getPassword(){
     return this.password;
+    }
+
+    /**
+    * 手机号码，可作为登录凭证
+    */
+    private String getPhone(){
+    return this.phone;
+    }
+
+    /**
+    * 昵称
+    */
+    private String getNickname(){
+    return this.nickname;
     }
 
     /**

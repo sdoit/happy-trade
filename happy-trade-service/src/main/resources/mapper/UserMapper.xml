@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserMapper">
+
+
+    <resultMap id="baseMap" type="com.lyu.entity.User">
+        <id column="uid" property="uid" javaType="Long" jdbcType="BIGINT"/>
+        <result column="username" property="username" javaType="String" jdbcType="VARCHAR"/>
+        <result column="password" property="password" javaType="String" jdbcType="VARCHAR"/>
+        <result column="phone" property="phone" javaType="String" jdbcType="CHAR"/>
+        <result column="nickname" property="nickname" javaType="String" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" javaType="String" jdbcType="VARCHAR"/>
+        <result column="Introduction" property="introduction" javaType="String" jdbcType="VARCHAR"/>
+    </resultMap>
+    <insert id="saveUser">
+        insert into db_happy_trade.t_user(uid, username, password, phone, nickname, avatar, Introduction)
+        values (#{uid}, #{username}, #{password}, #{phone}, #{nickname}, #{avatar}, #{Introduction});
+    </insert>
+    <update id="updateUser" parameterType="com.lyu.entity.User">
+        update db_happy_trade.t_user u
+        <set>
+            <if test="#{phone} != null">
+                u.phone =#{phone},
+            </if>
+            <if test="#{password} != null">
+                u.password =#{password},
+            </if>
+            <if test="#{username} != null">
+                u.username =#{username},
+            </if>
+            <if test="#{nickname} != null">
+                u.nickname =#{nickname},
+            </if>
+            <if test="#{avatar} != null">
+                u.avatar =#{avatar},
+            </if>
+            <if test="#{introduction} != null">
+                u.introduction =#{introduction},
+            </if>
+        </set>
+        where u.uid=#{uid};
+    </update>
+    <select id="getUserIfExist" parameterType="com.lyu.entity.User" resultMap="baseMap">
+        select uid, username, password, phone, nickname, avatar, Introduction
+        from db_happy_trade.t_user
+        where password = #{password}
+          and (username = #{username} or phone = #{phone} or uid = #{uid});
+    </select>
+</mapper>
