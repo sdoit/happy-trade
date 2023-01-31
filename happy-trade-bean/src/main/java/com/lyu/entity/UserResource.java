@@ -1,133 +1,107 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import java.time.LocalDateTime;
 
 /**
-* 
-* @TableName t_user_resource
-*/
+ * @author LEE
+ * @TableName t_user_resource
+ */
+@TableName(value = "t_user_resource")
+@Data
 public class UserResource implements Serializable {
+    /**
+     * 资源id
+     */
+    @TableId(type = IdType.AUTO)
+    private Long rid;
 
     /**
-    * 资源id
-    */
-    @NotNull(message="[资源id]不能为空")
-    @ApiModelProperty("资源id")
-    private Long rid;
+     * 资源类型:
+     * image
+     * video
+     * ……
+     */
+    private String type;
+
     /**
-    * 资源类型，
-0:图片
-1:视频
-2:音频
-    */
-    @NotNull(message="[资源类型， 0:图片 1:视频 2:音频]不能为空")
-    @ApiModelProperty("资源类型， 0:图片 1:视频 2:音频")
-    private Integer type;
+     * 文件名
+     */
+    private String fileName;
+
     /**
-    * 资源路径
-    */
-    @NotBlank(message="[资源路径]不能为空")
-    @Size(max= 255,message="编码长度不能超过255")
-    @ApiModelProperty("资源路径")
-    @Length(max= 255,message="编码长度不能超过255")
-    private String path;
-    /**
-    * 
-    */
-    @NotBlank(message="[]不能为空")
-    @Size(max= 32,message="编码长度不能超过32")
-    @ApiModelProperty("")
-    @Length(max= 32,message="编码长度不能超过32")
+     *
+     */
     private String md5;
+
     /**
-    * 创建资源用户的id
-    */
-    @NotNull(message="[创建资源用户的id]不能为空")
-    @ApiModelProperty("创建资源用户的id")
+     * 创建资源用户的id
+     */
     private Long uid;
 
     /**
-    * 资源id
-    */
-    private void setRid(Long rid){
-    this.rid = rid;
+     * 上传时间
+     */
+    @JsonFormat(pattern = "yyyyMMdd")
+    private LocalDateTime date;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        UserResource other = (UserResource) that;
+        return (this.getRid() == null ? other.getRid() == null : this.getRid().equals(other.getRid()))
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getFileName() == null ? other.getFileName() == null : this.getFileName().equals(other.getFileName()))
+                && (this.getMd5() == null ? other.getMd5() == null : this.getMd5().equals(other.getMd5()))
+                && (this.getDate() == null ? other.getDate() == null : this.getDate().equals(other.getDate()))
+                && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()));
     }
 
-    /**
-    * 资源类型，
-0:图片
-1:视频
-2:音频
-    */
-    private void setType(Integer type){
-    this.type = type;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getRid() == null) ? 0 : getRid().hashCode());
+        result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+        result = prime * result + ((getFileName() == null) ? 0 : getFileName().hashCode());
+        result = prime * result + ((getMd5() == null) ? 0 : getMd5().hashCode());
+        result = prime * result + ((getDate() == null) ? 0 : getDate().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        return result;
     }
 
-    /**
-    * 资源路径
-    */
-    private void setPath(String path){
-    this.path = path;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", rid=").append(rid);
+        sb.append(", type=").append(type);
+        sb.append(", fileName=").append(fileName);
+        sb.append(", md5=").append(md5);
+        sb.append(", date=").append(date);
+        sb.append(", uid=").append(uid);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 
-    */
-    private void setMd5(String md5){
-    this.md5 = md5;
-    }
-
-    /**
-    * 创建资源用户的id
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
-    }
-
-
-    /**
-    * 资源id
-    */
-    private Long getRid(){
-    return this.rid;
-    }
-
-    /**
-    * 资源类型，
-0:图片
-1:视频
-2:音频
-    */
-    private Integer getType(){
-    return this.type;
-    }
-
-    /**
-    * 资源路径
-    */
-    private String getPath(){
-    return this.path;
-    }
-
-    /**
-    * 
-    */
-    private String getMd5(){
-    return this.md5;
-    }
-
-    /**
-    * 创建资源用户的id
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
 }

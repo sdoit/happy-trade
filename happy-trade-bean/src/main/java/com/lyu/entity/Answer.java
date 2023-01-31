@@ -1,118 +1,93 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
-
 /**
-* 
-* @author LEE
-*/
+ * 
+ * @author LEE
+ * @TableName t_answer
+ */
+@TableName(value ="t_answer")
+@Data
 public class Answer implements Serializable {
+    /**
+     * 回答id
+     */
+    @TableId
+    private Long aid;
 
     /**
-    * 回答id
-    */
-    @NotNull(message="[回答id]不能为空")
-    @ApiModelProperty("回答id")
-    private Long aid;
-    /**
-    * 回答人用户id
-    */
-    @NotNull(message="[回答人用户id]不能为空")
-    @ApiModelProperty("回答人用户id")
+     * 回答人用户id
+     */
     private Long uid;
+
     /**
-    * 问题id
-    */
-    @ApiModelProperty("问题id")
+     * 问题id
+     */
     private Long qid;
+
     /**
-    * 回答内容
-    */
-    @Size(max= -1,message="编码长度不能超过-1")
-    @ApiModelProperty("回答内容")
-    @Length(max= -1,message="编码长度不能超过-1")
+     * 回答内容
+     */
     private String answer;
+
     /**
-    * 附加图片-> t_user_resource.rid
-    */
-    @ApiModelProperty("附加图片-> t_user_resource.rid")
+     * 附加图片-> t_user_resource.rid
+     */
     private Long rid;
 
-    /**
-    * 回答id
-    */
-    private void setAid(Long aid){
-    this.aid = aid;
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        Answer other = (Answer) that;
+        return (this.getAid() == null ? other.getAid() == null : this.getAid().equals(other.getAid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getQid() == null ? other.getQid() == null : this.getQid().equals(other.getQid()))
+            && (this.getAnswer() == null ? other.getAnswer() == null : this.getAnswer().equals(other.getAnswer()))
+            && (this.getRid() == null ? other.getRid() == null : this.getRid().equals(other.getRid()));
     }
 
-    /**
-    * 回答人用户id
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getAid() == null) ? 0 : getAid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getQid() == null) ? 0 : getQid().hashCode());
+        result = prime * result + ((getAnswer() == null) ? 0 : getAnswer().hashCode());
+        result = prime * result + ((getRid() == null) ? 0 : getRid().hashCode());
+        return result;
     }
 
-    /**
-    * 问题id
-    */
-    private void setQid(Long qid){
-    this.qid = qid;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", aid=").append(aid);
+        sb.append(", uid=").append(uid);
+        sb.append(", qid=").append(qid);
+        sb.append(", answer=").append(answer);
+        sb.append(", rid=").append(rid);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 回答内容
-    */
-    private void setAnswer(String answer){
-    this.answer = answer;
-    }
-
-    /**
-    * 附加图片-> t_user_resource.rid
-    */
-    private void setRid(Long rid){
-    this.rid = rid;
-    }
-
-
-    /**
-    * 回答id
-    */
-    private Long getAid(){
-    return this.aid;
-    }
-
-    /**
-    * 回答人用户id
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
-    /**
-    * 问题id
-    */
-    private Long getQid(){
-    return this.qid;
-    }
-
-    /**
-    * 回答内容
-    */
-    private String getAnswer(){
-    return this.answer;
-    }
-
-    /**
-    * 附加图片-> t_user_resource.rid
-    */
-    private Long getRid(){
-    return this.rid;
-    }
-
 }

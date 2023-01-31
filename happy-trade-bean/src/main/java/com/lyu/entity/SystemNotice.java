@@ -1,167 +1,109 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import java.util.Date;
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import java.time.LocalDateTime;
 
 /**
-* 
-* @TableName t_system_notice
-*/
+ * 
+ * @TableName t_system_notice
+ */
+@TableName(value ="t_system_notice")
+@Data
 public class SystemNotice implements Serializable {
-
     /**
-    * 通知id
-    */
-    @NotNull(message="[通知id]不能为空")
-    @ApiModelProperty("通知id")
+     * 通知id
+     */
+    @TableId
     private Long nid;
+
     /**
-    * 通知标题
-    */
-    @NotBlank(message="[通知标题]不能为空")
-    @Size(max= 30,message="编码长度不能超过30")
-    @ApiModelProperty("通知标题")
-    @Length(max= 30,message="编码长度不能超过30")
+     * 通知标题
+     */
     private String title;
+
     /**
-    * 通知内容
-    */
-    @NotBlank(message="[通知内容]不能为空")
-    @Size(max= 200,message="编码长度不能超过200")
-    @ApiModelProperty("通知内容")
-    @Length(max= 200,message="编码长度不能超过200")
+     * 通知内容
+     */
     private String content;
+
     /**
-    * 接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户
-    */
-    @NotBlank(message="[接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户]不能为空")
-    @Size(max= 30,message="编码长度不能超过30")
-    @ApiModelProperty("接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户")
-    @Length(max= 30,message="编码长度不能超过30")
+     * 接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户
+     */
     private String recipientType;
+
     /**
-    * bool  是否被拉取过 0:未被拉取过,1:已被拉取过
-    */
-    @NotNull(message="[bool  是否被拉取过 0:未被拉取过,1:已被拉取过]不能为空")
-    @ApiModelProperty("bool  是否被拉取过 0:未被拉取过,1:已被拉取过")
+     * bool  是否被拉取过 0:未被拉取过,1:已被拉取过
+     */
     private Integer state;
+
     /**
-    * 当通知单用户时有效，指定接收者id
-    */
-    @NotNull(message="[当通知单用户时有效，指定接收者id]不能为空")
-    @ApiModelProperty("当通知单用户时有效，指定接收者id")
+     * 当通知单用户时有效，指定接收者id
+     */
     private Long recipientUid;
-    /**
-    * 发布时间
-    */
-    @NotNull(message="[发布时间]不能为空")
-    @ApiModelProperty("发布时间")
-    private Date time;
 
     /**
-    * 通知id
-    */
-    private void setNid(Long nid){
-    this.nid = nid;
+     * 发布时间
+     */
+    private LocalDateTime time;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        SystemNotice other = (SystemNotice) that;
+        return (this.getNid() == null ? other.getNid() == null : this.getNid().equals(other.getNid()))
+            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
+            && (this.getRecipientType() == null ? other.getRecipientType() == null : this.getRecipientType().equals(other.getRecipientType()))
+            && (this.getState() == null ? other.getState() == null : this.getState().equals(other.getState()))
+            && (this.getRecipientUid() == null ? other.getRecipientUid() == null : this.getRecipientUid().equals(other.getRecipientUid()))
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
-    /**
-    * 通知标题
-    */
-    private void setTitle(String title){
-    this.title = title;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getNid() == null) ? 0 : getNid().hashCode());
+        result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
+        result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
+        result = prime * result + ((getRecipientType() == null) ? 0 : getRecipientType().hashCode());
+        result = prime * result + ((getState() == null) ? 0 : getState().hashCode());
+        result = prime * result + ((getRecipientUid() == null) ? 0 : getRecipientUid().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
+        return result;
     }
 
-    /**
-    * 通知内容
-    */
-    private void setContent(String content){
-    this.content = content;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", nid=").append(nid);
+        sb.append(", title=").append(title);
+        sb.append(", content=").append(content);
+        sb.append(", recipientType=").append(recipientType);
+        sb.append(", state=").append(state);
+        sb.append(", recipientUid=").append(recipientUid);
+        sb.append(", time=").append(time);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户
-    */
-    private void setRecipientType(String recipientType){
-    this.recipientType = recipientType;
-    }
-
-    /**
-    * bool  是否被拉取过 0:未被拉取过,1:已被拉取过
-    */
-    private void setState(Integer state){
-    this.state = state;
-    }
-
-    /**
-    * 当通知单用户时有效，指定接收者id
-    */
-    private void setRecipientUid(Long recipientUid){
-    this.recipientUid = recipientUid;
-    }
-
-    /**
-    * 发布时间
-    */
-    private void setTime(Date time){
-    this.time = time;
-    }
-
-
-    /**
-    * 通知id
-    */
-    private Long getNid(){
-    return this.nid;
-    }
-
-    /**
-    * 通知标题
-    */
-    private String getTitle(){
-    return this.title;
-    }
-
-    /**
-    * 通知内容
-    */
-    private String getContent(){
-    return this.content;
-    }
-
-    /**
-    * 接收本通知的群体，single:指定用户，all:全体用户，[roll]其他角色用户
-    */
-    private String getRecipientType(){
-    return this.recipientType;
-    }
-
-    /**
-    * bool  是否被拉取过 0:未被拉取过,1:已被拉取过
-    */
-    private Integer getState(){
-    return this.state;
-    }
-
-    /**
-    * 当通知单用户时有效，指定接收者id
-    */
-    private Long getRecipientUid(){
-    return this.recipientUid;
-    }
-
-    /**
-    * 发布时间
-    */
-    private Date getTime(){
-    return this.time;
-    }
-
 }

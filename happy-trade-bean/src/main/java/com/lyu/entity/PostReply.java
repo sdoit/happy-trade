@@ -1,124 +1,92 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
-
 /**
-* 
-* @TableName t_post_reply
-*/
+ * 
+ * @TableName t_post_reply
+ */
+@TableName(value ="t_post_reply")
+@Data
 public class PostReply implements Serializable {
+    /**
+     * 
+     */
+    @TableId
+    private Long rId;
 
     /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
-    private Long rId;
-    /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
+     * 
+     */
     private Long uid;
+
     /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
+     * 
+     */
     private Long pid;
+
     /**
-    * 
-    */
-    @NotBlank(message="[]不能为空")
-    @Size(max= 255,message="编码长度不能超过255")
-    @ApiModelProperty("")
-    @Length(max= 255,message="编码长度不能超过255")
+     * 
+     */
     private String title;
+
     /**
-    * 
-    */
-    @NotBlank(message="[]不能为空")
-    @Size(max= 255,message="编码长度不能超过255")
-    @ApiModelProperty("")
-    @Length(max= 255,message="编码长度不能超过255")
+     * 
+     */
     private String content;
 
-    /**
-    * 
-    */
-    private void setRId(Long rId){
-    this.rId = rId;
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        PostReply other = (PostReply) that;
+        return (this.getPid() == null ? other.getPid() == null : this.getPid().equals(other.getPid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getPid() == null ? other.getPid() == null : this.getPid().equals(other.getPid()))
+            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()));
     }
 
-    /**
-    * 
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getPid() == null) ? 0 : getPid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getPid() == null) ? 0 : getPid().hashCode());
+        result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
+        result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
+        return result;
     }
 
-    /**
-    * 
-    */
-    private void setPid(Long pid){
-    this.pid = pid;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", rId=").append(rId);
+        sb.append(", uid=").append(uid);
+        sb.append(", pid=").append(pid);
+        sb.append(", title=").append(title);
+        sb.append(", content=").append(content);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 
-    */
-    private void setTitle(String title){
-    this.title = title;
-    }
-
-    /**
-    * 
-    */
-    private void setContent(String content){
-    this.content = content;
-    }
-
-
-    /**
-    * 
-    */
-    private Long getRId(){
-    return this.rId;
-    }
-
-    /**
-    * 
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
-    /**
-    * 
-    */
-    private Long getPid(){
-    return this.pid;
-    }
-
-    /**
-    * 
-    */
-    private String getTitle(){
-    return this.title;
-    }
-
-    /**
-    * 
-    */
-    private String getContent(){
-    return this.content;
-    }
-
 }

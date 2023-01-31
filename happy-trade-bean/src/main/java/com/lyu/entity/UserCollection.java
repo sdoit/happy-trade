@@ -1,81 +1,78 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import java.util.Date;
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import java.time.LocalDateTime;
 
 /**
-* 
-* @TableName t_user_collection
-*/
+ * 
+ * @TableName t_user_collection
+ */
+@TableName(value ="t_user_collection")
+@Data
 public class UserCollection implements Serializable {
-
     /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
+     * 
+     */
+    @TableId
     private Long coid;
+
     /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
+     * 
+     */
+    @TableId
     private Long uid;
-    /**
-    * 
-    */
-    @NotNull(message="[]不能为空")
-    @ApiModelProperty("")
-    private Date time;
 
     /**
-    * 
-    */
-    private void setCoid(Long coid){
-    this.coid = coid;
+     * 
+     */
+    private LocalDateTime time;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        UserCollection other = (UserCollection) that;
+        return (this.getCoid() == null ? other.getCoid() == null : this.getCoid().equals(other.getCoid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
-    /**
-    * 
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getCoid() == null) ? 0 : getCoid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
+        return result;
     }
 
-    /**
-    * 
-    */
-    private void setTime(Date time){
-    this.time = time;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", coid=").append(coid);
+        sb.append(", uid=").append(uid);
+        sb.append(", time=").append(time);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-
-    /**
-    * 
-    */
-    private Long getCoid(){
-    return this.coid;
-    }
-
-    /**
-    * 
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
-    /**
-    * 
-    */
-    private Date getTime(){
-    return this.time;
-    }
-
 }

@@ -1,81 +1,79 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import java.util.Date;
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import java.time.LocalDateTime;
 
 /**
-* 
-* @TableName t_browsing_history
-*/
+ * 
+ * @author LEE
+ * @TableName t_browsing_history
+ */
+@TableName(value ="t_browsing_history")
+@Data
 public class BrowsingHistory implements Serializable {
-
     /**
-    * 商品id
-    */
-    @NotNull(message="[商品id]不能为空")
-    @ApiModelProperty("商品id")
+     * 商品id
+     */
+    @TableId
     private Long cid;
+
     /**
-    * 用户id
-    */
-    @NotNull(message="[用户id]不能为空")
-    @ApiModelProperty("用户id")
+     * 用户id
+     */
+    @TableId
     private Long uid;
-    /**
-    * 浏览时间
-    */
-    @NotNull(message="[浏览时间]不能为空")
-    @ApiModelProperty("浏览时间")
-    private Date time;
 
     /**
-    * 商品id
-    */
-    private void setCid(Long cid){
-    this.cid = cid;
+     * 浏览时间
+     */
+    private LocalDateTime time;
+
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        BrowsingHistory other = (BrowsingHistory) that;
+        return (this.getCid() == null ? other.getCid() == null : this.getCid().equals(other.getCid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
-    /**
-    * 用户id
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getCid() == null) ? 0 : getCid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
+        return result;
     }
 
-    /**
-    * 浏览时间
-    */
-    private void setTime(Date time){
-    this.time = time;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", cid=").append(cid);
+        sb.append(", uid=").append(uid);
+        sb.append(", time=").append(time);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-
-    /**
-    * 商品id
-    */
-    private Long getCid(){
-    return this.cid;
-    }
-
-    /**
-    * 用户id
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
-    /**
-    * 浏览时间
-    */
-    private Date getTime(){
-    return this.time;
-    }
-
 }

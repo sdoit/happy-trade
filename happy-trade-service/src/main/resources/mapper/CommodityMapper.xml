@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.CommodityMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.CommodityDTO">
+        <id column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="quality" property="quality" jdbcType="FLOAT"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
+        <result column="sold" property="sold" jdbcType="TINYINT"/>
+        <result column="launched" property="launched" jdbcType="TINYINT"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <association property="cover" javaType="com.lyu.entity.UserResource">
+            <id column="rid" property="rid" jdbcType="BIGINT"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+            <result column="coverUid" property="uid" jdbcType="BIGINT"/>
+            <result column="coverDate" property="date" jdbcType="DATE"/>
+            <result column="coverType" property="type" jdbcType="CHAR"/>
+        </association>
+    </resultMap>
+
+
+    <!--映射包含图片和视频介绍在内-->
+    <resultMap id="mapResources" type="com.lyu.entity.dto.CommodityDTO">
+        <id column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="quality" property="quality" jdbcType="FLOAT"/>
+        <result column="type" property="type" jdbcType="INTEGER"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
+        <result column="sold" property="sold" jdbcType="TINYINT"/>
+        <result column="launched" property="launched" jdbcType="TINYINT"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <collection property="resources" ofType="com.lyu.entity.UserResource">
+            <id column="rid" property="rid" jdbcType="BIGINT"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+            <result column="rUid" property="uid" jdbcType="BIGINT"/>
+            <result column="rDate" property="date" jdbcType="DATE"/>
+            <result column="rType" property="type" jdbcType="CHAR"/>
+        </collection>
+    </resultMap>
+
+
+    <select id="getCommoditiesByKeyWords" resultMap="baseMap">
+        SELECT t_commodity.cid,
+        t_commodity.uid,
+        t_commodity.`name`,
+        t_commodity.quality,
+        t_commodity.type,
+        t_commodity.price,
+        t_commodity.sold,
+        t_commodity.launched,
+        t_user_resource.rid,
+        t_user_resource.file_name,
+        t_user_resource.uid coverUid,
+        t_user_resource.date coverDate,
+        t_user_resource.type coverType,
+        t_commodity_type.type_name
+        FROM db_happy_trade.t_commodity,
+        db_happy_trade.t_user_resource,
+        db_happy_trade.t_commodity_type
+        WHERE
+        <foreach collection="words" item="word" separator="AND">
+            t_commodity.name like CONCAT('%',#{word},'%')
+        </foreach>
+        AND t_commodity.cover_id = t_user_resource.rid
+        AND t_commodity.type = t_commodity_type.tid
+    </select>
+
+    <select id="getCommodityById" resultMap="mapResources">
+        SELECT t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.`name`,
+               t_commodity.quality,
+               t_commodity.type,
+               t_commodity.price,
+               t_commodity.description,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_user_resource.rid,
+               t_user_resource.file_name,
+               t_user_resource.uid  rUid,
+               t_user_resource.date rDate,
+               t_user_resource.type rType,
+               t_commodity_type.type_name
+        FROM db_happy_trade.t_commodity,
+             db_happy_trade.t_user_resource,
+             db_happy_trade.t_commodity_type
+        WHERE t_commodity.cid = #{cid}
+          AND t_commodity.cover_id = t_user_resource.rid
+          AND t_commodity.type = t_commodity_type.tid
+        UNION
+        SELECT t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.`name`,
+               t_commodity.quality,
+               t_commodity.type,
+               t_commodity.price,
+               t_commodity.description,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_user_resource.rid,
+               t_user_resource.file_name,
+               t_user_resource.uid  rUid,
+               t_user_resource.date rDate,
+               t_user_resource.type rType,
+               t_commodity_type.type_name
+        FROM db_happy_trade.t_commodity,
+             db_happy_trade.t_user_resource,
+             db_happy_trade.t_commodity_resource_map,
+             db_happy_trade.t_commodity_type
+        WHERE t_commodity.type = t_commodity_type.tid
+          AND t_commodity.cid = t_commodity_resource_map.cid
+          AND t_user_resource.rid = t_commodity_resource_map.rid
+          AND t_commodity.cid = #{cid}
+    </select>
+</mapper>

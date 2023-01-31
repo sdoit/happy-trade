@@ -1,0 +1,20 @@
+server:
+  port: 8080
+vue:
+  address: http://localhost:5173
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+hostname: localhost
+protocol: http
+
+
+nginx:
+  static-server:
+    ssh:
+      username: sftp_static_server
+      password: 123456
+      host: 192.168.3.164
+      port: 22
+      path: /sftp_static_server/static

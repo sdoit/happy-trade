@@ -1,164 +1,142 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import java.math.BigDecimal;
 
 /**
-* 
-* @TableName t_commodity
-*/
+ * 
+ * @author LEE
+ * @TableName t_commodity
+ */
+@TableName(value ="t_commodity")
+@Data
 public class Commodity implements Serializable {
-
     /**
-    * 商品ID
-    */
-    @NotNull(message="[商品ID]不能为空")
-    @ApiModelProperty("商品ID")
+     * 商品ID
+     */
+    @TableId
     private Long cid;
+
     /**
-    * 商品名
-    */
-    @NotBlank(message="[商品名]不能为空")
-    @Size(max= 50,message="编码长度不能超过50")
-    @ApiModelProperty("商品名")
-    @Length(max= 50,message="编码长度不能超过50")
+     * 所属人
+     */
+    private Long uid;
+
+    /**
+     * 商品名
+     */
     private String name;
+
     /**
-    * 商品品质 0-10
-    */
-    @NotNull(message="[商品品质 0-10]不能为空")
-    @ApiModelProperty("商品品质 0-10")
+     * 封面图片
+     */
+    private Long coverId;
+
+    /**
+     * 商品品质 0-10
+     */
     private Double quality;
+
     /**
-    * 商品类型
-    */
-    @NotBlank(message="[商品类型]不能为空")
-    @Size(max= 255,message="编码长度不能超过255")
-    @ApiModelProperty("商品类型")
-    @Length(max= 255,message="编码长度不能超过255")
-    private String type;
+     * 商品类型
+     */
+    private Integer type;
+
     /**
-    * 价格
-    */
-    @NotNull(message="[价格]不能为空")
-    @ApiModelProperty("价格")
-    private Double prince;
+     * 价格
+     */
+    private BigDecimal price;
+
     /**
-    * 商品说明/商品描述
-    */
-    @Size(max= -1,message="编码长度不能超过-1")
-    @ApiModelProperty("商品说明/商品描述")
-    @Length(max= -1,message="编码长度不能超过-1")
+     * 商品说明/商品描述
+     */
     private String description;
-    /**
-    * 商品图片
-    */
-    @ApiModelProperty("商品图片")
-    private Object img;
 
     /**
-    * 商品ID
-    */
-    private void setCid(Long cid){
-    this.cid = cid;
+     * 已卖出
+     */
+    private Boolean sold;
+
+    /**
+     * 已上架
+     */
+    private Integer launched;
+
+
+    /**
+     * 浏览数
+     */
+    private Integer viewCount;
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        Commodity other = (Commodity) that;
+        return (this.getCid() == null ? other.getCid() == null : this.getCid().equals(other.getCid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
+            && (this.getCoverId() == null ? other.getCoverId() == null : this.getCoverId().equals(other.getCoverId()))
+            && (this.getQuality() == null ? other.getQuality() == null : this.getQuality().equals(other.getQuality()))
+            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+            && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
+            && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
+            && (this.getSold() == null ? other.getSold() == null : this.getSold().equals(other.getSold()))
+            && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
+            && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
     }
 
-    /**
-    * 商品名
-    */
-    private void setName(String name){
-    this.name = name;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getCid() == null) ? 0 : getCid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        result = prime * result + ((getCoverId() == null) ? 0 : getCoverId().hashCode());
+        result = prime * result + ((getQuality() == null) ? 0 : getQuality().hashCode());
+        result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+        result = prime * result + ((getPrice() == null) ? 0 : getPrice().hashCode());
+        result = prime * result + ((getDescription() == null) ? 0 : getDescription().hashCode());
+        result = prime * result + ((getSold() == null) ? 0 : getSold().hashCode());
+        result = prime * result + ((getLaunched() == null) ? 0 : getLaunched().hashCode());
+        result = prime * result + ((getViewCount() == null) ? 0 : getViewCount().hashCode());
+        return result;
     }
 
-    /**
-    * 商品品质 0-10
-    */
-    private void setQuality(Double quality){
-    this.quality = quality;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", cid=").append(cid);
+        sb.append(", uid=").append(uid);
+        sb.append(", name=").append(name);
+        sb.append(", coverId=").append(coverId);
+        sb.append(", quality=").append(quality);
+        sb.append(", type=").append(type);
+        sb.append(", price=").append(price);
+        sb.append(", description=").append(description);
+        sb.append(", sold=").append(sold);
+        sb.append(", launched=").append(launched);
+        sb.append(", viewCount=").append(viewCount);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 商品类型
-    */
-    private void setType(String type){
-    this.type = type;
-    }
-
-    /**
-    * 价格
-    */
-    private void setPrince(Double prince){
-    this.prince = prince;
-    }
-
-    /**
-    * 商品说明/商品描述
-    */
-    private void setDescription(String description){
-    this.description = description;
-    }
-
-    /**
-    * 商品图片
-    */
-    private void setImg(Object img){
-    this.img = img;
-    }
-
-
-    /**
-    * 商品ID
-    */
-    private Long getCid(){
-    return this.cid;
-    }
-
-    /**
-    * 商品名
-    */
-    private String getName(){
-    return this.name;
-    }
-
-    /**
-    * 商品品质 0-10
-    */
-    private Double getQuality(){
-    return this.quality;
-    }
-
-    /**
-    * 商品类型
-    */
-    private String getType(){
-    return this.type;
-    }
-
-    /**
-    * 价格
-    */
-    private Double getPrince(){
-    return this.prince;
-    }
-
-    /**
-    * 商品说明/商品描述
-    */
-    private String getDescription(){
-    return this.description;
-    }
-
-    /**
-    * 商品图片
-    */
-    private Object getImg(){
-    return this.img;
-    }
-
 }

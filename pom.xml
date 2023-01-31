@@ -31,16 +31,22 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>2.7.5</version>
+
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
+                <version>2.7.5</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/com.baomidou/mybatis-plus-boot-starter -->
             <dependency>
-                <groupId>org.mybatis.spring.boot</groupId>
-                <artifactId>mybatis-spring-boot-starter</artifactId>
-                <version>2.2.2</version>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>3.5.3.1</version>
             </dependency>
+
+
             <!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
@@ -48,9 +54,21 @@
                 <version>6.1.6.Final</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/io.springfox/springfox-swagger2 -->
+            <!--            <dependency>-->
+            <!--                <groupId>io.springfox</groupId>-->
+            <!--                <artifactId>springfox-swagger2</artifactId>-->
+            <!--                <version>3.0.0</version>-->
+            <!--            </dependency>-->
+            <!--            <dependency>-->
+            <!--                <groupId>io.springfox</groupId>-->
+            <!--                <artifactId>springfox-swagger-ui</artifactId>-->
+            <!--                <version>3.0.0</version>-->
+            <!--            </dependency>-->
+
+
             <dependency>
                 <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
+                <artifactId>springfox-boot-starter</artifactId>
                 <version>3.0.0</version>
             </dependency>
             <!--Sa-Token用户验证-->
@@ -81,15 +99,19 @@
                 <artifactId>lombok</artifactId>
                 <optional>true</optional>
             </dependency>
+
             <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <scope>test</scope>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.24</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.55</version>
             </dependency>
 
-
         </dependencies>
-
     </dependencyManagement>
 
 

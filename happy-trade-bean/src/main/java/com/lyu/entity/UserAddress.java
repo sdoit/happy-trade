@@ -1,208 +1,124 @@
 package com.lyu.entity;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotNull;
-
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
-
-import io.swagger.annotations.ApiModelProperty;
-import org.hibernate.validator.constraints.Length;
+import lombok.Data;
 
 /**
-* 
-* @TableName t_user_address
-*/
+ * 
+ * @TableName t_user_address
+ */
+@TableName(value ="t_user_address")
+@Data
 public class UserAddress implements Serializable {
+    /**
+     * 收货地址id
+     */
+    @TableId
+    private Long aid;
 
     /**
-    * 收货地址id
-    */
-    @NotNull(message="[收货地址id]不能为空")
-    @ApiModelProperty("收货地址id")
-    private Long aid;
-    /**
-    * 用户id
-    */
-    @NotNull(message="[用户id]不能为空")
-    @ApiModelProperty("用户id")
+     * 用户id
+     */
     private Long uid;
+
     /**
-    * 收货人姓名
-    */
-    @NotNull(message="[收货人姓名]不能为空")
-    @ApiModelProperty("收货人姓名")
+     * 收货人姓名
+     */
     private String name;
+
     /**
-    * 收货人电话
-    */
-    @NotNull(message="[收货人电话]不能为空")
-    @ApiModelProperty("收货人电话")
+     * 收货人电话
+     */
     private String phone;
+
     /**
-    * 收货人省份
-    */
-    @NotBlank(message="[收货人省份]不能为空")
-    @Size(max= 5,message="编码长度不能超过5")
-    @ApiModelProperty("收货人省份")
-    @Length(max= 5,message="编码长度不能超过5")
+     * 收货人省份
+     */
     private String province;
+
     /**
-    * 收货人城市
-    */
-    @NotBlank(message="[收货人城市]不能为空")
-    @Size(max= 10,message="编码长度不能超过10")
-    @ApiModelProperty("收货人城市")
-    @Length(max= 10,message="编码长度不能超过10")
+     * 收货人城市
+     */
     private String city;
+
     /**
-    * 收货人区县
-    */
-    @NotBlank(message="[收货人区县]不能为空")
-    @Size(max= 20,message="编码长度不能超过20")
-    @ApiModelProperty("收货人区县")
-    @Length(max= 20,message="编码长度不能超过20")
+     * 收货人区县
+     */
     private String district;
+
     /**
-    * 收货人详细地址
-    */
-    @NotBlank(message="[收货人详细地址]不能为空")
-    @Size(max= 50,message="编码长度不能超过50")
-    @ApiModelProperty("收货人详细地址")
-    @Length(max= 50,message="编码长度不能超过50")
+     * 收货人详细地址
+     */
     private String address;
+
     /**
-    * bool， 1:默认地址 0:非默认地址
-    */
-    @NotNull(message="[bool， 1:默认地址 0:非默认地址]不能为空")
-    @ApiModelProperty("bool， 1:默认地址 0:非默认地址")
+     * bool， 1:默认地址 0:非默认地址
+     */
     private Integer defaultAddress;
 
-    /**
-    * 收货地址id
-    */
-    private void setAid(Long aid){
-    this.aid = aid;
+    @TableField(exist = false)
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public boolean equals(Object that) {
+        if (this == that) {
+            return true;
+        }
+        if (that == null) {
+            return false;
+        }
+        if (getClass() != that.getClass()) {
+            return false;
+        }
+        UserAddress other = (UserAddress) that;
+        return (this.getAid() == null ? other.getAid() == null : this.getAid().equals(other.getAid()))
+            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+            && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
+            && (this.getPhone() == null ? other.getPhone() == null : this.getPhone().equals(other.getPhone()))
+            && (this.getProvince() == null ? other.getProvince() == null : this.getProvince().equals(other.getProvince()))
+            && (this.getCity() == null ? other.getCity() == null : this.getCity().equals(other.getCity()))
+            && (this.getDistrict() == null ? other.getDistrict() == null : this.getDistrict().equals(other.getDistrict()))
+            && (this.getAddress() == null ? other.getAddress() == null : this.getAddress().equals(other.getAddress()))
+            && (this.getDefaultAddress() == null ? other.getDefaultAddress() == null : this.getDefaultAddress().equals(other.getDefaultAddress()));
     }
 
-    /**
-    * 用户id
-    */
-    private void setUid(Long uid){
-    this.uid = uid;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((getAid() == null) ? 0 : getAid().hashCode());
+        result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
+        result = prime * result + ((getPhone() == null) ? 0 : getPhone().hashCode());
+        result = prime * result + ((getProvince() == null) ? 0 : getProvince().hashCode());
+        result = prime * result + ((getCity() == null) ? 0 : getCity().hashCode());
+        result = prime * result + ((getDistrict() == null) ? 0 : getDistrict().hashCode());
+        result = prime * result + ((getAddress() == null) ? 0 : getAddress().hashCode());
+        result = prime * result + ((getDefaultAddress() == null) ? 0 : getDefaultAddress().hashCode());
+        return result;
     }
 
-    /**
-    * 收货人姓名
-    */
-    private void setName(String name){
-    this.name = name;
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getSimpleName());
+        sb.append(" [");
+        sb.append("Hash = ").append(hashCode());
+        sb.append(", aid=").append(aid);
+        sb.append(", uid=").append(uid);
+        sb.append(", name=").append(name);
+        sb.append(", phone=").append(phone);
+        sb.append(", province=").append(province);
+        sb.append(", city=").append(city);
+        sb.append(", district=").append(district);
+        sb.append(", address=").append(address);
+        sb.append(", defaultAddress=").append(defaultAddress);
+        sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append("]");
+        return sb.toString();
     }
-
-    /**
-    * 收货人电话
-    */
-    private void setPhone(String phone){
-    this.phone = phone;
-    }
-
-    /**
-    * 收货人省份
-    */
-    private void setProvince(String province){
-    this.province = province;
-    }
-
-    /**
-    * 收货人城市
-    */
-    private void setCity(String city){
-    this.city = city;
-    }
-
-    /**
-    * 收货人区县
-    */
-    private void setDistrict(String district){
-    this.district = district;
-    }
-
-    /**
-    * 收货人详细地址
-    */
-    private void setAddress(String address){
-    this.address = address;
-    }
-
-    /**
-    * bool， 1:默认地址 0:非默认地址
-    */
-    private void setDefaultAddress(Integer defaultAddress){
-    this.defaultAddress = defaultAddress;
-    }
-
-
-    /**
-    * 收货地址id
-    */
-    private Long getAid(){
-    return this.aid;
-    }
-
-    /**
-    * 用户id
-    */
-    private Long getUid(){
-    return this.uid;
-    }
-
-    /**
-    * 收货人姓名
-    */
-    private String getName(){
-    return this.name;
-    }
-
-    /**
-    * 收货人电话
-    */
-    private String getPhone(){
-    return this.phone;
-    }
-
-    /**
-    * 收货人省份
-    */
-    private String getProvince(){
-    return this.province;
-    }
-
-    /**
-    * 收货人城市
-    */
-    private String getCity(){
-    return this.city;
-    }
-
-    /**
-    * 收货人区县
-    */
-    private String getDistrict(){
-    return this.district;
-    }
-
-    /**
-    * 收货人详细地址
-    */
-    private String getAddress(){
-    return this.address;
-    }
-
-    /**
-    * bool， 1:默认地址 0:非默认地址
-    */
-    private Integer getDefaultAddress(){
-    return this.defaultAddress;
-    }
-
 }
