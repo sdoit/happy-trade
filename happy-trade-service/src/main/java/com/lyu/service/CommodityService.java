@@ -15,7 +15,6 @@ public interface CommodityService {
     /**
      * 用户添加商品
      *
-     * @param user
      * @param commodity
      * @return
      */
@@ -44,6 +43,8 @@ public interface CommodityService {
      * @return
      */
     Commodity getCommodityById(Long cid);
+
+
 
     /**
      * 获取指定用户在线商品

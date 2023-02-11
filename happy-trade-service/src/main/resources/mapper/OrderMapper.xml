@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.OrderMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.OrderDTO">
+        <id column="oid" property="oid" jdbcType="BIGINT"/>
+        <result column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid_seller" property="uidSeller" jdbcType="BIGINT"/>
+        <result column="uid_buyer" property="uidBuyer" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="trade_id" property="tradeId" jdbcType="VARCHAR"/>
+        <result column="order_time" property="orderTime" jdbcType="TIMESTAMP"/>
+        <result column="pay_time" property="payTime" jdbcType="TIMESTAMP"/>
+        <result column="ship_time" property="shipTime" jdbcType="TIMESTAMP"/>
+        <result column="total_amount" property="totalAmount" jdbcType="DECIMAL"/>
+        <result column="buyer_alipay_id" property="buyerAlipayId" jdbcType="VARCHAR"/>
+        <result column="cancel_time" property="cancelTime" jdbcType="TIMESTAMP"/>
+        <result column="complete_time" property="completeTime" jdbcType="TIMESTAMP"/>
+        <result column="status" property="status" jdbcType="TINYINT"/>
+        <result column="status_name" property="statusName" jdbcType="VARCHAR"/>
+        <association property="commodity" javaType="com.lyu.entity.Commodity">
+            <result column="quality" property="quality" jdbcType="FLOAT"/>
+            <result column="price" property="price" jdbcType="DECIMAL"/>
+            <result column="time" property="time" jdbcType="TIMESTAMP"/>
+            <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+        </association>
+        <association property="user" javaType="com.lyu.entity.User">
+            <result column="username" property="username" jdbcType="VARCHAR"/>
+            <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+            <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        </association>
+        <association property="cover">
+            <result column="type" property="type" jdbcType="CHAR"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+            <result column="ruid" property="uid" jdbcType="BIGINT"/>
+            <result column="rdate" property="date" jdbcType="DATE"/>
+        </association>
+        <association property="userAddress">
+            <result column="aname" property="name" jdbcType="VARCHAR"/>
+            <result column="aphone" property="phone" jdbcType="VARCHAR"/>
+            <result column="province" property="province" jdbcType="VARCHAR"/>
+            <result column="city" property="city" jdbcType="VARCHAR"/>
+            <result column="district" property="district" jdbcType="VARCHAR"/>
+            <result column="street" property="street" jdbcType="VARCHAR"/>
+            <result column="address" property="address" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <select id="getOrdersByUser" resultMap="baseMap">
+        select t_order.oid,
+               t_order.name,
+               t_order.ship_time,
+               t_order.pay_time,
+               t_order.total_amount,
+               t_order.cancel_time,
+               t_order.complete_time,
+               t_order.status,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user_resource.type,
+               t_user_resource.file_name,
+               t_user_resource.uid  ruid,
+               t_user_resource.date rdate
+        from db_happy_trade.t_order,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user,
+             db_happy_trade.t_user_resource,
+             db_happy_trade.t_order_status
+        where t_order.cid = t_commodity.cid
+          and t_order.uid_seller = t_user.uid
+          and t_commodity.cover_id = t_user_resource.rid
+          and t_order.status = t_order_status.status_id
+          and t_order.uid_buyer = #{uid};
+
+    </select>
+    <select id="exist" resultType="java.lang.Boolean">
+        SELECT 1
+        FROM db_happy_trade.t_order
+        WHERE t_order.oid = #{oid}
+        LIMIT 1
+    </select>
+    <select id="getOrderByOid" resultMap="baseMap">
+        select t_order.oid,
+               t_order.cid,
+               t_order.uid_seller,
+               t_order.uid_buyer,
+               t_order.name,
+               t_order.trade_id,
+               t_order.order_time,
+               t_order.pay_time,
+               t_order.ship_time,
+               t_order.total_amount,
+               t_order.buyer_alipay_id,
+               t_order.cancel_time,
+               t_order.complete_time,
+               t_order.status,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user_resource.type,
+               t_user_resource.file_name,
+               t_user_resource.uid  ruid,
+               t_user_resource.date rdate,
+               t_user_address.name  aname,
+               t_user_address.phone aphone,
+               t_user_address.province,
+               t_user_address.city,
+               t_user_address.district,
+               t_user_address.street,
+               t_user_address.address,
+               t_order_status.status_name
+        from db_happy_trade.t_order,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user,
+             db_happy_trade.t_user_resource,
+             db_happy_trade.t_user_address,
+             db_happy_trade.t_order_status
+        where t_order.cid = t_commodity.cid
+          and t_order.uid_seller = t_user.uid
+          and t_commodity.cover_id = t_user_resource.rid
+          and t_order.aid = t_user_address.aid
+          and t_order.status = t_order_status.status_id
+          and t_order.oid = #{oid};
+    </select>
+</mapper>

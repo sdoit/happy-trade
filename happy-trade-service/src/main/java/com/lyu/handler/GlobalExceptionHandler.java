@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 /**
  * 全局异常控制
+ *
  * @author LEE
  */
 @RestControllerAdvice
@@ -20,11 +23,12 @@ public class GlobalExceptionHandler {
     /**
      * 自定义全局异常
      */
-    @ExceptionHandler({UserException.class, CommodityException.class, OrderException.class})
+    @ExceptionHandler({UserException.class, CommodityException.class, OrderException.class, CommodityBidException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult<Object> globalExceptionHandler(GlobalException e) {
         return new CommonResult<>(e.getCode(), false, e.getMessage(), null);
     }
+
     @ExceptionHandler(NotLoginException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult<Object> saTokenNotLoginExceptionHandler(NotLoginException e) {
@@ -35,6 +39,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult<Object> updateFileExceptionHandler(GlobalException e) {
         return new CommonResult<>(CodeAndMessage.UNEXPECTED_ERROR.getCode(), false, e.getMessage(), null);
+    }
+
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public CommonResult<Object> validationExceptionHandler(ConstraintViolationException e) {
+        return new CommonResult<>(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), false, CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage(), null);
     }
 
 }

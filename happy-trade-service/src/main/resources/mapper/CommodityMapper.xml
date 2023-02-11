@@ -13,12 +13,20 @@
         <result column="sold" property="sold" jdbcType="TINYINT"/>
         <result column="launched" property="launched" jdbcType="TINYINT"/>
         <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
         <association property="cover" javaType="com.lyu.entity.UserResource">
             <id column="rid" property="rid" jdbcType="BIGINT"/>
             <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
             <result column="coverUid" property="uid" jdbcType="BIGINT"/>
             <result column="coverDate" property="date" jdbcType="DATE"/>
             <result column="coverType" property="type" jdbcType="CHAR"/>
+        </association>
+        <association property="user" javaType="com.lyu.entity.User">
+            <id column="uid2" property="uid" jdbcType="BIGINT"/>
+            <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+            <result column="username" property="username" jdbcType="VARCHAR"/>
+            <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
 
@@ -36,6 +44,8 @@
         <result column="sold" property="sold" jdbcType="TINYINT"/>
         <result column="launched" property="launched" jdbcType="TINYINT"/>
         <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
         <collection property="resources" ofType="com.lyu.entity.UserResource">
             <id column="rid" property="rid" jdbcType="BIGINT"/>
             <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
@@ -55,21 +65,30 @@
         t_commodity.price,
         t_commodity.sold,
         t_commodity.launched,
+        t_commodity.time,
+        t_commodity.view_count,
         t_user_resource.rid,
         t_user_resource.file_name,
         t_user_resource.uid coverUid,
         t_user_resource.date coverDate,
         t_user_resource.type coverType,
-        t_commodity_type.type_name
+        t_commodity_type.type_name,
+        t_user.uid uid2,
+        t_user.nickname,
+        t_user.username,
+        t_user.avatar
         FROM db_happy_trade.t_commodity,
         db_happy_trade.t_user_resource,
-        db_happy_trade.t_commodity_type
+        db_happy_trade.t_commodity_type,
+        db_happy_trade.t_user
         WHERE
         <foreach collection="words" item="word" separator="AND">
             t_commodity.name like CONCAT('%',#{word},'%')
         </foreach>
         AND t_commodity.cover_id = t_user_resource.rid
         AND t_commodity.type = t_commodity_type.tid
+        AND t_user.uid=t_commodity.uid
+        AND t_commodity.sold=0
     </select>
 
     <select id="getCommodityById" resultMap="mapResources">
@@ -82,6 +101,8 @@
                t_commodity.description,
                t_commodity.sold,
                t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
                t_user_resource.rid,
                t_user_resource.file_name,
                t_user_resource.uid  rUid,
@@ -104,6 +125,8 @@
                t_commodity.description,
                t_commodity.sold,
                t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
                t_user_resource.rid,
                t_user_resource.file_name,
                t_user_resource.uid  rUid,

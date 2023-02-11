@@ -2,6 +2,7 @@
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    cache-enabled: false
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/db_happy_trade
@@ -9,17 +10,22 @@ spring:
     username: root
     password: admin
 
-
 logging:
   level:
     com.lyu.mapper: debug
 sa-token:
   token-name: token
+  token-style: tik
 
 alipay:
   appId: 2021000121664075
   appPrivateKey: MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCIW4qqx+RxrrBTXZHhZafRZMUSvVacn8+uRIysuKaqy1PtK+fRYSkwRNoMpGyjQL0BZGsPCOu73/WOqIwaIvogtV/a31mHKAPqV/o5TolGQb76EtxYZEMk30HHsYHPRAaW+x+K6GRUQDGeRVxRzHl+JGimqzyPR/gCQodhBnoCIxV1Ggla+SFsdVKafaJFARor3Yl+tYDAQg+Iafx837hSuIisWJCHb0u4d9CnSZNhwMUjYAYN+qWW2aGuSIURazruhc279EjeLXIzme6y3qfHE6Fg3O0y+HI8sVQN+sR0M3EcNusx3oAJRdruMXx54aT5u/3Fj21i2aFfX3GGudnBAgMBAAECggEAT4X7uB/99eLoSKZAZtCPb8oyOPydX5jAWST3WeASq3cLij1Z5D2i9Niixk66YPdng0FaQpl0ScySfFGF69RMRfkhXxd1MiK/LdODRhqsaoH7bALF6PMISZ++0ESQrR1CLplkSvG/WXdauLBA6B+1F0EKm3EwT2uskzzTkV1imI2dateXNboj1fRAZXZWM6VkckQ2cgxdOvVKdsllwUN4D0EW2SagCmp5hwREqyyKIRGA/LgbxIw0trzg+1T614Yeewfbq8az9tOgrtPPZfvizArIamTU9tGLiFwzw0wzzG9A8vYdPaWCYZ3gM3ByobNNsKdRT748Qt1A+1njrkiywQKBgQDBvdBdL+d2sM4TtwDGkh+gTwSTp7YKOt9YOzdVfKSC8GWeTfr99IMtjTRQi68LEqojNhnz38yeR0iN8ZIPoC84mcvLpKGerx1OBgFmefWJ5rpbOGy+GAqxuWluSUCz9d3uHIWooikw3hQjhcvn3w1Ue/k9KlMk+fjWiLqdiIkz6QKBgQC0LQeoZSu87++6VScWWHf70UF4KmUDtdrQIwWt2THKBM6Vql63c8RaVTUMaYg9DdjDhZ+NMjSVg5lAGkF1ePGmLHhS7+PSurQP4WW4basAf/nCVDUPMSz6S8+K114Feld8Kl72MZIy4EGqUyBsn8XYKEMcZooedct8xUAUB8CIGQKBgQCm3dOez2mugq2bsV0LqkNvEV/BxQs3WGmRVr9b89TFqkP7yvJI1NY+34WVchm7kcHUPf6wW6ujD4ZgKxZAOxkwyNYMealyQSUeVHHUT2q58W3Er56JQ6/CTw2Nna4K0dLqCMrd6X1Mx5nU1qI+/ZA/md+bXN7r1BkMvgrtL/HsMQKBgE5qhrmwho+tcY2MP/3GtTmgwji1Ys9xl3EcvP0D2VqOKwcSZjS7qsqR6Quk5omD/EJkZqOCJUapRsqSYsjowWtMUXXvOB1f6rw6ohXZjSIjkKUWFx2sjmHFGufXgfEqZOcCXeAShQmldo7VrPf5tZa1NzgmHJjTNaPxCUluckoJAoGAbaVrRDq2qTTKz1Nv8lP8POmN3H43uvdi2jxqJ0f0/hdqzJrJ7eLve0TZtCprYsl14r+LbAG90NSY/JO/4AC4uBTJLqT/TLfyQQ8u2GmQxMazsJDfNM6qfVm1cVLDDuS+Cfxa1yjlk3zg/EKZO6ofRfjMtIZf1COFgZCnqxshxcI=
   alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAl+eQfb9SQKHGwVpySRmxtsTTU71Kb9CtyyPfza3b7TVnwb3UEVfJK5N58MkUTqUKBeLKAe3IJFJA3nTQv9ch2u401B3yWw5mpyCYhfGzGqhvcuBJ2rrMBRjLeSCF2L7CKaqDJ9LZRVCbLHP6CFn2A0vQZ+t6lPO4+yzpwqsVw2vIhiYhpQ7HDFqae1Xy7b8TmUad6zn10nEGQgXEHcg5AdCTRYkQBkfcN6ZpU+O3F7GS+fzQNcAJ0LL2nvJjNJmSsOv2sVDy3Ll70T9cky1ISdsblwDxzEtD5JU6id5anwQo5ZxAhFO8BJi0tCg7Yr/6omaW43bVWfUPR0iu8NxlJwIDAQAB
-  notifyUrl: http://eqyt53.natappfree.cc/api/alipay/notify
-  returnUrl: https://localhost:8080/api/alipay/result
-
+  rootCertPath: D:\Develop\alipayCert\alipayRootCert.crt
+  certPath: D:\Develop\alipayCert\appPublicCert.crt
+  alipayPublicCertPath: D:\Develop\alipayCert\alipayPublicCert.crt
+  notifyUrl: http://h2pz62.natappfree.cc/api/alipay/notify
+  returnUrl: http://localhost:5173
+  withdrawalOrder:
+    title: Happy-Trade 金额提现
+    remark:

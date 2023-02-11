@@ -1,6 +1,7 @@
 package com.lyu.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -15,6 +16,7 @@ import java.io.Serializable;
  */
 @TableName(value ="t_search_candidate_word")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchCandidateWord implements Serializable {
 
     /**

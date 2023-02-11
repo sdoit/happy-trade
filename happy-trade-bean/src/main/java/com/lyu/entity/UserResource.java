@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "t_user_resource")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResource implements Serializable {
     /**
      * 资源id

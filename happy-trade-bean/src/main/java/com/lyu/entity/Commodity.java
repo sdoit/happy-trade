@@ -3,18 +3,21 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
- * 
  * @author LEE
  * @TableName t_commodity
  */
-@TableName(value ="t_commodity")
+@TableName(value = "t_commodity")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class Commodity implements Serializable {
     /**
      * 商品ID
@@ -66,7 +69,10 @@ public class Commodity implements Serializable {
      * 已上架
      */
     private Integer launched;
-
+    /**
+     * 发布时间
+     */
+    private LocalDateTime time;
 
     /**
      * 浏览数
@@ -88,16 +94,16 @@ public class Commodity implements Serializable {
         }
         Commodity other = (Commodity) that;
         return (this.getCid() == null ? other.getCid() == null : this.getCid().equals(other.getCid()))
-            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
-            && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
-            && (this.getCoverId() == null ? other.getCoverId() == null : this.getCoverId().equals(other.getCoverId()))
-            && (this.getQuality() == null ? other.getQuality() == null : this.getQuality().equals(other.getQuality()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
-            && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
-            && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
-            && (this.getSold() == null ? other.getSold() == null : this.getSold().equals(other.getSold()))
-            && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
-            && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
+                && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+                && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
+                && (this.getCoverId() == null ? other.getCoverId() == null : this.getCoverId().equals(other.getCoverId()))
+                && (this.getQuality() == null ? other.getQuality() == null : this.getQuality().equals(other.getQuality()))
+                && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+                && (this.getPrice() == null ? other.getPrice() == null : this.getPrice().equals(other.getPrice()))
+                && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
+                && (this.getSold() == null ? other.getSold() == null : this.getSold().equals(other.getSold()))
+                && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
+                && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
     }
 
     @Override

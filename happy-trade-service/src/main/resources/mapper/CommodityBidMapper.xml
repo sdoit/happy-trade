@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.CommodityBidMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.CommodityBidUserDTO">
+        <id column="bid" property="bid"/>
+        <result column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid_buyer" property="uidBuyer" jdbcType="BIGINT"/>
+        <result column="uid_seller" property="uidSeller" jdbcType="BIGINT"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="message_buyer" property="messageBuyer" jdbcType="VARCHAR"/>
+        <result column="reply_seller" property="replySeller" jdbcType="VARCHAR"/>
+        <result column="agree" property="agree" jdbcType="BOOLEAN"/>
+        <result column="time_created" property="timeCreated" jdbcType="TIMESTAMP"/>
+        <result column="time_reply" property="timeReply" jdbcType="TIMESTAMP"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <association property="commodity" javaType="com.lyu.entity.Commodity">
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="quality" property="quality" jdbcType="FLOAT"/>
+            <result column="cprice" property="price" jdbcType="DECIMAL"/>
+            <result column="time" property="time" jdbcType="TIMESTAMP"/>
+            <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+        </association>
+        <association property="cover" javaType="com.lyu.entity.UserResource">
+            <result column="type" property="type" jdbcType="CHAR"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+            <result column="ruid" property="uid" jdbcType="BIGINT"/>
+            <result column="date" property="date" jdbcType="DATE"/>
+        </association>
+
+    </resultMap>
+
+    <select id="getCommodityBidsPaidByCid" resultType="com.lyu.entity.dto.CommodityBidUserDTO">
+        select bid,
+               cid,
+               uid_buyer,
+               uid_seller,
+               price,
+               message_buyer,
+               reply_seller,
+               agree,
+               `time_created`,
+               time_reply,
+               nickname,
+               avatar
+        from db_happy_trade.t_commodity_bid,
+             db_happy_trade.t_user
+        where t_commodity_bid.uid_buyer = t_user.uid
+          and t_commodity_bid.trade_id is not NULL
+          AND t_commodity_bid.cid = #{cid}
+        order by `time_created`
+    </select>
+    <select id="getCommodityBidsByBuyerUid" resultMap="baseMap">
+        select t_commodity_bid.bid,
+               t_commodity_bid.cid,
+               t_commodity_bid.uid_buyer,
+               t_commodity_bid.uid_seller,
+               t_commodity_bid.price,
+               t_commodity_bid.message_buyer,
+               t_commodity_bid.reply_seller,
+               t_commodity_bid.agree,
+               t_commodity_bid.`time_created`,
+               t_commodity_bid.time_reply,
+               nickname,
+               avatar,
+               t_commodity.name,
+               t_commodity.quality,
+               t_commodity.price   cprice,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_user_resource.type,
+               t_user_resource.file_name,
+               t_user_resource.uid ruid,
+               t_user_resource.date
+        from db_happy_trade.t_commodity_bid,
+             db_happy_trade.t_user,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user_resource
+        where t_commodity_bid.uid_seller = t_user.uid
+          and t_user_resource.rid = t_commodity.cover_id
+          AND t_commodity.cid = t_commodity_bid.cid
+          AND t_commodity_bid.uid_buyer = #{uid}
+        order by `time_created`
+    </select>
+
+    <select id="orderOrBidExist" resultType="java.lang.Boolean">
+        SELECT 1
+        FROM db_happy_trade.t_commodity_bid,
+             db_happy_trade.t_order
+        WHERE (t_commodity_bid.uid_buyer = #{uid}
+            AND t_commodity_bid.cid = #{cid})
+           OR (t_order.uid_buyer = #{uid}
+            AND t_order.cid = #{cid})
+        LIMIT 1
+    </select>
+    <sql id="baseSql">
+        select t_commodity_bid.bid,
+               t_commodity_bid.cid,
+               t_commodity_bid.uid_buyer,
+               t_commodity_bid.uid_seller,
+               t_commodity_bid.price,
+               t_commodity_bid.message_buyer,
+               t_commodity_bid.reply_seller,
+               t_commodity_bid.agree,
+               t_commodity_bid.`time_created`,
+               t_commodity_bid.time_reply,
+               nickname,
+               avatar,
+               username,
+               t_commodity.name,
+               t_commodity.quality,
+               t_commodity.price   cprice,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_user_resource.type,
+               t_user_resource.file_name,
+               t_user_resource.uid ruid,
+               t_user_resource.date
+        from db_happy_trade.t_commodity_bid,
+             db_happy_trade.t_user,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user_resource
+    </sql>
+    <select id="getCommodityBidsBySellerUid" resultMap="baseMap">
+        <include refid="baseSql"></include>
+        where t_commodity_bid.uid_buyer = t_user.uid
+        and t_user_resource.rid = t_commodity.cover_id
+        AND t_commodity.cid = t_commodity_bid.cid
+        AND t_commodity_bid.uid_seller = #{uid}
+        order by `time_created`
+    </select>
+    <select id="getCommodityBidsRespondedBySellerUid" resultMap="baseMap">
+        <include refid="baseSql"></include>
+        where t_commodity_bid.uid_buyer = t_user.uid
+        and t_user_resource.rid = t_commodity.cover_id
+        AND t_commodity.cid = t_commodity_bid.cid
+        AND t_commodity_bid.agree IS NOT NULL
+        AND t_commodity_bid.uid_seller = #{uid}
+        order by `time_created`
+    </select>
+    <select id="getCommodityBidsNoResponseBySellerUid" resultMap="baseMap">
+        <include refid="baseSql"></include>
+        where t_commodity_bid.uid_buyer = t_user.uid
+        and t_user_resource.rid = t_commodity.cover_id
+        AND t_commodity.cid = t_commodity_bid.cid
+        AND t_commodity_bid.agree IS NULL
+        AND t_commodity_bid.uid_seller = #{uid}
+        order by `time_created`
+
+    </select>
+    <select id="getCommodityBidsAgreedBySellerUid" resultMap="baseMap">
+        <include refid="baseSql"></include>
+        where t_commodity_bid.uid_buyer = t_user.uid
+        and t_user_resource.rid = t_commodity.cover_id
+        AND t_commodity.cid = t_commodity_bid.cid
+        AND t_commodity_bid.agree=1
+        AND t_commodity_bid.uid_seller = #{uid}
+        order by `time_created`
+    </select>
+    <select id="getCommodityBidsRejectedBySellerUid" resultMap="baseMap">
+        <include refid="baseSql"></include>
+        where t_commodity_bid.uid_buyer = t_user.uid
+        and t_user_resource.rid = t_commodity.cover_id
+        AND t_commodity.cid = t_commodity_bid.cid
+        AND t_commodity_bid.agree=0
+        AND t_commodity_bid.uid_seller = #{uid}
+        order by `time_created`
+    </select>
+</mapper>

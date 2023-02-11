@@ -15,13 +15,13 @@ import javax.annotation.Resource;
  */
 @Slf4j
 @Service
-public class UserResourceServiceImpl extends ServiceImpl<UserResourceMapper,UserResource> implements UserResourceService {
+public class UserResourceServiceImpl extends ServiceImpl<UserResourceMapper, UserResource> implements UserResourceService {
     @Resource
     private UserResourceMapper userResourceMapper;
 
     @Override
     public Integer saveResource(UserResource userResource) {
-
+        //已在外层判断登录状态
         return userResourceMapper.insert(userResource);
     }
 

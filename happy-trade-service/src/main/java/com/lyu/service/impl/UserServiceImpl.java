@@ -4,12 +4,13 @@ import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lyu.common.CodeAndMessage;
+import com.lyu.common.Constant;
 import com.lyu.entity.User;
-import com.lyu.exception.*;
+import com.lyu.exception.UserException;
 import com.lyu.mapper.UserMapper;
 import com.lyu.service.UserService;
+import com.lyu.util.RedisUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -19,13 +20,14 @@ import javax.annotation.Resource;
  * @time 2022/12/28 14:22
  */
 @Service
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
-
+    @Resource
+    private RedisUtil redisUtil;
 
     @Override
-    public SaTokenInfo login(User user) throws UserException {
+    public User login(User user) throws UserException {
         //从数据库获取用户 匹配 uid，username，phone
         User userInDb = userMapper.selectOne(new QueryWrapper<User>()
                 .eq("username", user.getUsername())
@@ -49,12 +51,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new UserException(CodeAndMessage.BANED_USER.getCode(), CodeAndMessage.BANED_USER.getMessage());
         }
         StpUtil.login(userInDb.getUid());
+        userInDb.setPassword(null);
+        SaTokenInfo tokenInfo = StpUtil.getTokenInfo();
+        userInDb.setTokenName(tokenInfo.getTokenName());
+        userInDb.setTokenValue(tokenInfo.getTokenValue());
+        //存放User对象到Redis
+        redisUtil.set(Constant.REDIS_USER_LOGGED_KEY_PRE + userInDb.getUid(), userInDb);
         //登录成功
-        return StpUtil.getTokenInfo();
+        return userInDb;
     }
 
     @Override
     public void logout() {
+        String uid = StpUtil.getLoginIdAsString();
+        //删除Redis中的User
+        String key = Constant.REDIS_USER_LOGGED_KEY_PRE + uid;
+        redisUtil.getAndDelete(key);
         StpUtil.logout();
     }
 
@@ -65,7 +77,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .or()
                 .eq("phone", user.getPhone())
                 .or()
-                .eq("uid", user.getUid()));;
+                .eq("uid", user.getUid()));
+        ;
         if (userInDb != null) {
             throw new UserException(CodeAndMessage.USER_ALREADY_EXISTS.getCode(), CodeAndMessage.USER_ALREADY_EXISTS.getMessage());
         }
@@ -80,6 +93,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getUserByUid(Long uid) {
-        return userMapper.selectById(uid);
+        User user = userMapper.selectById(uid);
+        user.setPassword(null);
+        return user;
+    }
+
+    @Override
+    public User checkLogin() {
+        String uid = StpUtil.getLoginIdAsString();
+        //从Redis取出User对象
+        return (User) redisUtil.get(Constant.REDIS_USER_LOGGED_KEY_PRE + uid);
     }
 }

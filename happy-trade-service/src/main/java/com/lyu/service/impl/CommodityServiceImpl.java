@@ -3,11 +3,14 @@ package com.lyu.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.User;
 import com.lyu.entity.dto.CommodityDTO;
+import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.service.CommodityService;
+import com.lyu.service.UserViewHistoryService;
 import com.lyu.util.IDUtil;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,10 @@ public class CommodityServiceImpl implements CommodityService {
     @Resource
     private CommodityMapper commodityMapper;
     @Resource
+    private UserViewHistoryService userViewHistoryService;
+
+
+    @Resource
     private IDUtil idUtil;
 
     @Override
@@ -35,18 +42,34 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public Integer updateCommodity(Commodity commodity) {
+        Long uid = commodity.getUid();
+        long uidLogin = StpUtil.getLoginIdAsLong();
+        if (uid != uidLogin) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
         return commodityMapper.updateById(commodity);
     }
 
     @Override
     public Integer deleteCommodity(Commodity commodity) {
+        Long uid = commodity.getUid();
+        long uidLogin = StpUtil.getLoginIdAsLong();
+        if (uid != uidLogin) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+
         return commodityMapper.deleteById(commodity.getCid());
     }
 
     @Override
     public Commodity getCommodityById(Long cid) {
+        //如果登录，保存浏览记录
+        if (StpUtil.isLogin()) {
+            return userViewHistoryService.saveViewHistory(cid);
+        }
         return commodityMapper.getCommodityById(cid);
     }
+
 
     @Override
     public List<Commodity> getCommoditiesFromUser(User user) {
@@ -57,11 +80,6 @@ public class CommodityServiceImpl implements CommodityService {
     @Override
     public List<CommodityDTO> getCommoditiesByKeyWordsPage(String words, IPage<CommodityDTO> page) {
         String[] s = words.split(" ");
-//        QueryWrapper<Commodity> commodityKeyWordQueryWrapper = new QueryWrapper<>();
-//        for (String keyword : s) {
-//            commodityKeyWordQueryWrapper = commodityKeyWordQueryWrapper.like("name", keyword);
-//        }
-//        IPage<Commodity> pageResult = commodityMapper.selectPage(page, commodityKeyWordQueryWrapper);
         IPage<CommodityDTO> commoditiesByKeyWords = commodityMapper.getCommoditiesByKeyWords(page, s);
         return commoditiesByKeyWords.getRecords();
     }

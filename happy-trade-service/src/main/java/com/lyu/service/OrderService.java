@@ -2,7 +2,8 @@ package com.lyu.service;
 
 import com.lyu.entity.Commodity;
 import com.lyu.entity.Order;
-import com.lyu.entity.User;
+import com.lyu.entity.UserAddress;
+import com.lyu.entity.dto.OrderDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.OrderException;
 import com.lyu.exception.UserException;
@@ -17,13 +18,14 @@ public interface OrderService {
     /**
      * 创建订单
      *
-     * @param user
      * @param commodity
+     * @param userAddress
      * @return
      * @throws UserException
      * @throws CommodityException
      */
-    Order createOrder(User user, Commodity commodity) throws UserException, CommodityException;
+    Order createOrder(Commodity commodity, UserAddress userAddress) throws UserException, CommodityException;
+
 
     /**
      * 根据订单号获取订单
@@ -32,7 +34,15 @@ public interface OrderService {
      * @return
      * @throws OrderException
      */
-    Order getOrderByOid(Long oid) throws OrderException;
+    OrderDTO getOrderByOid(Long oid) throws OrderException;
+
+    /**
+     * 系统调用 不要求又登录用户
+     * @param oid
+     * @return
+     * @throws OrderException
+     */
+    Order getOrderByOidSystem(Long oid) throws OrderException;
 
     /**
      * 获取指定买家的所有订单
@@ -41,7 +51,7 @@ public interface OrderService {
      * @throws OrderException
      * @throws UserException
      */
-    List<Order> getOrdersByBuyerUid(Long uid) throws OrderException, UserException;
+    List<OrderDTO> getOrdersByBuyerUid(Long uid) throws OrderException, UserException;
     /**
      * 获取指定买家的未完成的订单
      * @param uid
@@ -71,5 +81,14 @@ public interface OrderService {
      * @param order
      * @return
      */
-    Order payOrder(Order order);
+    Integer completePayOrder(Order order);
+
+    /**
+     * 检查订单是否存在
+     * @param oid
+     * @return
+     */
+    Boolean exist(Long oid);
+
+
 }

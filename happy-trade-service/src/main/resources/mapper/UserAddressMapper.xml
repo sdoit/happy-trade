@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserAddressMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.UserAddressDTO">
+        <id column="aid" property="aid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="CHAR"/>
+        <result column="phone" property="phone" jdbcType="CHAR"/>
+        <result column="street_code" property="streetCode" jdbcType="CHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="tag" property="tag" jdbcType="VARCHAR"/>
+        <result column="default_address" property="defaultAddress" jdbcType="TINYINT"/>
+        <result column="province" property="province" jdbcType="VARCHAR"/>
+        <result column="city" property="city" jdbcType="VARCHAR"/>
+        <result column="area" property="area" jdbcType="VARCHAR"/>
+        <result column="street" property="street" jdbcType="VARCHAR"/>
+    </resultMap>
+    <select id="getAddressListByUid" resultMap="baseMap">
+        select t_user_address.aid,
+               t_user_address.uid,
+               t_user_address.name,
+               t_user_address.phone,
+               t_user_address.street_code,
+               t_user_address.address,
+               t_user_address.tag,
+               t_user_address.default_address,
+               t_province.name province,
+               t_city.name     city,
+               t_area.name     area,
+               t_street.name   street
+        from db_happy_trade.t_user_address,
+             db_happy_trade.t_province,
+             db_happy_trade.t_city,
+             db_happy_trade.t_area,
+             db_happy_trade.t_street
+        where t_user_address.street_code = t_street.code
+          and t_street.a_code = t_area.code
+          and t_street.c_code = t_city.code
+          and t_street.p_code = t_province.code
+          and t_user_address.uid = #{uid};
+    </select>
+    <select id="getAddressByAid" resultType="com.lyu.entity.dto.UserAddressDTO">
+        select t_user_address.aid,
+               t_user_address.uid,
+               t_user_address.name,
+               t_user_address.phone,
+               t_user_address.street_code,
+               t_user_address.address,
+               t_user_address.tag,
+               t_user_address.default_address,
+               t_province.name province,
+               t_city.name     city,
+               t_area.name     area,
+               t_street.name   street
+        from db_happy_trade.t_user_address,
+             db_happy_trade.t_province,
+             db_happy_trade.t_city,
+             db_happy_trade.t_area,
+             db_happy_trade.t_street
+        where t_user_address.street_code = t_street.code
+          and t_street.a_code = t_area.code
+          and t_street.c_code = t_city.code
+          and t_street.p_code = t_province.code
+          and t_user_address.aid = #{aid};
+    </select>
+    <select id="getAddressDefaultByUid" resultType="com.lyu.entity.dto.UserAddressDTO">
+        select t_user_address.aid,
+               t_user_address.uid,
+               t_user_address.name,
+               t_user_address.phone,
+               t_user_address.street_code,
+               t_user_address.address,
+               t_user_address.tag,
+               t_user_address.default_address,
+               t_province.name province,
+               t_city.name     city,
+               t_area.name     area,
+               t_street.name   street
+        from db_happy_trade.t_user_address,
+             db_happy_trade.t_province,
+             db_happy_trade.t_city,
+             db_happy_trade.t_area,
+             db_happy_trade.t_street
+        where t_user_address.street_code = t_street.code
+          and t_street.a_code = t_area.code
+          and t_street.c_code = t_city.code
+          and t_street.p_code = t_province.code
+          and t_user_address.default_address = 1
+          and t_user_address.uid = #{uid};
+    </select>
+</mapper>

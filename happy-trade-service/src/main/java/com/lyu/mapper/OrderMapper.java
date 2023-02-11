@@ -2,7 +2,10 @@ package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.lyu.entity.Order;
+import com.lyu.entity.dto.OrderDTO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * @author LEE
@@ -36,10 +39,18 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     /**
      * 获取指定用户的所有订单（作为卖家）
-     * @param user
+     * @param uid
      * @return
      */
-//    List<Order> getOrdersByUser(User user);
+    List<OrderDTO> getOrdersByUser(Long uid);
+
+    /**
+     * 根据oid获取 order
+     * @param oid
+     * @return
+     */
+    OrderDTO getOrderByOid(Long oid);
+
 
     /**
      * 获取购买的订单（作为买家）
@@ -54,10 +65,19 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return
      */
 //    List<Order> getCompletedOrdersByUser(User user);
+
     /**
      * 获取指定用户未完成的订单
+     *
      * @param user
      * @return
      */
 //    List<Order> getUncompletedOrdersByUser(User user);
+
+    /**
+     * 检查记录是否存在
+     * @param oid
+     * @return
+     */
+    Boolean exist(Long oid);
 }

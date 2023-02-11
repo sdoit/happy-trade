@@ -61,7 +61,7 @@ public class CommonResult<T> {
         this.data = data;
     }
 
-    public static <T> CommonResult<T> createCommonResult(CodeAndMessage codeAndMessage, T data) {
+    public static <T> CommonResult<T> Result(CodeAndMessage codeAndMessage, T data) {
         return new CommonResult<T>(codeAndMessage.getCode(), codeAndMessage.getFlag(), codeAndMessage.getMessage(), data);
 
     }

@@ -57,7 +57,7 @@ public class FileUploadController {
     public CommonResult<Object> updateImageUseSftp(MultipartFile file) throws UpdateFileException {
         long uid = StpUtil.getLoginIdAsLong();
         if (file == null) {
-            return CommonResult.createCommonResult(CodeAndMessage.UNEXPECTED_ERROR, null);
+            return CommonResult.Result(CodeAndMessage.UNEXPECTED_ERROR, null);
         }
         String suffix = "";
         if (file.getOriginalFilename() != null) {
@@ -87,14 +87,14 @@ public class FileUploadController {
         } catch (IOException | SftpException e) {
             throw new UpdateFileException(CodeAndMessage.UNEXPECTED_ERROR.getCode(), CodeAndMessage.UNEXPECTED_ERROR.getMessage());
         }
-        return CommonResult.createCommonResult(CodeAndMessage.SUCCESS, null);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
     @PostMapping("/imageBatch")
     public CommonResult<Object> updateImageUseSftpBatch(MultipartFile[] files) throws UpdateFileException {
         long uid = StpUtil.getLoginIdAsLong();
         if (files == null || files.length == 0) {
-            return CommonResult.createCommonResult(CodeAndMessage.UNEXPECTED_ERROR, null);
+            return CommonResult.Result(CodeAndMessage.UNEXPECTED_ERROR, null);
         }
         String suffix = "";
         LocalDateTime now = LocalDateTime.now();
@@ -132,6 +132,6 @@ public class FileUploadController {
                  SftpException e) {
             throw new UpdateFileException(CodeAndMessage.UNEXPECTED_ERROR.getCode(), CodeAndMessage.UNEXPECTED_ERROR.getMessage());
         }
-        return CommonResult.createCommonResult(CodeAndMessage.SUCCESS, null);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 }

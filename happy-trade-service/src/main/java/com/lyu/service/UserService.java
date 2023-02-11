@@ -1,6 +1,5 @@
 package com.lyu.service;
 
-import cn.dev33.satoken.stp.SaTokenInfo;
 import com.lyu.entity.User;
 import com.lyu.exception.UserException;
 
@@ -8,14 +7,15 @@ import com.lyu.exception.UserException;
  * @author LEE
  * @time 2022/12/26 10:42
  */
-public interface UserService{
+public interface UserService {
     /**
-     * 登陆成功返回token，失败抛出异常
+     * 登陆成功返回携带token的User，失败抛出异常
+     *
      * @param user
      * @return
      * @throws UserException
      */
-    SaTokenInfo login(User user) throws UserException;
+    User login(User user) throws UserException;
 
     /**
      * 用户登出
@@ -24,6 +24,7 @@ public interface UserService{
 
     /**
      * 注册用户
+     *
      * @param user
      * @return
      */
@@ -39,10 +40,16 @@ public interface UserService{
 
     /**
      * 通过uid查询用户
+     *
      * @param uid
      * @return
      */
     User getUserByUid(Long uid);
 
-
+    /**
+     * 检查是否登录，如果登录返回登录的用户
+     *
+     * @return
+     */
+    User checkLogin();
 }

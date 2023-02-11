@@ -18,3 +18,10 @@ nginx:
       host: 192.168.3.164
       port: 22
       path: /sftp_static_server/static
+
+
+debug: true
+logging:
+  level:
+    com.lyu.controller: debug
+    com.lyu.com.lyu.service: debug

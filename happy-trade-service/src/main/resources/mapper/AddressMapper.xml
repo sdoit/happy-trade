@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.AddressMapper">
+    <select id="getProvinceList" resultType="com.lyu.entity.address.Province">
+        select code, name
+        from db_happy_trade.t_province;
+    </select>
+    <select id="getCityListByProvince" resultType="com.lyu.entity.address.City">
+        select code, name, p_code
+        from db_happy_trade.t_city
+        where p_code = #{pCode}
+    </select>
+    <select id="getAreaListByCityAndProvince" resultType="com.lyu.entity.address.Area">
+        select code, name, c_code, p_code
+        from db_happy_trade.t_area
+        where p_code = #{pCode}
+          and c_code = #{cCode};
+    </select>
+    <select id="getStreetListByAreaAndCityAndProvince" resultType="com.lyu.entity.address.Street">
+        select code, name, a_code, p_code, c_code
+        from db_happy_trade.t_street
+        where p_code = #{pCode}
+          and c_code = #{cCode}
+          and a_code = #{aCode};
+    </select>
+</mapper>

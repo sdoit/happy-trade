@@ -3,16 +3,17 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * 
  * @TableName t_user
  */
-@TableName(value ="t_user")
+@TableName(value = "t_user")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class User implements Serializable {
     /**
      * 用户id
@@ -54,6 +55,11 @@ public class User implements Serializable {
      * 解封时间：-1永久封禁 0未封禁 0+ 解封时间 单位（h）
      */
     private Integer banedTime;
+    @TableField(exist = false)
+    private String tokenName;
+
+    @TableField(exist = false)
+    private String tokenValue;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -71,13 +77,13 @@ public class User implements Serializable {
         }
         User other = (User) that;
         return (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
-            && (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
-            && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
-            && (this.getPhone() == null ? other.getPhone() == null : this.getPhone().equals(other.getPhone()))
-            && (this.getNickname() == null ? other.getNickname() == null : this.getNickname().equals(other.getNickname()))
-            && (this.getAvatar() == null ? other.getAvatar() == null : this.getAvatar().equals(other.getAvatar()))
-            && (this.getIntroduction() == null ? other.getIntroduction() == null : this.getIntroduction().equals(other.getIntroduction()))
-            && (this.getBanedTime() == null ? other.getBanedTime() == null : this.getBanedTime().equals(other.getBanedTime()));
+                && (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
+                && (this.getPassword() == null ? other.getPassword() == null : this.getPassword().equals(other.getPassword()))
+                && (this.getPhone() == null ? other.getPhone() == null : this.getPhone().equals(other.getPhone()))
+                && (this.getNickname() == null ? other.getNickname() == null : this.getNickname().equals(other.getNickname()))
+                && (this.getAvatar() == null ? other.getAvatar() == null : this.getAvatar().equals(other.getAvatar()))
+                && (this.getIntroduction() == null ? other.getIntroduction() == null : this.getIntroduction().equals(other.getIntroduction()))
+                && (this.getBanedTime() == null ? other.getBanedTime() == null : this.getBanedTime().equals(other.getBanedTime()));
     }
 
     @Override

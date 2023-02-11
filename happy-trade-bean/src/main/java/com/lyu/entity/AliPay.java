@@ -1,5 +1,6 @@
 package com.lyu.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.Digits;
@@ -10,6 +11,8 @@ import javax.validation.constraints.NotBlank;
  * @time 2023/1/12 20:45
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class AliPay {
     /**
      * 商户订单号。
@@ -30,4 +33,10 @@ public class AliPay {
      *
      */
     private String returnUrl;
+
+
+    /**
+     * 订单类型
+     */
+    private String type;
 }

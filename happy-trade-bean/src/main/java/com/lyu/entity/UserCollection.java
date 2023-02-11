@@ -3,6 +3,7 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  */
 @TableName(value ="t_user_collection")
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserCollection implements Serializable {
     /**
      * 

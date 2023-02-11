@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserViewHistoryMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.UserViewHistoryDTO">
+        <id column="hid" property="hid" jdbcType="BIGINT"/>
+        <result column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="DATE"/>
+        <association property="commodity" javaType="com.lyu.entity.Commodity">
+            <id column="ccid" property="cid" jdbcType="BIGINT"/>
+            <result column="cuid" property="uid" jdbcType="BIGINT"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="price" property="price" jdbcType="DECIMAL"/>
+            <result column="sold" property="sold" jdbcType="TINYINT"/>
+            <result column="launched" property="launched" jdbcType="TINYINT"/>
+        </association>
+        <association property="cover" javaType="com.lyu.entity.UserResource">
+            <result column="type" property="type" jdbcType="CHAR"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
+            <result column="type" property="type" jdbcType="CHAR"/>
+            <result column="ruid" property="uid" jdbcType="BIGINT"/>
+            <result column="date" property="date" jdbcType="DATE"/>
+        </association>
+    </resultMap>
+    <select id="getAllViewHistoryByUid" resultMap="baseMap">
+        select t_user_view_history.hid,
+               t_user_view_history.cid,
+               t_user_view_history.uid,
+               t_user_view_history.time,
+               t_commodity.cid     ccid,
+               t_commodity.uid     cuid,
+               t_commodity.name,
+               t_commodity.price,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_user_resource.type,
+               t_user_resource.file_name,
+               t_user_resource.uid ruid,
+               t_user_resource.date
+        from db_happy_trade.t_user_view_history,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user_resource
+        where t_user_view_history.cid = t_commodity.cid
+          AND t_user_resource.rid = t_commodity.cover_id
+          AND t_user_view_history.uid = #{uid};
+
+    </select>
+    <select id="exists" resultType="java.lang.Boolean">
+        SELECT 1
+        FROM db_happy_trade.t_user_view_history
+        WHERE t_user_view_history.uid = #{uid}
+          AND t_user_view_history.cid = #{cid}
+        LIMIT 1
+    </select>
+</mapper>

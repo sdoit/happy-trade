@@ -1,5 +1,6 @@
 package com.lyu.entity.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.validation.constraints.NotBlank;
@@ -8,6 +9,8 @@ import javax.validation.constraints.NotBlank;
  * @author LEE
  * @time 2023/1/1 10:32
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
+
 public class UserDTO {
     /**
      * 可能是uid、username、phone

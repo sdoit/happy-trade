@@ -75,6 +75,17 @@ public class RedisUtil {
     }
 
     /**
+     * 获取值并删除
+     *
+     * @param key
+     * @return
+     */
+    public Object getAndDelete(String key) {
+        return key == null ? null : redisTemplate.opsForValue().getAndDelete(key);
+    }
+
+
+    /**
      * 将值放入缓存
      *
      * @param key   键
@@ -90,6 +101,10 @@ public class RedisUtil {
     }
 
     public void set(String key, Integer value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
+
+    public void set(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
