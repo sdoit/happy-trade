@@ -136,7 +136,11 @@ public class CommodityBidController {
     public CommonResult<Boolean> getCommodityBidsExistByUidCid(@NotNull @PathVariable("cid") Long cid) {
         Boolean exist = commodityBidService.orderOrBidExist(cid);
         return CommonResult.Result(CodeAndMessage.SUCCESS, exist);
+    }
 
-
+    @ApiOperation("买家撤销出价")
+    @PostMapping("/revoke/{bid}")
+    public CommonResult<Object> revokeCommodityBidsExistByBid(@NotNull @PathVariable("bid") Long bid) {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityBidService.revokeCommodityBidByBid(bid));
     }
 }

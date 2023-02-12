@@ -46,6 +46,7 @@ public class Constant {
     public static final Integer COMMODITY_PER_PAGE = 28;
     public static final Integer BID_PER_PAGE = 10;
     public static final Integer ORDER_PER_PAGE = 20;
+    public static final Integer FAVORITE_PER_PAGE = 30;
 
 
     public static final String NGINX_STATIC_SERVER_IMAGE_ADDR = "image";
@@ -54,6 +55,7 @@ public class Constant {
     public static final String REFUND_DUE_TO_DIRECT_PURCHASE = "有用户以商家标价直接购买了商品，导致本商品的所有出价被撤销";
     public static final String REFUND_DUE_TO_SELLER_AGREES_TO_ANOTHER_BID = "卖家同意了其他人的报价，你的报价被自动取消";
     public static final String REFUND_DUE_TO_REJECTED = "卖家拒绝了你的报价";
+    public static final String REFUND_DUE_USER_VOLUNTARILY_CANCEL = "用户主动撤销出价";
     public static final String ALIPAY_REFUND_SUCCESSFUL_LOGO = "Y";
     public static final String BID_GET_ALL = "all";
     public static final String BID_GET_NO_RESPONSE = "no-response";

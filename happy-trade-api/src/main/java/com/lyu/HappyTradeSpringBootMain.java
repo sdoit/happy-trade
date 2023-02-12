@@ -9,8 +9,8 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
  */
 @EnableOpenApi
 @SpringBootApplication
-public class Main {
+public class HappyTradeSpringBootMain {
     public static void main(String[] args) {
-        SpringApplication.run(Main.class);
+        SpringApplication.run(HappyTradeSpringBootMain.class);
     }
 }

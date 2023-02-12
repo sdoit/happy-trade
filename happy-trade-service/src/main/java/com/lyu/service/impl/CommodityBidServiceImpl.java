@@ -2,12 +2,16 @@ package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
-import com.lyu.entity.*;
+import com.lyu.entity.Commodity;
+import com.lyu.entity.CommodityBid;
+import com.lyu.entity.Order;
+import com.lyu.entity.User;
 import com.lyu.entity.dto.CommodityBidUserDTO;
 import com.lyu.exception.CommodityBidException;
 import com.lyu.exception.CommodityException;
@@ -205,6 +209,36 @@ public class CommodityBidServiceImpl implements CommodityBidService {
             return commodityBidMapper.getCommodityBidsRejectedBySellerUid(page, uid);
         }
         return commodityBidMapper.getCommodityBidsBySellerUid(page, uid);
+    }
+
+    @Override
+    public Integer revokeCommodityBidByBid(Long bid) {
+        if (bid == null) {
+            throw new CommodityBidException(CodeAndMessage.INVALID_BID_ID.getCode(), CodeAndMessage.INVALID_BID_ID.getMessage());
+        }
+        CommodityBid commodityBid = commodityBidMapper.selectById(bid);
+        if (commodityBid == null) {
+            throw new CommodityBidException(CodeAndMessage.INVALID_BID_ID.getCode(), CodeAndMessage.INVALID_BID_ID.getMessage());
+        }
+        if (!commodityBid.getUidBuyer().equals(StpUtil.getLoginIdAsLong())) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+        //判断是否为已处理过的订单
+        if (!ObjectUtil.isNull(commodityBid.getAgree()) || BooleanUtil.isTrue(commodityBid.getCancel())) {
+            throw new CommodityBidException(CodeAndMessage.BID_HAS_BEEN_CANCELED_OR_PROCESSED.getCode(), CodeAndMessage.BID_HAS_BEEN_CANCELED_OR_PROCESSED.getMessage());
+        }
+        //判断出价是否超过了24小时。如果未超过不能撤销
+        if (commodityBid.getTimeCreated().plusDays(1).isAfter(LocalDateTime.now())) {
+            throw new CommodityBidException(CodeAndMessage.BID_NOT_VALID_FOR_24_HOURS.getCode(), CodeAndMessage.BID_NOT_VALID_FOR_24_HOURS.getMessage());
+        }
+        //发起退款
+        alipayService.refund(commodityBid.getTradeId(), commodityBid.getPrice(), String.valueOf(commodityBid.getBid()),
+                Constant.REFUND_DUE_USER_VOLUNTARILY_CANCEL, Constant.ALIPAY_PAY_TYPE_BID);
+        return commodityBidMapper.update(null, new UpdateWrapper<CommodityBid>()
+                .set("cancel", 1)
+                .set("refund_time", LocalDateTime.now())
+                .eq("bid", commodityBid.getBid()));
+
     }
 
     @Override

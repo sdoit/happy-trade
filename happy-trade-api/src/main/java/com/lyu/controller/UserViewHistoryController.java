@@ -1,15 +1,18 @@
 package com.lyu.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
 import com.lyu.common.Constant;
-import com.lyu.entity.UserViewHistory;
 import com.lyu.entity.dto.UserViewHistoryDTO;
 import com.lyu.service.UserViewHistoryService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
@@ -29,21 +32,11 @@ public class UserViewHistoryController {
     @Resource
     private UserViewHistoryService userViewHistoryService;
 
-    /**
-     * ？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？是否应该存在 待定
-     * @param userViewHistory
-     * @return
-     */
-    @PostMapping()
-    public CommonResult<Object> saveViewHistory(@NotNull UserViewHistory userViewHistory) {
-        userViewHistoryService.saveViewHistory(userViewHistory.getCid());
-        return CommonResult.Result(CodeAndMessage.INCONCLUSIVE_RESULT, null);
-    }
-
-    @GetMapping("/{uid}")
-    public CommonResult<List<UserViewHistoryDTO>> getAllViewHistoryByUid(@NotNull() Integer page, @NotNull @PathVariable("uid") Long uid) {
+    @ApiOperation("[分页]获取用户的浏览历史")
+    @GetMapping
+    public CommonResult<List<UserViewHistoryDTO>> getAllViewHistoryByUid(@NotNull Integer page) {
         Page<UserViewHistoryDTO> pageUserViewHistoryDTO = new Page<>(page, Constant.COMMODITY_PER_PAGE);
-        List<UserViewHistoryDTO> allViewHistory = userViewHistoryService.getAllViewHistoryByUid(pageUserViewHistoryDTO, uid);
+        List<UserViewHistoryDTO> allViewHistory = userViewHistoryService.getAllViewHistoryByUid(pageUserViewHistoryDTO, StpUtil.getLoginIdAsLong());
         return CommonResult.Result(CodeAndMessage.SUCCESS, allViewHistory);
     }
 }

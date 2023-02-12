@@ -86,6 +86,14 @@ public interface CommodityBidService {
 
 
     /**
+     * 买家撤销出价
+     *
+     * @param bid
+     * @return
+     */
+    Integer revokeCommodityBidByBid(Long bid);
+
+    /**
      * 用户完成支付
      *
      * @param commodityBid

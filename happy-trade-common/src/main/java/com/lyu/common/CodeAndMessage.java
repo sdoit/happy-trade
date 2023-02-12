@@ -18,7 +18,6 @@ public enum CodeAndMessage {
     SUCCESS(true, 200, "成功"),
 
 
-
     /**
      * ======================================================================
      * =============异常==================
@@ -46,6 +45,8 @@ public enum CodeAndMessage {
     INVALID_BID_ID(false, 3050, "无效的报价号"),
 
     BID_ALREADY_EXISTS(false, 3051, "你已经对这个商品有一个报价了"),
+    BID_NOT_VALID_FOR_24_HOURS(false, 3052, "24小时内不能撤销出价"),
+    BID_HAS_BEEN_CANCELED_OR_PROCESSED(false, 3053, "出价已被取消或已被处理"),
     /**
      * alipay
      */

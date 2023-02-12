@@ -13,6 +13,7 @@
             <result column="price" property="price" jdbcType="DECIMAL"/>
             <result column="sold" property="sold" jdbcType="TINYINT"/>
             <result column="launched" property="launched" jdbcType="TINYINT"/>
+            <result column="quality" property="quality" jdbcType="FLOAT"/>
         </association>
         <association property="cover" javaType="com.lyu.entity.UserResource">
             <result column="type" property="type" jdbcType="CHAR"/>
@@ -33,6 +34,8 @@
                t_commodity.price,
                t_commodity.sold,
                t_commodity.launched,
+               t_commodity.quality,
+               t_commodity.time ctime,
                t_user_resource.type,
                t_user_resource.file_name,
                t_user_resource.uid ruid,
@@ -42,8 +45,7 @@
              db_happy_trade.t_user_resource
         where t_user_view_history.cid = t_commodity.cid
           AND t_user_resource.rid = t_commodity.cover_id
-          AND t_user_view_history.uid = #{uid};
-
+          AND t_user_view_history.uid = #{uid}
     </select>
     <select id="exists" resultType="java.lang.Boolean">
         SELECT 1

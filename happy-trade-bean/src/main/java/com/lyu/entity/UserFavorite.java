@@ -1,37 +1,33 @@
 package com.lyu.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
+ * @author LEE
  * @TableName t_user_collection
  */
-@TableName(value ="t_user_collection")
+@TableName(value = "t_user_favorites")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class UserCollection implements Serializable {
-    /**
-     * 
-     */
-    @TableId
-    private Long coid;
+public class UserFavorite implements Serializable {
 
-    /**
-     * 
-     */
-    @TableId
+    @TableId(type = IdType.AUTO)
+    private Long fid;
+
+
     private Long uid;
 
-    /**
-     * 
-     */
+    @NotNull
+    private Long cid;
     private LocalDateTime time;
 
     @TableField(exist = false)
@@ -48,18 +44,20 @@ public class UserCollection implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        UserCollection other = (UserCollection) that;
-        return (this.getCoid() == null ? other.getCoid() == null : this.getCoid().equals(other.getCoid()))
-            && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
-            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
+        UserFavorite other = (UserFavorite) that;
+        return (this.getFid() == null ? other.getFid() == null : this.getFid().equals(other.getFid()))
+                && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
+                && (this.getCid() == null ? other.getCid() == null : this.getCid().equals(other.getCid()))
+                && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getCoid() == null) ? 0 : getCoid().hashCode());
+        result = prime * result + ((getFid() == null) ? 0 : getFid().hashCode());
         result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
+        result = prime * result + ((getCid() == null) ? 0 : getCid().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         return result;
     }
@@ -70,8 +68,9 @@ public class UserCollection implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", coid=").append(coid);
+        sb.append(", fid=").append(fid);
         sb.append(", uid=").append(uid);
+        sb.append(", cid=").append(cid);
         sb.append(", time=").append(time);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
