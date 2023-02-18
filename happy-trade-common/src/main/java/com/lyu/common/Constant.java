@@ -50,6 +50,7 @@ public class Constant {
 
 
     public static final String NGINX_STATIC_SERVER_IMAGE_ADDR = "image";
+    public static final String NGINX_STATIC_SERVER_VIDEO_ADDR = "video";
     public static final String FILE_TYPE_IMAGE = "image";
     public static final String FILE_TYPE_VIDEO = "video";
     public static final String REFUND_DUE_TO_DIRECT_PURCHASE = "有用户以商家标价直接购买了商品，导致本商品的所有出价被撤销";

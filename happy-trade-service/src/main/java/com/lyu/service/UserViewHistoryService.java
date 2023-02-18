@@ -1,8 +1,8 @@
 package com.lyu.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lyu.entity.Commodity;
 import com.lyu.entity.UserViewHistory;
+import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.entity.dto.UserViewHistoryDTO;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface UserViewHistoryService {
      * @param cid
      * @return
      */
-    Commodity saveViewHistory(Long cid);
+    CommodityDTO saveViewHistory(Long cid);
 
     /**
      * 获取某用户的所有浏览历史

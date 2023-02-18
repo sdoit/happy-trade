@@ -1,8 +1,7 @@
 package com.lyu.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.lyu.entity.Commodity;
-import com.lyu.entity.User;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.entity.dto.CommodityDTO;
 
 import java.util.List;
@@ -16,9 +15,9 @@ public interface CommodityService {
      * 用户添加商品
      *
      * @param commodity
-     * @return
+     * @return 返回cid
      */
-    Integer addCommodity(Commodity commodity);
+    Long addCommodity(CommodityDTO commodity);
 
     /**
      * 修改商品信息
@@ -26,15 +25,15 @@ public interface CommodityService {
      * @param commodity
      * @return
      */
-    Integer updateCommodity(Commodity commodity);
+    Integer updateCommodity(CommodityDTO commodity);
 
     /**
      * 删除指定商品
      *
-     * @param commodity
+     * @param cid
      * @return
      */
-    Integer deleteCommodity(Commodity commodity);
+    Integer deleteCommodityByCid(Long cid);
 
     /**
      * 根据商品id获取商品
@@ -42,17 +41,17 @@ public interface CommodityService {
      * @param cid
      * @return
      */
-    Commodity getCommodityById(Long cid);
+    CommodityDTO getCommodityById(Long cid);
 
 
 
     /**
      * 获取指定用户在线商品
      *
-     * @param user
+     * @param uid
      * @return
      */
-    List<Commodity> getCommoditiesFromUser(User user);
+    List<CommodityDTO> getCommoditiesFromUser(Page<CommodityDTO> page, Long uid);
 
     /**
      * 根据关键词获取商品列表

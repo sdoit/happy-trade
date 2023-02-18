@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
+ * @author LEE
  * @TableName t_search_candidate_word
  */
 @TableName(value ="t_search_candidate_word")

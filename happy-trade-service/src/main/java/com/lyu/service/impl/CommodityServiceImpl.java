@@ -1,20 +1,21 @@
 package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.Commodity;
-import com.lyu.entity.User;
 import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.service.CommodityService;
+import com.lyu.service.TagService;
 import com.lyu.service.UserViewHistoryService;
 import com.lyu.util.IDUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -27,31 +28,49 @@ public class CommodityServiceImpl implements CommodityService {
     private CommodityMapper commodityMapper;
     @Resource
     private UserViewHistoryService userViewHistoryService;
-
+    @Resource
+    private TagService tagService;
 
     @Resource
     private IDUtil idUtil;
 
     @Override
-    public Integer addCommodity(Commodity commodity) {
+    public Long addCommodity(CommodityDTO commodity) {
         long uid = StpUtil.getLoginIdAsLong();
         commodity.setCid(idUtil.getNextCommodityId());
         commodity.setUid(uid);
-        return commodityMapper.insert(commodity);
+        commodity.setSold(false);
+        commodity.setLaunched(true);
+        commodity.setTime(LocalDateTime.now());
+        //先保存tag
+        if (commodity.getTags().size() == 1) {
+            commodity.setTags(List.of(tagService.insertTagIfNotExist(commodity.getTags().get(0))));
+        } else if (commodity.getTags().size() > 1) {
+            commodity.setTags(tagService.insertTagsIfNotExist(commodity.getTags()));
+        }
+        //映射
+        tagService.mapCommodityAndTags(commodity.getTags(), commodity.getCid());
+        commodityMapper.insert(commodity);
+        return commodity.getCid();
     }
 
     @Override
-    public Integer updateCommodity(Commodity commodity) {
+    public Integer updateCommodity(CommodityDTO commodity) {
         Long uid = commodity.getUid();
         long uidLogin = StpUtil.getLoginIdAsLong();
         if (uid != uidLogin) {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
+        //删除tag
+        tagService.cancelTagsNotIncludedAndAddIncluded(commodity.getCid(), commodity.getTags());
+
+
         return commodityMapper.updateById(commodity);
     }
 
     @Override
-    public Integer deleteCommodity(Commodity commodity) {
+    public Integer deleteCommodityByCid(Long cid) {
+        Commodity commodity = commodityMapper.selectById(cid);
         Long uid = commodity.getUid();
         long uidLogin = StpUtil.getLoginIdAsLong();
         if (uid != uidLogin) {
@@ -62,7 +81,7 @@ public class CommodityServiceImpl implements CommodityService {
     }
 
     @Override
-    public Commodity getCommodityById(Long cid) {
+    public CommodityDTO getCommodityById(Long cid) {
         //如果登录，保存浏览记录
         if (StpUtil.isLogin()) {
             return userViewHistoryService.saveViewHistory(cid);
@@ -72,9 +91,8 @@ public class CommodityServiceImpl implements CommodityService {
 
 
     @Override
-    public List<Commodity> getCommoditiesFromUser(User user) {
-        return commodityMapper.selectList(new QueryWrapper<Commodity>()
-                .eq("uid", user.getUid()));
+    public List<CommodityDTO> getCommoditiesFromUser(Page<CommodityDTO> page, Long uid) {
+        return commodityMapper.getCommoditiesFromUser(page, uid).getRecords();
     }
 
     @Override

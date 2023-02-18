@@ -1,4 +1,4 @@
-package com.lyu.config;
+package com.lyu.cache;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.crypto.digest.DigestUtil;
@@ -14,44 +14,36 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * @author LEE
- * @time 2023/2/10 9:42
  */
+
 @Slf4j
-public class MybatisRedisCacheConfig implements Cache {
+public class MybatisRedisCache implements Cache {
     private static final String COMMON_CACHE_KEY = "mybatis";
-    /**
-     * 读写锁
-     */
+    // 读写锁
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
     private final RedisTemplate<String, Object> redisTemplate;
     private final String nameSpace;
-
-    public MybatisRedisCacheConfig(String nameSpace) {
+    public MybatisRedisCache(String nameSpace) {
         if (nameSpace == null) {
             throw new IllegalArgumentException("Cache instances require an ID");
         }
         redisTemplate = SpringUtil.getBean("redisTemplate");
         this.nameSpace = nameSpace;
     }
-
     @Override
     public String getId() {
         return this.nameSpace;
     }
-
     private String getKeys() {
         return COMMON_CACHE_KEY + "::" + nameSpace + "::*";
     }
-
     private String getKey(Object key) {
         return COMMON_CACHE_KEY + "::" + nameSpace + "::" + DigestUtil.md5Hex(String.valueOf(key));
     }
-
     @Override
     public void putObject(Object key, Object value) {
         redisTemplate.opsForValue().set(getKey(key), value, 10, TimeUnit.MINUTES);
     }
-
     @Override
     public Object getObject(Object key) {
         try {
@@ -62,14 +54,12 @@ public class MybatisRedisCacheConfig implements Cache {
         }
         return null;
     }
-
     @Override
     public Object removeObject(Object o) {
         Object n = redisTemplate.opsForValue().get(getKey(o));
         redisTemplate.delete(getKey(o));
         return n;
     }
-
     @Override
     public void clear() {
         Set<String> keys = redisTemplate.keys(getKeys());
@@ -78,7 +68,6 @@ public class MybatisRedisCacheConfig implements Cache {
             redisTemplate.delete(keys);
         }
     }
-
     @Override
     public int getSize() {
         Set<String> keys = redisTemplate.keys(getKeys());
@@ -88,7 +77,6 @@ public class MybatisRedisCacheConfig implements Cache {
         }
         return 0;
     }
-
     @Override
     public ReadWriteLock getReadWriteLock() {
         return this.readWriteLock;

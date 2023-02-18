@@ -1,11 +1,12 @@
 package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
-import com.lyu.entity.Commodity;
 import com.lyu.entity.UserViewHistory;
+import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.entity.dto.UserViewHistoryDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.UserException;
@@ -31,9 +32,9 @@ public class UserViewHistoryServiceImpl implements UserViewHistoryService {
     private CommodityMapper commodityMapper;
 
     @Override
-    public Commodity saveViewHistory(Long cid) {
+    public CommodityDTO saveViewHistory(Long cid) {
         long uid = StpUtil.getLoginIdAsLong();
-        Commodity commodity = commodityMapper.getCommodityById(cid);
+        CommodityDTO commodity = commodityMapper.getCommodityById(cid);
         if (commodity == null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
         }
@@ -42,11 +43,11 @@ public class UserViewHistoryServiceImpl implements UserViewHistoryService {
         userViewHistory.setCid(cid);
         userViewHistory.setTime(LocalDateTime.now());
         Boolean exist = this.existViewHistory(userViewHistory);
-        if (exist == null || !exist) {
+        if (!BooleanUtil.isTrue(exist)) {
             commodity.setViewCount(commodity.getViewCount() + 1);
             commodityMapper.updateById(commodity);
-            userViewHistoryMapper.insert(userViewHistory);
         }
+        userViewHistoryMapper.insertOrUpdate(userViewHistory);
         return commodity;
     }
 

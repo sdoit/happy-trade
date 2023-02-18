@@ -3,143 +3,124 @@
 <mapper namespace="com.lyu.mapper.CommodityMapper">
     <resultMap id="baseMap" type="com.lyu.entity.dto.CommodityDTO">
         <id column="cid" property="cid" jdbcType="BIGINT"/>
-        <result column="cid" property="cid" jdbcType="BIGINT"/>
         <result column="uid" property="uid" jdbcType="BIGINT"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="quality" property="quality" jdbcType="FLOAT"/>
-        <result column="type" property="type" jdbcType="INTEGER"/>
         <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="fare" property="fare" jdbcType="DECIMAL"/>
+        <result column="freight_collect" property="freightCollect" jdbcType="TINYINT"/>
+        <result column="free_shipping" property="freeShipping" jdbcType="TINYINT"/>
         <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
         <result column="sold" property="sold" jdbcType="TINYINT"/>
         <result column="launched" property="launched" jdbcType="TINYINT"/>
-        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
         <result column="time" property="time" jdbcType="TIMESTAMP"/>
         <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
-        <association property="cover" javaType="com.lyu.entity.UserResource">
-            <id column="rid" property="rid" jdbcType="BIGINT"/>
-            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
-            <result column="coverUid" property="uid" jdbcType="BIGINT"/>
-            <result column="coverDate" property="date" jdbcType="DATE"/>
-            <result column="coverType" property="type" jdbcType="CHAR"/>
-        </association>
+        <result column="cover" property="cover" jdbcType="VARCHAR"/>
         <association property="user" javaType="com.lyu.entity.User">
-            <id column="uid2" property="uid" jdbcType="BIGINT"/>
+            <id column="uuid" property="uid" jdbcType="BIGINT"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
             <result column="username" property="username" jdbcType="VARCHAR"/>
             <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+            <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+            <result column="baned_time" property="banedTime" jdbcType="INTEGER"/>
         </association>
-    </resultMap>
-
-
-    <!--映射包含图片和视频介绍在内-->
-    <resultMap id="mapResources" type="com.lyu.entity.dto.CommodityDTO">
-        <id column="cid" property="cid" jdbcType="BIGINT"/>
-        <result column="cid" property="cid" jdbcType="BIGINT"/>
-        <result column="uid" property="uid" jdbcType="BIGINT"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
-        <result column="quality" property="quality" jdbcType="FLOAT"/>
-        <result column="type" property="type" jdbcType="INTEGER"/>
-        <result column="price" property="price" jdbcType="DECIMAL"/>
-        <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
-        <result column="sold" property="sold" jdbcType="TINYINT"/>
-        <result column="launched" property="launched" jdbcType="TINYINT"/>
-        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
-        <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
-        <result column="time" property="time" jdbcType="TIMESTAMP"/>
-        <collection property="resources" ofType="com.lyu.entity.UserResource">
-            <id column="rid" property="rid" jdbcType="BIGINT"/>
-            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
-            <result column="rUid" property="uid" jdbcType="BIGINT"/>
-            <result column="rDate" property="date" jdbcType="DATE"/>
-            <result column="rType" property="type" jdbcType="CHAR"/>
+        <association property="type" javaType="com.lyu.entity.CommodityType">
+            <result column="type_id" property="tid" jdbcType="INTEGER"/>
+            <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        </association>
+        <collection property="tags" ofType="com.lyu.entity.Tag">
+            <id column="tid" property="tid" jdbcType="BIGINT"/>
+            <result column="tag" property="tag" jdbcType="VARCHAR"/>
         </collection>
+
     </resultMap>
-
-
     <select id="getCommoditiesByKeyWords" resultMap="baseMap">
         SELECT t_commodity.cid,
         t_commodity.uid,
         t_commodity.`name`,
         t_commodity.quality,
-        t_commodity.type,
         t_commodity.price,
         t_commodity.sold,
         t_commodity.launched,
         t_commodity.time,
         t_commodity.view_count,
-        t_user_resource.rid,
-        t_user_resource.file_name,
-        t_user_resource.uid coverUid,
-        t_user_resource.date coverDate,
-        t_user_resource.type coverType,
+        t_commodity.cover,
         t_commodity_type.type_name,
+        t_commodity_type.tid `type_id`,
         t_user.uid uid2,
         t_user.nickname,
         t_user.username,
         t_user.avatar
         FROM db_happy_trade.t_commodity,
-        db_happy_trade.t_user_resource,
         db_happy_trade.t_commodity_type,
         db_happy_trade.t_user
         WHERE
         <foreach collection="words" item="word" separator="AND">
             t_commodity.name like CONCAT('%',#{word},'%')
         </foreach>
-        AND t_commodity.cover_id = t_user_resource.rid
-        AND t_commodity.type = t_commodity_type.tid
+        AND t_commodity.type_id = t_commodity_type.tid
         AND t_user.uid=t_commodity.uid
         AND t_commodity.sold=0
     </select>
 
-    <select id="getCommodityById" resultMap="mapResources">
-        SELECT t_commodity.cid,
+    <select id="getCommodityById" resultMap="baseMap">
+        select t_commodity.cid,
                t_commodity.uid,
-               t_commodity.`name`,
+               t_commodity.name,
+               t_commodity.cover,
                t_commodity.quality,
-               t_commodity.type,
                t_commodity.price,
+               t_commodity.fare,
+               t_commodity.freight_collect,
+               t_commodity.free_shipping,
                t_commodity.description,
                t_commodity.sold,
                t_commodity.launched,
                t_commodity.time,
                t_commodity.view_count,
-               t_user_resource.rid,
-               t_user_resource.file_name,
-               t_user_resource.uid  rUid,
-               t_user_resource.date rDate,
-               t_user_resource.type rType,
-               t_commodity_type.type_name
-        FROM db_happy_trade.t_commodity,
-             db_happy_trade.t_user_resource,
-             db_happy_trade.t_commodity_type
-        WHERE t_commodity.cid = #{cid}
-          AND t_commodity.cover_id = t_user_resource.rid
-          AND t_commodity.type = t_commodity_type.tid
-        UNION
+               A.tid                                                 `type_id`,
+               CONCAT_WS('/', C.type_name, B.type_name, A.type_name) `type_name`,
+               t_commodity_tag.tid,
+               t_commodity_tag.tag,
+               t_user.uid                                            uuid,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.introduction,
+               t_user.baned_time
+        from db_happy_trade.t_commodity
+                 LEFT JOIN db_happy_trade.t_commodity_tag_map ON t_commodity.cid = t_commodity_tag_map.cid
+                 LEFT JOIN db_happy_trade.t_commodity_tag ON t_commodity_tag_map.tid = t_commodity_tag.tid,
+             db_happy_trade.t_user,
+             db_happy_trade.t_commodity_type A
+                 LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
+                 LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
+        where t_commodity.type_id = A.tid
+          and t_commodity.uid = t_user.uid
+          and t_commodity.cid = #{cid}
+    </select>
+    <select id="getCommoditiesFromUser" resultMap="baseMap">
         SELECT t_commodity.cid,
                t_commodity.uid,
                t_commodity.`name`,
                t_commodity.quality,
-               t_commodity.type,
                t_commodity.price,
-               t_commodity.description,
                t_commodity.sold,
                t_commodity.launched,
                t_commodity.time,
                t_commodity.view_count,
-               t_user_resource.rid,
-               t_user_resource.file_name,
-               t_user_resource.uid  rUid,
-               t_user_resource.date rDate,
-               t_user_resource.type rType,
-               t_commodity_type.type_name
+               t_commodity.cover,
+               t_commodity_type.type_name,
+               t_commodity_type.tid `type_id`,
+               t_user.uid uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
         FROM db_happy_trade.t_commodity,
-             db_happy_trade.t_user_resource,
-             db_happy_trade.t_commodity_resource_map,
-             db_happy_trade.t_commodity_type
-        WHERE t_commodity.type = t_commodity_type.tid
-          AND t_commodity.cid = t_commodity_resource_map.cid
-          AND t_user_resource.rid = t_commodity_resource_map.rid
-          AND t_commodity.cid = #{cid}
+             db_happy_trade.t_commodity_type,
+             db_happy_trade.t_user
+        where t_commodity.type_id = t_commodity_type.tid
+          AND t_user.uid = t_commodity.uid
+          AND t_commodity.uid = #{uid}
     </select>
 </mapper>

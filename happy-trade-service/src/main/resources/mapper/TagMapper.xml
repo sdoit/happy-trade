@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.TagMapper">
+
+    <insert id="mapCommodityAndTags">
+        insert ignore into db_happy_trade.t_commodity_tag_map(tid, cid, time)
+        values
+        <foreach collection="tags" item="tag" separator=",">
+            (#{tag.tid}, #{cid}, #{time})
+        </foreach>
+
+    </insert>
+    <delete id="cancelAllTagsMap">
+        delete
+        from db_happy_trade.t_commodity_tag_map
+        where tid in
+        <foreach collection="tags" item="tags" open="(" close=")">
+            #{tag.tid}
+        </foreach>
+        and cid=#{cid}
+    </delete>
+    <select id="getAllTagsByCid" resultType="com.lyu.entity.Tag">
+        select t_commodity_tag_map.tid,
+               t_commodity_tag.uid,
+               t_commodity_tag.tag,
+               t_commodity_tag.time
+        from db_happy_trade.t_commodity_tag_map,
+             db_happy_trade.t_commodity_tag
+        where t_commodity_tag.tid = t_commodity_tag_map.tid
+          and t_commodity_tag_map.cid = #{cid};
+    </select>
+</mapper>

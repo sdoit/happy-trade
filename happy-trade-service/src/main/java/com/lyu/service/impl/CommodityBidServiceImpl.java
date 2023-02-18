@@ -124,7 +124,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         order.setUidSeller(commodity.getUid());
         order.setUidBuyer(user.getUid());
         order.setOrderTime(LocalDateTime.now());
-        order.setTotalAmount(commodity.getPrice().doubleValue());
+        order.setTotalAmount(commodity.getPrice());
         order.setName(commodity.getName());
         order.setAid(commodityBid.getAid());
         order.setStatus(0);

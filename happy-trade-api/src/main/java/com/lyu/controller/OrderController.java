@@ -10,9 +10,7 @@ import com.lyu.entity.UserAddress;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.entity.dto.OrderSimpleDTO;
 import com.lyu.service.CommodityBidService;
-import com.lyu.service.CommodityService;
 import com.lyu.service.OrderService;
-import com.lyu.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
@@ -34,10 +32,6 @@ import java.util.List;
 public class OrderController {
     @Resource
     private OrderService orderService;
-    @Resource
-    private UserService userService;
-    @Resource
-    private CommodityService commodityService;
     @Resource
     private CommodityBidService commodityBidService;
     @Value("${hostname}")
@@ -78,16 +72,28 @@ public class OrderController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, commodityBidService.orderOrBidExist(cid));
     }
 
-    @ApiOperation("获取用户的所有订单")
+    @ApiOperation("获取用户的作为买家所有订单")
     @GetMapping
     public CommonResult<List<OrderDTO>> getOrdersByLoginUser() {
         return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrdersByBuyerUid(StpUtil.getLoginIdAsLong()));
+    }
+
+    @ApiOperation("获取用户的作为卖家所有订单")
+    @GetMapping("/seller")
+    public CommonResult<List<OrderDTO>> getOrdersByLoginUserAsSeller() {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrdersByBuyerUidAsSeller(StpUtil.getLoginIdAsLong()));
     }
 
     @ApiOperation("根据订单号获取指定订单")
     @GetMapping("/oid/{oid}")
     public CommonResult<OrderDTO> getOrderByOid(@NotNull @PathVariable("oid") Long oid) {
         return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrderByOid(oid));
+    }
+
+    @ApiOperation("根据商品id获取指定订单")
+    @GetMapping("/c/{cid}")
+    public CommonResult<OrderDTO> getOrderByCid(@NotNull @PathVariable("cid") Long cid) {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrderByCid(cid));
     }
 
 }

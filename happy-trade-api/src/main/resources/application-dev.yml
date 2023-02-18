@@ -15,7 +15,7 @@ nginx:
     ssh:
       username: sftp_static_server
       password: 123456
-      host: 192.168.3.164
+      host: localhost
       port: 22
       path: /sftp_static_server/static
 

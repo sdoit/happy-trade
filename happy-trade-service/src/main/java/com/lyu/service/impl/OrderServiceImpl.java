@@ -44,7 +44,8 @@ public class OrderServiceImpl implements OrderService {
     private AlipayService alipayService;
     @Resource
     private UserAddressService userAddressService;
-
+    @Resource
+    private UserAmountLogService userAmountLogService;
     @Resource
     private IDUtil idUtil;
     @Resource
@@ -85,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUidSeller(commodity.getUid());
         order.setUidBuyer(user.getUid());
         order.setOrderTime(LocalDateTime.now());
-        order.setTotalAmount(commodity.getPrice().doubleValue());
+        order.setTotalAmount(commodity.getPrice());
         order.setName(commodity.getName());
         order.setAid(userAddressInDb.getAid());
         order.setOid(idUtil.getNextOrderId(order));
@@ -102,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public OrderDTO getOrderByOid(Long oid) throws OrderException {
-        OrderDTO orderDTO = orderMapper.getOrderByOid(oid);
+        OrderDTO orderDTO = orderMapper.getOrderByOid(oid, StpUtil.getLoginIdAsLong());
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
         return orderDTO;
     }
@@ -129,6 +130,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderDTO> getOrdersByBuyerUidAsSeller(Long uid) throws OrderException, UserException {
+        if (uid == null) {
+            throw new OrderException(CodeAndMessage.USER_NOT_EXIST.getCode(), CodeAndMessage.USER_NOT_EXIST.getMessage());
+        }
+        checkAccess(uid);
+        return orderMapper.getOrdersByUserAsSeller(uid);
+    }
+
+    @Override
     public List<Order> getOrdersUncompletedByBuyerUid(Long uid) throws OrderException, UserException {
 
         if (uid == null) {
@@ -140,6 +150,18 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.selectList(new QueryWrapper<Order>()
                 .eq("uid", user.getUid())
                 .isNull("complete_time"));
+    }
+
+    @Override
+    public OrderDTO getOrderByCid(Long cid) {
+        OrderDTO order = orderMapper.getOrderByCid(cid);
+        if (order == null) {
+            throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
+        }
+        if (!order.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+        return order;
     }
 
     @Override
@@ -176,6 +198,15 @@ public class OrderServiceImpl implements OrderService {
             alipayService.refund(commodityBidRefund.getTradeId(), commodityBidRefund.getPrice(),
                     String.valueOf(commodityBidRefund.getBid()), Constant.REFUND_DUE_TO_DIRECT_PURCHASE, Constant.ALIPAY_PAY_TYPE_BID);
         });
+        //记录日志
+        UserAmountLog userAmountLog = new UserAmountLog();
+        userAmountLog.setAmount(order.getTotalAmount());
+        userAmountLog.setPlus(true);
+        userAmountLog.setUid(order.getUidSeller());
+        userAmountLog.setEffective(false);
+        userAmountLog.setSourceId(order.getOid());
+        userAmountLog.setTime(order.getPayTime());
+        userAmountLogService.logUserAmount(userAmountLog);
 
         //插入记录到数据库
         return orderMapper.insert(order);

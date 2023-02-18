@@ -30,4 +30,11 @@ public interface UserViewHistoryMapper extends BaseMapper<UserViewHistory> {
      * @return
      */
     Boolean exists(UserViewHistory userViewHistory);
+
+    /**
+     * 如果记录不存在则插入，如果记录存在则更新时间
+     * @param userViewHistory
+     * @return
+     */
+    Integer insertOrUpdate(UserViewHistory userViewHistory);
 }

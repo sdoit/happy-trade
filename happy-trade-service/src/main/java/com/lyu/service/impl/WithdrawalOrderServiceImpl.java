@@ -4,10 +4,12 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.UserAmount;
+import com.lyu.entity.UserAmountLog;
 import com.lyu.entity.WithdrawalOrder;
 import com.lyu.exception.UserAmountException;
 import com.lyu.mapper.WithdrawalOrderMapper;
 import com.lyu.service.AlipayService;
+import com.lyu.service.UserAmountLogService;
 import com.lyu.service.UserAmountService;
 import com.lyu.service.WithdrawalOrderService;
 import com.lyu.util.IDUtil;
@@ -36,6 +38,8 @@ public class WithdrawalOrderServiceImpl implements WithdrawalOrderService {
 
     @Resource
     private UserAmountService userAmountService;
+    @Resource
+    private UserAmountLogService userAmountLogService;
 
     @Resource
     private IDUtil idUtil;
@@ -69,6 +73,15 @@ public class WithdrawalOrderServiceImpl implements WithdrawalOrderService {
         //扣款
         userAmount.setAmountEffective(userAmount.getAmountEffective().subtract(withdrawalOrder.getAmount()));
         userAmountService.updateUserAmount(userAmount);
+        //记录日志
+        UserAmountLog userAmountLog = new UserAmountLog();
+        userAmountLog.setAmount(withdrawalOrder.getAmount());
+        userAmountLog.setPlus(false);
+        userAmountLog.setUid(uidLogin);
+        userAmountLog.setEffective(true);
+        userAmountLog.setSourceId(withdrawalOrder.getWid());
+        userAmountLog.setTime(withdrawalOrder.getTime());
+        userAmountLogService.logUserAmount(userAmountLog);
         //提现
         log.info("开始向支付宝发起提现申请");
         alipayService.withdraw(

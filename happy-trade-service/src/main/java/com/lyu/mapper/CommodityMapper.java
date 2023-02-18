@@ -2,6 +2,7 @@ package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.dto.CommodityDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -47,10 +48,11 @@ public interface CommodityMapper extends BaseMapper<Commodity> {
     /**
      * 获取指定用户发布的商品
      *
-     * @param user
+     * @param page
+     * @param uid
      * @return
      */
-//    List<Commodity> getCommoditiesFromUser(User user);
+    IPage<CommodityDTO> getCommoditiesFromUser(Page<CommodityDTO> page, Long uid);
 
 
     /**
@@ -59,7 +61,7 @@ public interface CommodityMapper extends BaseMapper<Commodity> {
      * @param cid 商品id
      * @return
      */
-    Commodity getCommodityById(Long cid);
+    CommodityDTO getCommodityById(Long cid);
 
     /**
      * 根据关键词获取商品列表

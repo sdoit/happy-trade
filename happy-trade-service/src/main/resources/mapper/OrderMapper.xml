@@ -22,29 +22,25 @@
             <result column="price" property="price" jdbcType="DECIMAL"/>
             <result column="time" property="time" jdbcType="TIMESTAMP"/>
             <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+            <result column="cover" property="cover" jdbcType="VARCHAR"/>
         </association>
         <association property="user" javaType="com.lyu.entity.User">
             <result column="username" property="username" jdbcType="VARCHAR"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
             <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
         </association>
-        <association property="cover">
-            <result column="type" property="type" jdbcType="CHAR"/>
-            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
-            <result column="ruid" property="uid" jdbcType="BIGINT"/>
-            <result column="rdate" property="date" jdbcType="DATE"/>
-        </association>
         <association property="userAddress">
             <result column="aname" property="name" jdbcType="VARCHAR"/>
             <result column="aphone" property="phone" jdbcType="VARCHAR"/>
+            <result column="street_code" property="streetCode" jdbcType="VARCHAR"/>
             <result column="province" property="province" jdbcType="VARCHAR"/>
             <result column="city" property="city" jdbcType="VARCHAR"/>
-            <result column="district" property="district" jdbcType="VARCHAR"/>
+            <result column="area" property="area" jdbcType="VARCHAR"/>
             <result column="street" property="street" jdbcType="VARCHAR"/>
             <result column="address" property="address" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
-    <select id="getOrdersByUser" resultMap="baseMap">
+    <sql id="getOrderByUserSql">
         select t_order.oid,
                t_order.name,
                t_order.ship_time,
@@ -57,32 +53,34 @@
                t_commodity.price,
                t_commodity.time,
                t_commodity.view_count,
+               t_commodity.cover,
                t_user.username,
                t_user.nickname,
-               t_user.avatar,
-               t_user_resource.type,
-               t_user_resource.file_name,
-               t_user_resource.uid  ruid,
-               t_user_resource.date rdate
+               t_user.avatar
         from db_happy_trade.t_order,
              db_happy_trade.t_commodity,
              db_happy_trade.t_user,
-             db_happy_trade.t_user_resource,
              db_happy_trade.t_order_status
         where t_order.cid = t_commodity.cid
           and t_order.uid_seller = t_user.uid
-          and t_commodity.cover_id = t_user_resource.rid
           and t_order.status = t_order_status.status_id
-          and t_order.uid_buyer = #{uid};
-
+    </sql>
+    <select id="getOrdersByUser" resultMap="baseMap">
+        <include refid="getOrderByUserSql"/>
+        and t_order.uid_buyer = #{uid}
     </select>
+    <select id="getOrdersByUserAsSeller"  resultMap="baseMap">
+        <include refid="getOrderByUserSql"/>
+        and t_order.uid_seller = #{uid}
+    </select>
+
     <select id="exist" resultType="java.lang.Boolean">
         SELECT 1
         FROM db_happy_trade.t_order
         WHERE t_order.oid = #{oid}
         LIMIT 1
     </select>
-    <select id="getOrderByOid" resultMap="baseMap">
+    <sql id="getOrderSql">
         select t_order.oid,
                t_order.cid,
                t_order.uid_seller,
@@ -101,32 +99,50 @@
                t_commodity.price,
                t_commodity.time,
                t_commodity.view_count,
+               t_commodity.cover,
                t_user.username,
                t_user.nickname,
                t_user.avatar,
-               t_user_resource.type,
-               t_user_resource.file_name,
-               t_user_resource.uid  ruid,
-               t_user_resource.date rdate,
+
                t_user_address.name  aname,
                t_user_address.phone aphone,
-               t_user_address.province,
-               t_user_address.city,
-               t_user_address.district,
-               t_user_address.street,
+               t_user_address.street_code,
+               t_user_address.address,
+               t_user_address.tag,
+               t_user_address.default_address,
+               t_province.name      province,
+               t_city.name          city,
+               t_area.name          area,
+               t_street.name        street,
                t_user_address.address,
                t_order_status.status_name
         from db_happy_trade.t_order,
              db_happy_trade.t_commodity,
              db_happy_trade.t_user,
-             db_happy_trade.t_user_resource,
              db_happy_trade.t_user_address,
+             db_happy_trade.t_province,
+             db_happy_trade.t_city,
+             db_happy_trade.t_area,
+             db_happy_trade.t_street,
              db_happy_trade.t_order_status
         where t_order.cid = t_commodity.cid
-          and t_order.uid_seller = t_user.uid
-          and t_commodity.cover_id = t_user_resource.rid
           and t_order.aid = t_user_address.aid
           and t_order.status = t_order_status.status_id
-          and t_order.oid = #{oid};
+          and t_user_address.street_code = t_street.code
+          and t_street.a_code = t_area.code
+          and t_street.c_code = t_city.code
+          and t_street.p_code = t_province.code
+    </sql>
+    <select id="getOrderByOid" resultMap="baseMap">
+        <include refid="getOrderSql"/>
+        and (t_order.uid_seller = t_user.uid or t_order.uid_buyer = t_user.uid)
+        and t_user.uid <![CDATA[<>]]> #{uid}
+        and t_order.oid = #{oid}
     </select>
+    <select id="getOrderByCid" resultMap="baseMap">
+        <include refid="getOrderSql"/>
+        and t_order.uid_seller = t_user.uid
+        and t_order.cid = #{cid}
+    </select>
+
 </mapper>

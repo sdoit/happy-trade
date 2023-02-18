@@ -37,7 +37,7 @@ public interface OrderService {
     OrderDTO getOrderByOid(Long oid) throws OrderException;
 
     /**
-     * 系统调用 不要求又登录用户
+     * 系统调用 不要求登录用户
      * @param oid
      * @return
      * @throws OrderException
@@ -53,6 +53,14 @@ public interface OrderService {
      */
     List<OrderDTO> getOrdersByBuyerUid(Long uid) throws OrderException, UserException;
     /**
+     * 获取指定卖家的所有订单
+     * @param uid
+     * @return
+     * @throws OrderException
+     * @throws UserException
+     */
+    List<OrderDTO> getOrdersByBuyerUidAsSeller(Long uid) throws OrderException, UserException;
+    /**
      * 获取指定买家的未完成的订单
      * @param uid
      * @return
@@ -60,6 +68,13 @@ public interface OrderService {
      * @throws UserException
      */
     List<Order> getOrdersUncompletedByBuyerUid(Long uid) throws OrderException, UserException;
+
+    /**
+     * 通过cid获取对应的订单
+     * @param cid
+     * @return
+     */
+    OrderDTO getOrderByCid(Long cid);
 
     /**
      * 更新订单信息

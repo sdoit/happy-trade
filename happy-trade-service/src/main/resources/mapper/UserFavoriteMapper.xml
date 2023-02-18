@@ -13,12 +13,7 @@
             <result column="launched" property="launched" jdbcType="TINYINT"/>
             <result column="ctime" property="time" jdbcType="TIMESTAMP"/>
             <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
-        </association>
-        <association property="cover" javaType="com.lyu.entity.UserResource">
-            <result column="type" property="type" jdbcType="CHAR"/>
-            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
-            <result column="uid" property="uid" jdbcType="BIGINT"/>
-            <result column="date" property="date" jdbcType="DATE"/>
+            <result column="cover" property="cover" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
     <select id="getFavoritesByUid" resultMap="baseMap">
@@ -32,15 +27,10 @@
                t_commodity.launched,
                t_commodity.time ctime,
                t_commodity.view_count,
-               t_user_resource.type,
-               t_user_resource.file_name,
-               t_user_resource.uid,
-               t_user_resource.date
+               t_commodity.cover
         from db_happy_trade.t_user_favorites,
-             db_happy_trade.t_commodity,
-             db_happy_trade.t_user_resource
+             db_happy_trade.t_commodity
         where t_commodity.cid = t_user_favorites.cid
-          and t_commodity.cover_id = t_user_resource.rid
           and t_user_favorites.uid = #{uid}
     </select>
 </mapper>

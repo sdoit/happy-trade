@@ -2,7 +2,7 @@
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    cache-enabled: false
+    cache-enabled: true
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/db_happy_trade
@@ -10,6 +10,10 @@ spring:
     username: root
     password: admin
 
+  servlet:
+    multipart:
+      max-file-size: 150MB
+      max-request-size: 150MB
 logging:
   level:
     com.lyu.mapper: debug
@@ -24,7 +28,7 @@ alipay:
   rootCertPath: D:\Develop\alipayCert\alipayRootCert.crt
   certPath: D:\Develop\alipayCert\appPublicCert.crt
   alipayPublicCertPath: D:\Develop\alipayCert\alipayPublicCert.crt
-  notifyUrl: http://runb3v.natappfree.cc/api/alipay/notify
+  notifyUrl: http://tyvd9c.natappfree.cc/api/alipay/notify
   returnUrl: http://localhost:5173
   withdrawalOrder:
     title: Happy-Trade 金额提现

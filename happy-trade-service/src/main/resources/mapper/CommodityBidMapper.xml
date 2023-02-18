@@ -21,14 +21,8 @@
             <result column="cprice" property="price" jdbcType="DECIMAL"/>
             <result column="time" property="time" jdbcType="TIMESTAMP"/>
             <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+            <result column="cover" property="cover" jdbcType="VARCHAR"/>
         </association>
-        <association property="cover" javaType="com.lyu.entity.UserResource">
-            <result column="type" property="type" jdbcType="CHAR"/>
-            <result column="file_name" property="fileName" jdbcType="VARCHAR"/>
-            <result column="ruid" property="uid" jdbcType="BIGINT"/>
-            <result column="date" property="date" jdbcType="DATE"/>
-        </association>
-
     </resultMap>
 
     <select id="getCommodityBidsPaidByCid" resultType="com.lyu.entity.dto.CommodityBidUserDTO">
@@ -67,19 +61,14 @@
                avatar,
                t_commodity.name,
                t_commodity.quality,
-               t_commodity.price   cprice,
+               t_commodity.price cprice,
                t_commodity.time,
                t_commodity.view_count,
-               t_user_resource.type,
-               t_user_resource.file_name,
-               t_user_resource.uid ruid,
-               t_user_resource.date
+               t_commodity.cover
         from db_happy_trade.t_commodity_bid,
              db_happy_trade.t_user,
-             db_happy_trade.t_commodity,
-             db_happy_trade.t_user_resource
+             db_happy_trade.t_commodity
         where t_commodity_bid.uid_seller = t_user.uid
-          and t_user_resource.rid = t_commodity.cover_id
           AND t_commodity.cid = t_commodity_bid.cid
           AND t_commodity_bid.uid_buyer = #{uid}
         order by `time_created`
@@ -112,22 +101,17 @@
                username,
                t_commodity.name,
                t_commodity.quality,
-               t_commodity.price   cprice,
+               t_commodity.price cprice,
                t_commodity.time,
                t_commodity.view_count,
-               t_user_resource.type,
-               t_user_resource.file_name,
-               t_user_resource.uid ruid,
-               t_user_resource.date
+               t_commodity.cover
         from db_happy_trade.t_commodity_bid,
              db_happy_trade.t_user,
-             db_happy_trade.t_commodity,
-             db_happy_trade.t_user_resource
+             db_happy_trade.t_commodity
     </sql>
     <select id="getCommodityBidsBySellerUid" resultMap="baseMap">
         <include refid="baseSql"></include>
         where t_commodity_bid.uid_buyer = t_user.uid
-        and t_user_resource.rid = t_commodity.cover_id
         AND t_commodity.cid = t_commodity_bid.cid
         AND t_commodity_bid.uid_seller = #{uid}
         order by `time_created`
@@ -135,7 +119,6 @@
     <select id="getCommodityBidsRespondedBySellerUid" resultMap="baseMap">
         <include refid="baseSql"></include>
         where t_commodity_bid.uid_buyer = t_user.uid
-        and t_user_resource.rid = t_commodity.cover_id
         AND t_commodity.cid = t_commodity_bid.cid
         AND t_commodity_bid.agree IS NOT NULL
         AND t_commodity_bid.uid_seller = #{uid}
@@ -144,7 +127,6 @@
     <select id="getCommodityBidsNoResponseBySellerUid" resultMap="baseMap">
         <include refid="baseSql"></include>
         where t_commodity_bid.uid_buyer = t_user.uid
-        and t_user_resource.rid = t_commodity.cover_id
         AND t_commodity.cid = t_commodity_bid.cid
         AND t_commodity_bid.agree IS NULL
         AND t_commodity_bid.uid_seller = #{uid}
@@ -154,7 +136,6 @@
     <select id="getCommodityBidsAgreedBySellerUid" resultMap="baseMap">
         <include refid="baseSql"></include>
         where t_commodity_bid.uid_buyer = t_user.uid
-        and t_user_resource.rid = t_commodity.cover_id
         AND t_commodity.cid = t_commodity_bid.cid
         AND t_commodity_bid.agree=1
         AND t_commodity_bid.uid_seller = #{uid}
@@ -163,7 +144,6 @@
     <select id="getCommodityBidsRejectedBySellerUid" resultMap="baseMap">
         <include refid="baseSql"></include>
         where t_commodity_bid.uid_buyer = t_user.uid
-        and t_user_resource.rid = t_commodity.cover_id
         AND t_commodity.cid = t_commodity_bid.cid
         AND t_commodity_bid.agree=0
         AND t_commodity_bid.uid_seller = #{uid}

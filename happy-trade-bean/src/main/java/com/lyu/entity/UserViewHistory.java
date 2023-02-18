@@ -1,8 +1,6 @@
 package com.lyu.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -21,11 +19,6 @@ import java.time.LocalDateTime;
 public class UserViewHistory implements Serializable {
 
 
-    @TableId(type = IdType.AUTO)
-    private Long hid;
-    /**
-     * 商品id
-     */
     @NotNull
     private Long cid;
 

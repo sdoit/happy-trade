@@ -12,9 +12,9 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderDTO extends Order {
     private User user;
-    private UserResource cover;
+    private String cover;
     private Commodity commodity;
-    private UserAddress userAddress;
+    private UserAddressDTO userAddress;
     private String statusName;
 
 }

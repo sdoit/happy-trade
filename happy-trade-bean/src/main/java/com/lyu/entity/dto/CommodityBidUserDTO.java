@@ -3,7 +3,6 @@ package com.lyu.entity.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityBid;
-import com.lyu.entity.UserResource;
 import lombok.Data;
 
 /**
@@ -25,6 +24,5 @@ public class CommodityBidUserDTO extends CommodityBid {
     private String username;
 
     private Commodity commodity;
-    private UserResource cover;
 
 }
