@@ -31,9 +31,8 @@ public interface TagService {
      *
      * @param tags
      * @param cid
-     * @return
      */
-    Integer mapCommodityAndTags(List<Tag> tags, Long cid);
+    void mapCommodityAndTags(List<Tag> tags, Long cid);
 
     /**
      * 模糊搜索tags
@@ -46,9 +45,9 @@ public interface TagService {
 
     /**
      * 根据tags，取消目前商品不在tags中的标签标签，并且添加目前未被包含的标签
-     * @param cid 商品id
+     *
+     * @param cid  商品id
      * @param tags 更新后商品应包含的所有标签
-     * @return
      */
-    Integer cancelTagsNotIncludedAndAddIncluded(Long cid, List<Tag> tags);
+    void cancelTagsNotIncludedAndAddIncluded(Long cid, List<Tag> tags);
 }

@@ -16,6 +16,7 @@
         <result column="time" property="time" jdbcType="TIMESTAMP"/>
         <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
         <result column="cover" property="cover" jdbcType="VARCHAR"/>
+        <result column="bid_count" property="bidCount" jdbcType="INTEGER"/>
         <association property="user" javaType="com.lyu.entity.User">
             <id column="uuid" property="uid" jdbcType="BIGINT"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
@@ -27,6 +28,8 @@
         <association property="type" javaType="com.lyu.entity.CommodityType">
             <result column="type_id" property="tid" jdbcType="INTEGER"/>
             <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+           <result column="tid_middle" property="tidMiddle" jdbcType="INTEGER"/>
+           <result column="tid_root" property="tidRoot" jdbcType="INTEGER"/>
         </association>
         <collection property="tags" ofType="com.lyu.entity.Tag">
             <id column="tid" property="tid" jdbcType="BIGINT"/>
@@ -80,6 +83,8 @@
                t_commodity.view_count,
                A.tid                                                 `type_id`,
                CONCAT_WS('/', C.type_name, B.type_name, A.type_name) `type_name`,
+               B.tid                                                 tid_middle,
+               C.tid                                                 tid_root,
                t_commodity_tag.tid,
                t_commodity_tag.tag,
                t_user.uid                                            uuid,
@@ -98,6 +103,7 @@
         where t_commodity.type_id = A.tid
           and t_commodity.uid = t_user.uid
           and t_commodity.cid = #{cid}
+        GROUP BY t_commodity.cid
     </select>
     <select id="getCommoditiesFromUser" resultMap="baseMap">
         SELECT t_commodity.cid,
@@ -110,17 +116,20 @@
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover,
+               COUNT(t_commodity_bid.bid) bid_count,
                t_commodity_type.type_name,
-               t_commodity_type.tid `type_id`,
-               t_user.uid uid2,
+               t_commodity_type.tid       `type_id`,
+               t_user.uid                 uid2,
                t_user.nickname,
                t_user.username,
                t_user.avatar
-        FROM db_happy_trade.t_commodity,
+        FROM db_happy_trade.t_commodity
+                 LEFT JOIN db_happy_trade.t_commodity_bid ON t_commodity.cid = t_commodity_bid.cid,
              db_happy_trade.t_commodity_type,
              db_happy_trade.t_user
         where t_commodity.type_id = t_commodity_type.tid
           AND t_user.uid = t_commodity.uid
           AND t_commodity.uid = #{uid}
+        GROUP BY t_commodity.cid
     </select>
 </mapper>

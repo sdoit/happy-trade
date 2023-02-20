@@ -1,26 +1,27 @@
 package com.lyu.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * 
- * @TableName t_private_message
+ * @author LEE
+ * @TableName t_user_message
  */
-@TableName(value ="t_private_message")
+@TableName(value ="t_user_message")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class PrivateMessage implements Serializable {
+public class UserMessage implements Serializable {
     /**
      * 消息id
      */
-    @TableId
+    @TableId(type = IdType.AUTO)
     private Long mid;
 
     /**
@@ -31,12 +32,23 @@ public class PrivateMessage implements Serializable {
     /**
      * 消息内容
      */
+    @NotNull
     private String content;
 
     /**
-     * 消息类型：0-系统通知 1-用户私信
+     * 消息引导用户跳转的地址
      */
-    private Integer type;
+    private String url;
+
+    /**
+     * 消息类型：true-系统通知 false-用户私信
+     */
+    private Boolean systemNotify;
+
+    /**
+     * success、warning、info 和error。
+     */
+    private String messageType;
 
     /**
      * 发送人id
@@ -44,8 +56,9 @@ public class PrivateMessage implements Serializable {
     private Long uidSend;
 
     /**
-     * 接收人id
+     * 接收人id 为0时全体接收
      */
+    @NotNull
     private Long uidReceive;
 
     /**
@@ -56,7 +69,8 @@ public class PrivateMessage implements Serializable {
     /**
      * 0-未读，1已读
      */
-    private Integer readed;
+    @TableField(value = "read_already")
+    private Boolean read;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -72,15 +86,17 @@ public class PrivateMessage implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        PrivateMessage other = (PrivateMessage) that;
+        UserMessage other = (UserMessage) that;
         return (this.getMid() == null ? other.getMid() == null : this.getMid().equals(other.getMid()))
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
             && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+            && (this.getUrl() == null ? other.getUrl() == null : this.getUrl().equals(other.getUrl()))
+            && (this.getSystemNotify() == null ? other.getSystemNotify() == null : this.getSystemNotify().equals(other.getSystemNotify()))
+            && (this.getMessageType() == null ? other.getMessageType() == null : this.getMessageType().equals(other.getMessageType()))
             && (this.getUidSend() == null ? other.getUidSend() == null : this.getUidSend().equals(other.getUidSend()))
             && (this.getUidReceive() == null ? other.getUidReceive() == null : this.getUidReceive().equals(other.getUidReceive()))
             && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-            && (this.getReaded() == null ? other.getReaded() == null : this.getReaded().equals(other.getReaded()));
+            && (this.getRead() == null ? other.getRead() == null : this.getRead().equals(other.getRead()));
     }
 
     @Override
@@ -90,11 +106,13 @@ public class PrivateMessage implements Serializable {
         result = prime * result + ((getMid() == null) ? 0 : getMid().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
         result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
-        result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+        result = prime * result + ((getUrl() == null) ? 0 : getUrl().hashCode());
+        result = prime * result + ((getSystemNotify() == null) ? 0 : getSystemNotify().hashCode());
+        result = prime * result + ((getMessageType() == null) ? 0 : getMessageType().hashCode());
         result = prime * result + ((getUidSend() == null) ? 0 : getUidSend().hashCode());
         result = prime * result + ((getUidReceive() == null) ? 0 : getUidReceive().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
-        result = prime * result + ((getReaded() == null) ? 0 : getReaded().hashCode());
+        result = prime * result + ((getRead() == null) ? 0 : getRead().hashCode());
         return result;
     }
 
@@ -107,11 +125,13 @@ public class PrivateMessage implements Serializable {
         sb.append(", mid=").append(mid);
         sb.append(", title=").append(title);
         sb.append(", content=").append(content);
-        sb.append(", type=").append(type);
+        sb.append(", url=").append(url);
+        sb.append(", systemNotify=").append(systemNotify);
+        sb.append(", messageType=").append(messageType);
         sb.append(", uidSend=").append(uidSend);
         sb.append(", uidReceive=").append(uidReceive);
         sb.append(", time=").append(time);
-        sb.append(", readed=").append(readed);
+        sb.append(", read=").append(read);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

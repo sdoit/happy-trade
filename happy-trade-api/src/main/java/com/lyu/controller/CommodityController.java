@@ -58,8 +58,7 @@ public class CommodityController {
 
     @ApiOperation("获取指定用户的商品")
     @GetMapping("/u")
-    public CommonResult<List<CommodityDTO>> getCommoditiesFromUser(Integer page) {
-
+    public CommonResult<List<CommodityDTO>> getCommoditiesFromUser(@NotNull Integer page) {
         List<CommodityDTO> commodities = commodityService.getCommoditiesFromUser(
                 new Page<>(page, Constant.COMMODITY_PER_PAGE),
                 StpUtil.getLoginIdAsLong());

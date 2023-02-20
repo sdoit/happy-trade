@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserMessageMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.UserMessageDTO">
+        <id column="mid" property="mid" jdbcType="BIGINT"/>
+        <result column="title" property="title" jdbcType="VARCHAR"/>
+        <result column="content" property="content" jdbcType="VARCHAR"/>
+        <result column="url" property="url" jdbcType="VARCHAR"/>
+        <result column="system_notify" property="systemNotify" jdbcType="TINYINT"/>
+        <result column="message_type" property="messageType" jdbcType="VARCHAR"/>
+        <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
+        <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="read_already" property="read" jdbcType="TINYINT"/>
+        <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
+        <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
+        <association property="sender" javaType="com.lyu.entity.User"  resultMap="mapUserSend"/>
+        <association property="receiver" javaType="com.lyu.entity.User" resultMap="mapUserReceive"/>
+    </resultMap>
+    <resultMap id="mapUserSend"  type="com.lyu.entity.User">
+        <id column="s_uid" property="uid" jdbcType="BIGINT"/>
+        <result column="s_username" property="username" jdbcType="VARCHAR"/>
+        <result column="s_nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="s_avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="s_introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="s_baned_time" property="banedTime" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="mapUserReceive" type="com.lyu.entity.User">
+        <id column="s_uid" property="uid" jdbcType="BIGINT"/>
+        <result column="s_username" property="username" jdbcType="VARCHAR"/>
+        <result column="s_nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="s_avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="s_introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="s_baned_time" property="banedTime" jdbcType="INTEGER"/>
+    </resultMap>
+    <!--携带send的user对象-->
+    <sql id="senderMessage">
+        select t_user_message.mid,
+               t_user_message.title,
+               t_user_message.content,
+               t_user_message.url,
+               t_user_message.system_notify,
+               t_user_message.message_type,
+               t_user_message.uid_send,
+               t_user_message.uid_receive,
+               t_user_message.time,
+               t_user_message.read_already,
+               t_user.uid          s_uid,
+               t_user.username     s_username,
+               t_user.nickname     s_nickname,
+               t_user.avatar       s_avatar,
+               t_user.introduction s_introduction,
+               t_user.baned_time   s_baned_time
+        from db_happy_trade.t_user_message,
+             db_happy_trade.t_user
+        where t_user_message.uid_send = t_user.uid
+    </sql>
+    <select id="pullMessagesByUidReceiver" resultMap="baseMap">
+        <include refid="senderMessage"/>
+        AND t_user_message.uid_receive = #{uid}
+    </select>
+    <select id="pullUnreadMessagesByUidReceiver" resultMap="baseMap">
+        <include refid="senderMessage"/>
+        AND t_user_message.read=0
+        AND t_user_message.uid_receive = #{uid}
+    </select>
+    <select id="pullMessageBySenderAndReceiver" resultMap="baseMap">
+        <include refid="senderMessage"/>
+        AND t_user_message.uid_receive in (#{uidSender}, #{uidReceiver})
+        AND t_user_message.uid_send in (#{uidSender}, #{uidReceiver})
+    </select>
+</mapper>

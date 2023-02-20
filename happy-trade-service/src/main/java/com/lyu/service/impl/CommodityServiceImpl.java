@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.Commodity;
+import com.lyu.entity.CommodityType;
 import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
@@ -82,11 +83,19 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public CommodityDTO getCommodityById(Long cid) {
+        CommodityDTO commodityDTO;
         //如果登录，保存浏览记录
         if (StpUtil.isLogin()) {
-            return userViewHistoryService.saveViewHistory(cid);
+            commodityDTO = userViewHistoryService.saveViewHistory(cid);
+        } else {
+            commodityDTO = commodityMapper.getCommodityById(cid);
         }
-        return commodityMapper.getCommodityById(cid);
+        //设置typePath
+        CommodityType commodityType = commodityDTO.getType();
+        commodityType.setTypePath(new Integer[]{commodityDTO.getType().getTidRoot(),
+                commodityDTO.getType().getTidMiddle(), commodityDTO.getType().getTid()});
+        commodityDTO.setType(commodityType);
+        return commodityDTO;
     }
 
 

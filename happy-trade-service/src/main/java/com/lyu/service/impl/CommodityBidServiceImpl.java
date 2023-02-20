@@ -12,7 +12,7 @@ import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.Order;
 import com.lyu.entity.User;
-import com.lyu.entity.dto.CommodityBidUserDTO;
+import com.lyu.entity.dto.CommodityBidDTO;
 import com.lyu.exception.CommodityBidException;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.OrderException;
@@ -177,7 +177,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
     }
 
     @Override
-    public List<CommodityBidUserDTO> getCommodityBidsPaidByCid(Long cid) {
+    public CommodityBidDTO getCommodityBidsPaidByCid(Long cid) {
         return commodityBidMapper.getCommodityBidsPaidByCid(cid);
     }
 
@@ -192,13 +192,13 @@ public class CommodityBidServiceImpl implements CommodityBidService {
     }
 
     @Override
-    public List<CommodityBidUserDTO> getCommodityBidsByBuyerUid(IPage<CommodityBidUserDTO> page, Long uid) {
-        return commodityBidMapper.getCommodityBidsByBuyerUid(page, uid).getRecords();
+    public IPage<CommodityBidDTO> getCommodityBidsByBuyerUid(IPage<CommodityBidDTO> page, Long uid) {
+        return commodityBidMapper.getCommodityBidsByBuyerUid(page, uid);
 
     }
 
     @Override
-    public IPage<CommodityBidUserDTO> getCommodityBidsBySellerUid(Long uid, IPage<CommodityBidUserDTO> page, String type) {
+    public IPage<CommodityBidDTO> getCommodityBidsBySellerUid(Long uid, IPage<CommodityBidDTO> page, String type) {
         if (Constant.BID_GET_RESPONDED.equals(type)) {
             return commodityBidMapper.getCommodityBidsRespondedBySellerUid(page, uid);
         } else if (Constant.BID_GET_NO_RESPONSE.equals(type)) {
@@ -242,17 +242,17 @@ public class CommodityBidServiceImpl implements CommodityBidService {
     }
 
     @Override
-    public Integer completePay(CommodityBid commodityBid) {
+    public void completePay(CommodityBid commodityBid) {
         if (commodityBid.getTradeId() == null || commodityBid.getPayTime() == null || commodityBid.getBuyerAlipayId() == null) {
             throw new CommodityBidException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
         }
         //return commodityBidMapper.updateById(commodityBid);
-        return commodityBidMapper.insert(commodityBid);
+        commodityBidMapper.insert(commodityBid);
     }
 
     @Override
-    public Integer cancelBidByCid(Long cid) {
-        return commodityBidMapper.update(null, new UpdateWrapper<CommodityBid>().set("cancel", 1).eq("cid", cid));
+    public void cancelBidByCid(Long cid) {
+        commodityBidMapper.update(null, new UpdateWrapper<CommodityBid>().set("cancel", 1).eq("cid", cid));
     }
 
     @Override

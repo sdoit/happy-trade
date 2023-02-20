@@ -4,6 +4,7 @@ import com.lyu.entity.WithdrawalOrder;
 import com.lyu.exception.AliPayException;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  * @author LEE
@@ -35,4 +36,15 @@ public interface AlipayService {
      * @throws AliPayException
      */
     void refund(String alipayTradeId, BigDecimal amount, String id, String reason, String type) throws AliPayException;
+
+    /**
+     * 支付宝支付回调处理
+     *
+     * @param alipayParamMap 支付宝回调参数
+     * @return 处理是否成功
+     * @throws Exception
+     */
+    boolean alipayNotify(Map<String, String> alipayParamMap) throws Exception;
+
+
 }

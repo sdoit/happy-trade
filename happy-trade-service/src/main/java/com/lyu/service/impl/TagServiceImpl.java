@@ -54,11 +54,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Integer mapCommodityAndTags(List<Tag> tags, Long cid) {
+    public void mapCommodityAndTags(List<Tag> tags, Long cid) {
         if (tags != null && !tags.isEmpty()) {
-            return tagMapper.mapCommodityAndTags(tags, cid, LocalDateTime.now());
+            tagMapper.mapCommodityAndTags(tags, cid, LocalDateTime.now());
         }
-        return 0;
     }
 
     @Override
@@ -67,10 +66,10 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public Integer cancelTagsNotIncludedAndAddIncluded(Long cid, List<Tag> tags) {
+    public void cancelTagsNotIncludedAndAddIncluded(Long cid, List<Tag> tags) {
         List<Tag> allTagsNow = tagMapper.getAllTagsByCid(cid);
         Collection<Tag> disjunction = CollectionUtil.disjunction(allTagsNow, tags);
         tagMapper.cancelAllTagsMap(cid, disjunction);
-        return tagMapper.mapCommodityAndTags(disjunction, cid, LocalDateTime.now());
+        tagMapper.mapCommodityAndTags(disjunction, cid, LocalDateTime.now());
     }
 }

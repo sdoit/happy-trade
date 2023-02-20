@@ -10,7 +10,7 @@ import com.lyu.common.CommonResultPage;
 import com.lyu.common.Constant;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.dto.CommodityBidDTO;
-import com.lyu.entity.dto.CommodityBidUserDTO;
+import com.lyu.entity.dto.CommodityBidSimplyDTO;
 import com.lyu.service.CommodityBidService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,8 +60,8 @@ public class CommodityBidController {
 
     @ApiOperation("卖家同意此报价")
     @PostMapping("/agree")
-    public CommonResult<Object> agreeCommodityBid(@RequestBody @NotNull CommodityBidDTO commodityBidDTO) {
-        Integer result = commodityBidService.agreeCommodityBid(commodityBidDTO.getBid(), commodityBidDTO.getMessage());
+    public CommonResult<Object> agreeCommodityBid(@RequestBody @NotNull CommodityBidSimplyDTO commodityBidSimplyDTO) {
+        Integer result = commodityBidService.agreeCommodityBid(commodityBidSimplyDTO.getBid(), commodityBidSimplyDTO.getMessage());
         if (result != null && result == 1) {
             return CommonResult.Result(CodeAndMessage.SUCCESS, null);
 
@@ -72,8 +72,8 @@ public class CommodityBidController {
 
     @ApiOperation("卖家拒绝此报价")
     @PostMapping("/reject")
-    public CommonResult<Object> rejectCommodityBid(@RequestBody @NotNull CommodityBidDTO commodityBidDTO) {
-        Integer result = commodityBidService.rejectCommodityBid(commodityBidDTO.getBid(), commodityBidDTO.getMessage());
+    public CommonResult<Object> rejectCommodityBid(@RequestBody @NotNull CommodityBidSimplyDTO commodityBidSimplyDTO) {
+        Integer result = commodityBidService.rejectCommodityBid(commodityBidSimplyDTO.getBid(), commodityBidSimplyDTO.getMessage());
         if (result != null && result == 1) {
             return CommonResult.Result(CodeAndMessage.SUCCESS, null);
 
@@ -84,14 +84,14 @@ public class CommodityBidController {
 
     @ApiOperation("获取某商品的全部报价")
     @GetMapping("/commodity/{cid}")
-    public CommonResult<List<CommodityBidUserDTO>> getCommodityBidsByCid(@NotNull @PathVariable("cid") Long cid) {
-        List<CommodityBidUserDTO> commodityBids = commodityBidService.getCommodityBidsPaidByCid(cid);
-        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityBids);
+    public CommonResult<CommodityBidDTO> getCommodityBidsByCid(@NotNull @PathVariable("cid") Long cid) {
+        CommodityBidDTO commodityBidDTO = commodityBidService.getCommodityBidsPaidByCid(cid);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityBidDTO);
     }
 
-    @ApiOperation("获取我(当前登用户)的商品的所有出价")
+    @ApiOperation("获取我(作为卖家)的商品的所有出价")
     @GetMapping("/seller")
-    public CommonResultPage<List<CommodityBidUserDTO>> getCommodityBidsBySellerUid(Integer page, String type) {
+    public CommonResultPage<List<CommodityBidDTO>> getCommodityBidsBySellerUid(Integer page, String type) {
 
         if (!Constant.BID_GET_ALL.equals(type) &&
                 !Constant.BID_GET_REJECTED.equals(type) &&
@@ -105,8 +105,8 @@ public class CommodityBidController {
         if (page == null) {
             page = 1;
         }
-        Page<CommodityBidUserDTO> dtoPage = new Page<>(page, Constant.BID_PER_PAGE);
-        IPage<CommodityBidUserDTO> commodityBids = commodityBidService.getCommodityBidsBySellerUid(uid, dtoPage, type);
+        Page<CommodityBidDTO> dtoPage = new Page<>(page, Constant.BID_PER_PAGE);
+        IPage<CommodityBidDTO> commodityBids = commodityBidService.getCommodityBidsBySellerUid(uid, dtoPage, type);
         return CommonResultPage.Result(CodeAndMessage.SUCCESS, commodityBids.getRecords(), commodityBids.getTotal());
 
     }
@@ -120,13 +120,13 @@ public class CommodityBidController {
 
     @ApiOperation("获取当前登录用户的所有出价")
     @GetMapping
-    public CommonResult<List<CommodityBidUserDTO>> getCommodityBidsByBuyerUid(Integer page) {
+    public CommonResult<List<CommodityBidDTO>> getCommodityBidsByBuyerUid(Integer page) {
         long uid = StpUtil.getLoginIdAsLong();
         if (page == null) {
             page = 1;
         }
-        Page<CommodityBidUserDTO> dtoPage = new Page<>(page, Constant.BID_PER_PAGE);
-        List<CommodityBidUserDTO> commodityBids = commodityBidService.getCommodityBidsByBuyerUid(dtoPage, uid);
+        Page<CommodityBidDTO> dtoPage = new Page<>(page, Constant.BID_PER_PAGE);
+        List<CommodityBidDTO> commodityBids = commodityBidService.getCommodityBidsByBuyerUid(dtoPage, uid).getRecords();
         return CommonResult.Result(CodeAndMessage.SUCCESS, commodityBids);
 
     }

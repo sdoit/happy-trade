@@ -1,20 +1,15 @@
 package com.lyu.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.util.StrUtil;
-import com.alipay.easysdk.factory.Factory;
 import com.alipay.easysdk.factory.Factory.Payment;
 import com.alipay.easysdk.payment.page.models.AlipayTradePagePayResponse;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
-import com.lyu.common.Message;
 import com.lyu.entity.AliPay;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.Order;
 import com.lyu.exception.AliPayException;
-import com.lyu.service.CommodityBidService;
-import com.lyu.service.OrderService;
-import com.lyu.service.SSEService;
+import com.lyu.service.*;
 import com.lyu.util.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
@@ -48,7 +43,11 @@ public class AliPayController {
     @Resource
     private SSEService sseService;
     @Resource
+    private UserMessageService userMessageService;
+    @Resource
     private RedisUtil redisUtil;
+    @Resource
+    private AlipayService alipayService;
 
     /**
      * 订单支付接口
@@ -107,65 +106,14 @@ public class AliPayController {
     @PostMapping("/notify")
     public String payNotify(HttpServletRequest request) throws Exception {
         if (request.getParameter(Constant.ALIPAY_PAY_STATUS_KEY).equals(Constant.ALIPAY_PAY_SUCCESS_VALUE)) {
-            Map<String, String> params = new HashMap<>(75);
+            Map<String, String> alipayParamMap = new HashMap<>(75);
             Map<String, String[]> requestParams = request.getParameterMap();
             for (String name : requestParams.keySet()) {
-                params.put(name, request.getParameter(name));
+                alipayParamMap.put(name, request.getParameter(name));
             }
-            // 支付宝验签
-            if (Factory.Payment.Common().verifyNotify(params)) {
-                // 验签通过
-                log.debug("交易名称: " + params.get("subject"));
-                log.debug("交易状态: " + params.get("trade_status"));
-                log.debug("支付宝交易凭证号: " + params.get("trade_no"));
-                log.debug("商户订单号: " + params.get("out_trade_no"));
-                log.debug("交易金额: " + params.get("total_amount"));
-                log.debug("买家在支付宝唯一id: " + params.get("buyer_id"));
-                log.debug("买家付款时间: " + params.get("gmt_payment"));
-                log.debug("买家付款金额: " + params.get("buyer_pay_amount"));
-                Long uid;
-                // 开始更新订单信息
-                //判断是否是bidOrder
-                if (StrUtil.startWith(params.get("out_trade_no"), Constant.BID_ORDER_PREFIX)) {
-                    //是bid订单
-                    log.debug("开始完成 bidOrder");
-                    //从Redis中取出bid订单信息
-                    Object bidObj = redisUtil.getAndDelete(Constant.REDIS_BID_UNPAID_KEY_PRE + Long.parseLong(params.get("out_trade_no")));
-                    if (bidObj == null) {
-                        return "error";
-                    }
-                    CommodityBid bidOrder = (CommodityBid) bidObj;
-                    bidOrder.setPayTime(LocalDateTime.parse(params.get("gmt_payment"), dateTimeFormatterAliPay));
-                    bidOrder.setTradeId(params.get("trade_no"));
-                    bidOrder.setBuyerAlipayId(params.get("buyer_id"));
-                    commodityBidService.completePay(bidOrder);
-                    //发送消息到卖家
-                    Long uidSeller=bidOrder.getUidSeller();
-                    sseService.sendMessage(String.valueOf(uidSeller),Message.ITEM_HAS_A_NEW_BID,"/seller/bid");
-                    uid = bidOrder.getUidBuyer();
-                    sseService.sendMessage(String.valueOf(uid), Message.SSE_ALPAY_COMPLETED,"/buyer/bid/");
-
-                } else {
-                    //是form 订单
-                    log.debug("开始完成 Order");
-                    Object orderObj = redisUtil.getAndDelete(Constant.REDIS_ORDER_UNPAID_KEY_PRE + Long.parseLong(params.get("out_trade_no")));
-                    if (orderObj == null) {
-                        return "error";
-                    }
-                    redisUtil.getAndDelete(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + Long.parseLong(params.get("out_trade_no")));
-                    Order order = (Order) orderObj;
-                    order.setOid(Long.parseLong(params.get("out_trade_no")));
-                    order.setPayTime(LocalDateTime.parse(params.get("gmt_payment"), dateTimeFormatterAliPay));
-                    order.setTradeId(params.get("trade_no"));
-                    order.setBuyerAlipayId(params.get("buyer_id"));
-                    orderService.completePayOrder(order);
-                    uid = order.getUidBuyer();
-                    sseService.sendMessage(String.valueOf(uid), Message.SSE_ALPAY_COMPLETED,"/buyer/order/"+order.getOid());
-                }
-
-            }
+            return alipayService.alipayNotify(alipayParamMap) ? "success" : "error";
         }
-        return "success";
+        return "error";
     }
 
 

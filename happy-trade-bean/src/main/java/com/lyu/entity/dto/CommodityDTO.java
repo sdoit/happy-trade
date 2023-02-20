@@ -16,6 +16,12 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommodityDTO extends Commodity {
+
+
+    /**
+     * 该商品的出价数量
+     */
+    private Integer bidCount;
     private CommodityType type;
 
     /**

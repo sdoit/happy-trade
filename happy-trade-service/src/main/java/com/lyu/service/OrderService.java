@@ -94,9 +94,8 @@ public interface OrderService {
      * 支付订单
      *
      * @param order
-     * @return
      */
-    Integer completePayOrder(Order order);
+    void completePayOrder(Order order);
 
     /**
      * 检查订单是否存在

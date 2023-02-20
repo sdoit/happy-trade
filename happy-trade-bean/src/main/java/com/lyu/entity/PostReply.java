@@ -57,7 +57,7 @@ public class PostReply implements Serializable {
             return false;
         }
         PostReply other = (PostReply) that;
-        return (this.getPid() == null ? other.getPid() == null : this.getPid().equals(other.getPid()))
+        return (this.getRId() == null ? other.getRId() == null : this.getRId().equals(other.getRId()))
             && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
             && (this.getPid() == null ? other.getPid() == null : this.getPid().equals(other.getPid()))
             && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
@@ -68,7 +68,7 @@ public class PostReply implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getPid() == null) ? 0 : getPid().hashCode());
+        result = prime * result + ((getRId() == null) ? 0 : getRId().hashCode());
         result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
         result = prime * result + ((getPid() == null) ? 0 : getPid().hashCode());
         result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());

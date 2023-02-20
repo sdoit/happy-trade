@@ -103,7 +103,6 @@
                t_user.username,
                t_user.nickname,
                t_user.avatar,
-
                t_user_address.name  aname,
                t_user_address.phone aphone,
                t_user_address.street_code,

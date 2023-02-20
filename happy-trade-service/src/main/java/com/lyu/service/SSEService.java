@@ -9,19 +9,45 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
  */
 public interface SSEService {
     /**
-     * 添加sse客户端
-     *
+     * 创建连接
      * @return
      */
-    SseEmitter addEmitter();
+    SseEmitter createSseConnect();
 
     /**
-     * 发送消息
-     *
-     * @param uid uid 可空
-     * @param messageId 消息id
-     * @param message 消息内容
+     * 关闭链接
+     * @param clientId
      */
-    void sendMessage(String uid, String messageId, String message,String url);
-    void sendMessage(String uid, Message message,String url);
+    void closeSseConnect(String clientId);
+
+    /**
+     * 根据id获取SseEmitter
+     * @param clientId
+     * @return
+     */
+    SseEmitter getSseEmitterByClientId(String clientId);
+
+    /**
+     * 推送消息到所有在线的客户端
+     * @param message
+     * @param url
+     */
+    void sendMsgToAllClients(Message message, String url);
+
+
+    /**
+     * 推送消息到客户端
+     * @param clientId
+     * @param message
+     * @param url 跳转的地址
+     */
+    void sendMsgToClientByClientId(String clientId, Message message,String url);
+    /**
+     * 推送消息到客户端
+     * @param clientId
+     * @param message
+     * @param url 跳转的地址
+     */
+    void sendCustomMsgToClientByClientId(String clientId, String messageId,String type, String title, String message,String url);
+
 }

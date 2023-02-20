@@ -2,11 +2,9 @@ package com.lyu.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.lyu.entity.CommodityBid;
-import com.lyu.entity.dto.CommodityBidUserDTO;
+import com.lyu.entity.dto.CommodityBidDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.UserException;
-
-import java.util.List;
 
 /**
  * @author LEE
@@ -55,7 +53,7 @@ public interface CommodityBidService {
      * @param cid
      * @return
      */
-    List<CommodityBidUserDTO> getCommodityBidsPaidByCid(Long cid);
+    CommodityBidDTO getCommodityBidsPaidByCid(Long cid);
 
     /**
      * 通过报价id获取报价
@@ -72,7 +70,7 @@ public interface CommodityBidService {
      * @param uid
      * @return
      */
-    List<CommodityBidUserDTO> getCommodityBidsByBuyerUid(IPage<CommodityBidUserDTO> page, Long uid);
+   IPage<CommodityBidDTO> getCommodityBidsByBuyerUid(IPage<CommodityBidDTO> page, Long uid);
 
     /**
      * 获取一个卖家的商品的所有出价
@@ -82,7 +80,7 @@ public interface CommodityBidService {
      * @param type
      * @return
      */
-    IPage<CommodityBidUserDTO> getCommodityBidsBySellerUid(Long uid, IPage<CommodityBidUserDTO> page, String type);
+    IPage<CommodityBidDTO> getCommodityBidsBySellerUid(Long uid, IPage<CommodityBidDTO> page, String type);
 
 
     /**
@@ -99,7 +97,7 @@ public interface CommodityBidService {
      * @param commodityBid
      * @return
      */
-    Integer completePay(CommodityBid commodityBid);
+    void completePay(CommodityBid commodityBid);
 
 
     /**
@@ -108,7 +106,7 @@ public interface CommodityBidService {
      * @param cid
      * @return
      */
-    Integer cancelBidByCid(Long cid);
+    void cancelBidByCid(Long cid);
 
     /**
      * 取消一个商品的所有[未回应]的报价

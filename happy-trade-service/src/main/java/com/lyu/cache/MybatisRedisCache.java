@@ -8,7 +8,6 @@ import org.apache.ibatis.cache.Cache;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -19,7 +18,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Slf4j
 public class MybatisRedisCache implements Cache {
     private static final String COMMON_CACHE_KEY = "mybatis";
-    // 读写锁
+
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock(true);
     private final RedisTemplate<String, Object> redisTemplate;
     private final String nameSpace;
@@ -42,7 +41,7 @@ public class MybatisRedisCache implements Cache {
     }
     @Override
     public void putObject(Object key, Object value) {
-        redisTemplate.opsForValue().set(getKey(key), value, 10, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(getKey(key), value);
     }
     @Override
     public Object getObject(Object key) {

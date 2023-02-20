@@ -26,7 +26,7 @@ public class SSEController {
 
     @GetMapping("/connect")
     public SseEmitter connect() {
-        return sseService.addEmitter();
+        return sseService.createSseConnect();
     }
 
 

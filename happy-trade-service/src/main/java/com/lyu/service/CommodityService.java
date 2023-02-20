@@ -48,6 +48,7 @@ public interface CommodityService {
     /**
      * 获取指定用户在线商品
      *
+     * @param page
      * @param uid
      * @return
      */

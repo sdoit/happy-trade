@@ -62,8 +62,12 @@ public enum CodeAndMessage {
     NO_SUCH_COMMODITY(false, 5001, "不存在该商品"),
 
 
-    WRONG_REQUEST_PARAMETER(false, 6001, "请求参数错误");
+    WRONG_REQUEST_PARAMETER(false, 6001, "请求参数错误"),
 
+    /**
+     * SSE
+     */
+    SSE_WENT_WRONG(false, 8001, "SSE推送服务创建失败");
 
     private final int code;
     private final boolean flag;

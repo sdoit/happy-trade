@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                 .eq("phone", user.getPhone())
                 .or()
                 .eq("uid", user.getUid()));
-        ;
+
         if (userInDb != null) {
             throw new UserException(CodeAndMessage.USER_ALREADY_EXISTS.getCode(), CodeAndMessage.USER_ALREADY_EXISTS.getMessage());
         }

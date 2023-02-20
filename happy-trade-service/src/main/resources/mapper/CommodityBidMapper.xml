@@ -1,47 +1,83 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyu.mapper.CommodityBidMapper">
-    <resultMap id="baseMap" type="com.lyu.entity.dto.CommodityBidUserDTO">
-        <id column="bid" property="bid"/>
-        <result column="cid" property="cid" jdbcType="BIGINT"/>
-        <result column="uid_buyer" property="uidBuyer" jdbcType="BIGINT"/>
-        <result column="uid_seller" property="uidSeller" jdbcType="BIGINT"/>
+    <resultMap id="baseMap" type="com.lyu.entity.dto.CommodityBidDTO">
+        <id column="cid" property="cid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="quality" property="quality" jdbcType="FLOAT"/>
         <result column="price" property="price" jdbcType="DECIMAL"/>
-        <result column="message_buyer" property="messageBuyer" jdbcType="VARCHAR"/>
-        <result column="reply_seller" property="replySeller" jdbcType="VARCHAR"/>
-        <result column="agree" property="agree" jdbcType="BOOLEAN"/>
-        <result column="time_created" property="timeCreated" jdbcType="TIMESTAMP"/>
-        <result column="time_reply" property="timeReply" jdbcType="TIMESTAMP"/>
-        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
-        <result column="username" property="username" jdbcType="VARCHAR"/>
-        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
-        <association property="commodity" javaType="com.lyu.entity.Commodity">
-            <result column="name" property="name" jdbcType="VARCHAR"/>
-            <result column="quality" property="quality" jdbcType="FLOAT"/>
-            <result column="cprice" property="price" jdbcType="DECIMAL"/>
-            <result column="time" property="time" jdbcType="TIMESTAMP"/>
-            <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
-            <result column="cover" property="cover" jdbcType="VARCHAR"/>
-        </association>
+        <result column="fare" property="fare" jdbcType="DECIMAL"/>
+        <result column="freight_collect" property="freightCollect" jdbcType="TINYINT"/>
+        <result column="free_shipping" property="freeShipping" jdbcType="TINYINT"/>
+        <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
+        <result column="sold" property="sold" jdbcType="TINYINT"/>
+        <result column="launched" property="launched" jdbcType="TINYINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+        <result column="cover" property="cover" jdbcType="VARCHAR"/>
+        <collection property="bids" ofType="com.lyu.entity.CommodityBid">
+            <id column="bid" property="bid"/>
+            <result column="cid" property="cid" jdbcType="BIGINT"/>
+            <result column="uid_buyer" property="uidBuyer" jdbcType="BIGINT"/>
+            <result column="uid_seller" property="uidSeller" jdbcType="BIGINT"/>
+            <result column="price" property="price" jdbcType="DECIMAL"/>
+            <result column="message_buyer" property="messageBuyer" jdbcType="VARCHAR"/>
+            <result column="reply_seller" property="replySeller" jdbcType="VARCHAR"/>
+            <result column="agree" property="agree" jdbcType="BOOLEAN"/>
+            <result column="time_created" property="timeCreated" jdbcType="TIMESTAMP"/>
+            <result column="time_reply" property="timeReply" jdbcType="TIMESTAMP"/>
+            <association property="buyer" resultMap="bid_buyer_map"/>
+            <association property="seller" resultMap="bid_seller_map"/>
+        </collection>
+    </resultMap>
+    <resultMap id="bid_buyer_map" type="com.lyu.entity.User">
+        <id column="uid_buyer" property="uid" jdbcType="BIGINT"/>
+        <result column="username_buyer" property="username" jdbcType="VARCHAR"/>
+        <result column="nickname_buyer" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar_buyer" property="avatar" jdbcType="VARCHAR"/>
+        <result column="baned_time_buyer" property="banedTime" jdbcType="INTEGER"/>
+        <result column="introduction_buyer" property="introduction" jdbcType="VARCHAR"/>
+    </resultMap>
+    <resultMap id="bid_seller_map" type="com.lyu.entity.User">
+        <id column="uid_buyer" property="uid" jdbcType="BIGINT"/>
+        <result column="username_buyer" property="username" jdbcType="VARCHAR"/>
+        <result column="nickname_buyer" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar_buyer" property="avatar" jdbcType="VARCHAR"/>
+        <result column="baned_time_buyer" property="banedTime" jdbcType="INTEGER"/>
+        <result column="introduction_buyer" property="introduction" jdbcType="VARCHAR"/>
     </resultMap>
 
-    <select id="getCommodityBidsPaidByCid" resultType="com.lyu.entity.dto.CommodityBidUserDTO">
-        select bid,
-               cid,
-               uid_buyer,
-               uid_seller,
-               price,
-               message_buyer,
-               reply_seller,
-               agree,
-               `time_created`,
-               time_reply,
-               nickname,
-               avatar
+    <select id="getCommodityBidsPaidByCid" resultMap="baseMap">
+        select t_commodity_bid.bid,
+               t_commodity_bid.cid,
+               t_commodity_bid.uid_buyer,
+               t_commodity_bid.uid_seller,
+               t_commodity_bid.price,
+               t_commodity_bid.message_buyer,
+               t_commodity_bid.reply_seller,
+               t_commodity_bid.agree,
+               t_commodity_bid.`time_created`,
+               t_commodity_bid.time_reply,
+               t_commodity_bid.cancel,
+               t_commodity.name,
+               t_commodity.quality,
+               t_commodity.price   cprice,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_commodity.cover,
+               t_user.uid          uid_buyer,
+               t_user.username     username_buyer,
+               t_user.nickname     nickname_buyer,
+               t_user.avatar       avatar_buyer,
+               t_user.baned_time   baned_time_buyer,
+               t_user.introduction introduction_buyer
         from db_happy_trade.t_commodity_bid,
+             db_happy_trade.t_commodity,
              db_happy_trade.t_user
         where t_commodity_bid.uid_buyer = t_user.uid
           and t_commodity_bid.trade_id is not NULL
+          and t_commodity.cid = t_commodity_bid.cid
           AND t_commodity_bid.cid = #{cid}
         order by `time_created`
     </select>
@@ -57,11 +93,15 @@
                t_commodity_bid.`time_created`,
                t_commodity_bid.time_reply,
                t_commodity_bid.cancel,
-               nickname,
-               avatar,
+               t_user.uid          uid_seller,
+               t_user.username     username_seller,
+               t_user.nickname     nickname_seller,
+               t_user.avatar       avatar_seller,
+               t_user.baned_time   baned_time_seller,
+               t_user.introduction introduction_seller,
                t_commodity.name,
                t_commodity.quality,
-               t_commodity.price cprice,
+               t_commodity.price   cprice,
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover
@@ -96,12 +136,15 @@
                t_commodity_bid.`time_created`,
                t_commodity_bid.time_reply,
                t_commodity_bid.cancel,
-               nickname,
-               avatar,
-               username,
+               t_user.uid          uid_buyer,
+               t_user.username     username_buyer,
+               t_user.nickname     nickname_buyer,
+               t_user.avatar       avatar_buyer,
+               t_user.baned_time   baned_time_buyer,
+               t_user.introduction introduction_buyer,
                t_commodity.name,
                t_commodity.quality,
-               t_commodity.price cprice,
+               t_commodity.price   cprice,
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover

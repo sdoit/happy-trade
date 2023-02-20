@@ -113,7 +113,10 @@ public class CommodityBid implements Serializable {
      * 是否取消
      */
     private Boolean cancel;
-
+    @TableField(exist = false)
+    private User buyer;
+    @TableField(exist = false)
+    private User seller;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

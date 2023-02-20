@@ -186,7 +186,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Integer completePayOrder(Order order) {
+    public void completePayOrder(Order order) {
         //设置为已付款
         order.setStatus(0);
         //获取本商品下的所有的出价
@@ -209,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
         userAmountLogService.logUserAmount(userAmountLog);
 
         //插入记录到数据库
-        return orderMapper.insert(order);
+        orderMapper.insert(order);
     }
 
     @Override
