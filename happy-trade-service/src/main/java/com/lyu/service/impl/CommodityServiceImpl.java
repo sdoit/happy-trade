@@ -1,12 +1,15 @@
 package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
+import com.lyu.common.Constant;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.dto.CommodityDTO;
+import com.lyu.exception.CommodityException;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.service.CommodityService;
@@ -40,6 +43,7 @@ public class CommodityServiceImpl implements CommodityService {
         long uid = StpUtil.getLoginIdAsLong();
         commodity.setCid(idUtil.getNextCommodityId());
         commodity.setUid(uid);
+        commodity.setTypeId(commodity.getType().getTid());
         commodity.setSold(false);
         commodity.setLaunched(true);
         commodity.setTime(LocalDateTime.now());
@@ -67,6 +71,38 @@ public class CommodityServiceImpl implements CommodityService {
 
 
         return commodityMapper.updateById(commodity);
+    }
+
+    @Override
+    public void takeDownCommodity(Long cid) {
+        Commodity commodity = commodityMapper.selectById(cid);
+        if (commodity == null) {
+            throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
+        }
+        if (!commodity.getUid().equals(StpUtil.getLoginIdAsLong())) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+        if (!BooleanUtil.isTrue(commodity.getLaunched())) {
+            throw new CommodityException(CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getCode(), CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getMessage());
+        }
+        commodity.setLaunched(false);
+        commodityMapper.updateById(commodity);
+    }
+
+    @Override
+    public void uploadedCommodity(Long cid) {
+        Commodity commodity = commodityMapper.selectById(cid);
+        if (commodity == null) {
+            throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
+        }
+        if (!commodity.getUid().equals(StpUtil.getLoginIdAsLong())) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+        if (BooleanUtil.isTrue(commodity.getLaunched())) {
+            throw new CommodityException(CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getCode(), CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getMessage());
+        }
+        commodity.setLaunched(true);
+        commodityMapper.updateById(commodity);
     }
 
     @Override
@@ -109,6 +145,51 @@ public class CommodityServiceImpl implements CommodityService {
         String[] s = words.split(" ");
         IPage<CommodityDTO> commoditiesByKeyWords = commodityMapper.getCommoditiesByKeyWords(page, s);
         return commoditiesByKeyWords.getRecords();
+    }
+
+    @Override
+    public List<CommodityDTO> getCommoditiesByType(IPage<CommodityDTO> page, Integer type) {
+        if (type == null) {
+            throw new CommodityException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
+        }
+        IPage<CommodityDTO> commoditiesByType = commodityMapper.getCommoditiesByType(page, type);
+        return commoditiesByType.getRecords();
+    }
+
+    @Override
+    public List<CommodityDTO> getCommoditiesRecommendations(IPage<CommodityDTO> page) {
+//        long uidLogin = StpUtil.getLoginIdAsLong();
+//        List<CommodityTypeViewCount> recentlyViewedCommodityType = commodityMapper.getRecentlyViewedCommodityType(uidLogin);
+//        int count = 0;
+//        for (CommodityTypeViewCount commodityTypeViewCount : recentlyViewedCommodityType) {
+//            count += commodityTypeViewCount.getCount();
+//        }
+//        for (CommodityTypeViewCount commodityTypeViewCount : recentlyViewedCommodityType) {
+//            commodityTypeViewCount.setRate((double) commodityTypeViewCount.getCount() / count);
+//        }
+        return commodityMapper.getCommodityRecommend(page, StpUtil.getLoginIdAsLong()).getRecords();
+    }
+
+    @Override
+    public List<CommodityDTO> getCommoditiesLatest(IPage<CommodityDTO> page) {
+        return commodityMapper.getCommoditiesLatest(page).getRecords();
+    }
+
+    @Override
+    public List<CommodityType> getTypeRecommend() {
+        if (StpUtil.isLogin()) {
+            List<CommodityType> typeRecommend = commodityMapper.getTypeRecommend(StpUtil.getLoginIdAsLong(), LocalDateTime.now());
+            if (typeRecommend.size() < Constant.HOME_RECOMMENDED_CATEGORY_COUNT) {
+                //如果用户浏览过于单一，甚至5个品类也没有，就在后面追加上近期较热的商品分类
+                List<CommodityType> typeHotRecent = commodityMapper.getTypeHotRecent(LocalDateTime.now());
+                for (int i = 0; i < Constant.HOME_RECOMMENDED_CATEGORY_COUNT - typeRecommend.size(); i++) {
+                    typeRecommend.add(typeHotRecent.get(i));
+                }
+
+            }
+            return typeRecommend;
+        }
+        return commodityMapper.getTypeHotRecent(LocalDateTime.now());
     }
 
 }

@@ -87,6 +87,8 @@ public class Order implements Serializable {
      */
     private LocalDateTime completeTime;
 
+    private String shipId;
+
     /**
      * 收货地址id
      */
@@ -97,6 +99,11 @@ public class Order implements Serializable {
      * -2:已退款；-1已关闭（未支付）；0:可用；1:已完成
      */
     private Integer status;
+
+    /**
+     * 快照id
+     */
+    private Long ssid;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -128,7 +135,9 @@ public class Order implements Serializable {
                 && (this.getCompleteTime() == null ? other.getCompleteTime() == null : this.getCompleteTime().equals(other.getCompleteTime()))
                 && (this.getAid() == null ? other.getAid() == null : this.getAid().equals(other.getAid()))
                 && (this.getRefundTime() == null ? other.getRefundTime() == null : this.getRefundTime().equals(other.getRefundTime()))
-                && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()));
+                && (this.getShipId() == null ? other.getShipId() == null : this.getShipId().equals(other.getShipId()))
+                && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
+                && (this.getSsid() == null ? other.getSsid() == null : this.getSsid().equals(other.getSsid()));
     }
 
     @Override
@@ -150,7 +159,9 @@ public class Order implements Serializable {
         result = prime * result + ((getCompleteTime() == null) ? 0 : getCompleteTime().hashCode());
         result = prime * result + ((getAid() == null) ? 0 : getAid().hashCode());
         result = prime * result + ((getRefundTime() == null) ? 0 : getRefundTime().hashCode());
+        result = prime * result + ((getShipId() == null) ? 0 : getShipId().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
+        result = prime * result + ((getSsid() == null) ? 0 : getSsid().hashCode());
         return result;
     }
 
@@ -175,7 +186,9 @@ public class Order implements Serializable {
         sb.append(", refundTime=").append(refundTime);
         sb.append(", completeTime=").append(completeTime);
         sb.append(", aid=").append(aid);
+        sb.append(", shipId=").append(shipId);
         sb.append(", status=").append(status);
+        sb.append(", ssid=").append(ssid);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

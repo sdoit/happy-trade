@@ -23,8 +23,7 @@ import javax.annotation.Resource;
 public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
-    @Resource
-    private RedisUtil redisUtil;
+    ;
 
     @Override
     public User login(User user) throws UserException {
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService {
         userInDb.setTokenName(tokenInfo.getTokenName());
         userInDb.setTokenValue(tokenInfo.getTokenValue());
         //存放User对象到Redis
-        redisUtil.set(Constant.REDIS_USER_LOGGED_KEY_PRE + userInDb.getUid(), userInDb);
+        RedisUtil.set(Constant.REDIS_USER_LOGGED_KEY_PRE + userInDb.getUid(), userInDb);
         //登录成功
         return userInDb;
     }
@@ -66,7 +65,7 @@ public class UserServiceImpl implements UserService {
         String uid = StpUtil.getLoginIdAsString();
         //删除Redis中的User
         String key = Constant.REDIS_USER_LOGGED_KEY_PRE + uid;
-        redisUtil.getAndDelete(key);
+        RedisUtil.getAndDelete(key);
         StpUtil.logout();
     }
 
@@ -93,6 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUid(Long uid) {
+        StpUtil.checkLogin();
         User user = userMapper.selectById(uid);
         user.setPassword(null);
         return user;
@@ -100,8 +100,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User checkLogin() {
+        if (!StpUtil.isLogin()) {
+            return null;
+        }
         String uid = StpUtil.getLoginIdAsString();
         //从Redis取出User对象
-        return (User) redisUtil.get(Constant.REDIS_USER_LOGGED_KEY_PRE + uid);
+        return (User) RedisUtil.get(Constant.REDIS_USER_LOGGED_KEY_PRE + uid);
     }
 }

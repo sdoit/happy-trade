@@ -13,6 +13,7 @@ import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityBidMapper;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.mapper.OrderMapper;
+import com.lyu.mapper.OrderRateMapper;
 import com.lyu.service.*;
 import com.lyu.util.IDUtil;
 import com.lyu.util.RedisUtil;
@@ -47,9 +48,12 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private UserAmountLogService userAmountLogService;
     @Resource
-    private IDUtil idUtil;
+    private CommoditySnapshotService commoditySnapshotService;
     @Resource
-    private RedisUtil redisUtil;
+    private OrderRateMapper orderRateMapper;
+    @Resource
+    private IDUtil idUtil;
+
 
     @Override
     @Transactional(rollbackFor = {RuntimeException.class})
@@ -91,12 +95,12 @@ public class OrderServiceImpl implements OrderService {
         order.setAid(userAddressInDb.getAid());
         order.setOid(idUtil.getNextOrderId(order));
         //将待支付的订单记录到Redis ，支付成功后写入数据库，超时后自动删除
-        redisUtil.set(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(), order);
-        redisUtil.expire(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(),
+        RedisUtil.set(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(), order);
+        RedisUtil.expire(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(),
                 Constant.ALIPAY_TIME_EXPIRE * 60 + 60);
 
-        redisUtil.set(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(), order.getCid());
-        redisUtil.expire(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(),
+        RedisUtil.set(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(), order.getCid());
+        RedisUtil.expire(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(),
                 Constant.ALIPAY_TIME_EXPIRE * 60 + 120);
         return order;
     }
@@ -104,6 +108,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDTO getOrderByOid(Long oid) throws OrderException {
         OrderDTO orderDTO = orderMapper.getOrderByOid(oid, StpUtil.getLoginIdAsLong());
+        if (orderDTO == null || orderDTO.getUidSeller() == null || orderDTO.getUidBuyer() == null) {
+            throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
+        }
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
         return orderDTO;
     }
@@ -187,8 +194,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void completePayOrder(Order order) {
+        //生成商品快照
+        Long ssid= commoditySnapshotService.createCommoditySnapshot(order.getCid());
         //设置为已付款
         order.setStatus(0);
+        order.setSsid(ssid);
         //获取本商品下的所有的出价
         List<CommodityBid> commodityBidRefundList = commodityBidMapper.selectList(new QueryWrapper<CommodityBid>().eq("cid", order.getCid()));
         //取消其他用户的所有出价并退款
@@ -207,9 +217,42 @@ public class OrderServiceImpl implements OrderService {
         userAmountLog.setSourceId(order.getOid());
         userAmountLog.setTime(order.getPayTime());
         userAmountLogService.logUserAmount(userAmountLog);
-
         //插入记录到数据库
         orderMapper.insert(order);
+    }
+
+    @Override
+    public void completeAndRateOrder(Long oid, Integer rating, String comment) {
+        long uidLogin = StpUtil.getLoginIdAsLong();
+        Order order = orderMapper.selectById(oid);
+        if (order == null) {
+            throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
+        }
+        OrderRating orderRating = new OrderRating();
+        orderRating.setScore(rating);
+        if (rating >= 4) {
+            orderRating.setLevel(2);
+        } else if (rating > 2) {
+            orderRating.setLevel(1);
+        } else {
+            orderRating.setLevel(0);
+        }
+        orderRating.setOid(oid);
+        orderRating.setComment(comment);
+        if (order.getUidBuyer().equals(uidLogin)) {
+            order.setStatus(Constant.ORDER_STATUS_COMPLETED);
+            order.setCompleteTime(LocalDateTime.now());
+            updateOrder(order);
+            orderRating.setTarget(order.getUidSeller());
+            orderRating.setSeller(true);
+        } else if ((order.getUidSeller().equals(uidLogin))) {
+            if (!order.getStatus().equals(Constant.ORDER_STATUS_COMPLETED)) {
+                throw new OrderException(CodeAndMessage.ORDER_IS_NOT_COMPLETED.getCode(), CodeAndMessage.ORDER_IS_NOT_COMPLETED.getMessage());
+            }
+            orderRating.setTarget(order.getUidBuyer());
+            orderRating.setSeller(false);
+        }
+        orderRateMapper.insert(orderRating);
     }
 
     @Override

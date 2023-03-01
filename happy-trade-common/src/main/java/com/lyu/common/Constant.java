@@ -8,6 +8,47 @@ public class Constant {
     public static final Long COMMODITY_GROUP_ID = 1L;
     public static final Long ORDER_GROUP_ID = 2L;
     /**
+     * SSE心跳包间隔 单位秒
+     */
+    public static final Integer SSE_HEARTBEAT_INTERVAL = 100;
+    public static final String SSE_MESSAGE_ID_NOTIFY = "0";
+    public static final String SSE_MESSAGE_ID_USER_MESSAGE = "1";
+    public static final String SSE_PAYMENT_RESULTS_MESSAGE = "2";
+
+    public static final Integer MESSAGE_COUNT_PER_PAGE = 20;
+
+    public static final Integer HOME_RECOMMENDED_CATEGORY_COUNT = 5;
+    /**
+     * 商品类别 根分类最大值
+     */
+    public static final Integer ROOT_TYPE_MAXIMUM = 100;
+    /**
+     * 商品类别 二级分类最大值
+     */
+    public static final Integer MIDDLE_TYPE_MAXIMUM = 1000;
+
+
+
+
+    /**
+     * 一分钟内无需验证的最多的请求次数
+     */
+    public static final Integer MAXIMUM_NUMBER_OF_REQUESTS_PER_MINUTES = 5;
+
+    /**
+     * 记录用户每分钟的请求数 后面需要加 {uid}
+     */
+    public static final String REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE = "requests:";
+    /**
+     * 请求验证数据 {uid}
+     */
+    public static final String REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY = "captcha:";
+    /**
+     * 通行证 后加getCaptcha生成的标识token
+     */
+    public static final String REDIS_PASS_TOKEN_KEY = "captcha:passToken:";
+
+    /**
      * 后面需要加 {cid}
      */
     public static final String REDIS_USER_LOGGED_KEY_PRE = "user:logged:";
@@ -36,7 +77,7 @@ public class Constant {
     /**
      * 支付宝支付过期时间 10分钟
      */
-    public static final Integer ALIPAY_TIME_EXPIRE = 3;
+    public static final Integer ALIPAY_TIME_EXPIRE = 10;
     public static final Integer ORDER_STATUS_REFUNDED = -2;
     public static final Integer ORDER_STATUS_CLOSED = -1;
     public static final Integer ORDER_STATUS_NORMAL = 0;

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @TableName(value = "t_commodity_bid")
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class CommodityBid implements Serializable {
     /**
      * 报价id

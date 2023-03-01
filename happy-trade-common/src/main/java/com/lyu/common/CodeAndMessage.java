@@ -12,11 +12,14 @@ public enum CodeAndMessage {
 
     UNEXPECTED_ERROR(false, 0, "发生意外的错误，请稍后重试"),
     INCONCLUSIVE_RESULT(false, 1, "Operation complete, but not sure if successful"),
+    THIS_OPERATION_NEEDS_FURTHER_VERIFICATION(false,2,"本次操作需要进行验证"),
 
     ORDER_NEED_PAY(true, 300, "订单待支付"),
 
     SUCCESS(true, 200, "成功"),
 
+    VERIFICATION_PASSED(true,200,"验证通过"),
+    VERIFICATION_FAILURE(true,0,"验证失败，请重试"),
 
     /**
      * ======================================================================
@@ -41,6 +44,7 @@ public enum CodeAndMessage {
     INVALID_ORDER_ID(false, 3002, "无效的订单号"),
     CANT_BUY_OWN_PRODUCT(false, 3003, "不能购买自己的商品"),
     INCORRECT_SHIPPING_ADDRESS(false, 3004, "错误的收货地址"),
+    ORDER_IS_NOT_COMPLETED(false, 3005, "订单还未完成"),
 
     INVALID_BID_ID(false, 3050, "无效的报价号"),
 
@@ -60,6 +64,9 @@ public enum CodeAndMessage {
      */
 
     NO_SUCH_COMMODITY(false, 5001, "不存在该商品"),
+    COMMODITY_IS_ALREADY_OUT_THE_SHELF(false, 5002, "商品已经处在下架的状态中"),
+    COMMODITY_IS_ALREADY_ON_THE_SHELF(false, 5003, "商品已经处在上架的状态中"),
+
 
 
     WRONG_REQUEST_PARAMETER(false, 6001, "请求参数错误"),

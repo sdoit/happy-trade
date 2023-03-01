@@ -37,6 +37,7 @@
           and t_street.a_code = t_area.code
           and t_street.c_code = t_city.code
           and t_street.p_code = t_province.code
+          and t_user_address.del=0
           and t_user_address.uid = #{uid};
     </select>
     <select id="getAddressByAid" resultType="com.lyu.entity.dto.UserAddressDTO">
@@ -61,6 +62,7 @@
           and t_street.a_code = t_area.code
           and t_street.c_code = t_city.code
           and t_street.p_code = t_province.code
+          and t_user_address.del = 0
           and t_user_address.aid = #{aid};
     </select>
     <select id="getAddressDefaultByUid" resultType="com.lyu.entity.dto.UserAddressDTO">
@@ -86,6 +88,7 @@
           and t_street.c_code = t_city.code
           and t_street.p_code = t_province.code
           and t_user_address.default_address = 1
+          and t_user_address.del=0
           and t_user_address.uid = #{uid};
     </select>
 </mapper>

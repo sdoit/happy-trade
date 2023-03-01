@@ -57,11 +57,10 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private DateTimeFormatter dateTimeFormatterAliPay;
     @Resource
-    private SSEService sseService;
+    private SseService sseService;
     @Resource
     private UserMessageService userMessageService;
-    @Resource
-    private RedisUtil redisUtil;
+  
 
     @Async("asyncPoolTaskExecutor")
     @Override
@@ -157,7 +156,7 @@ public class AlipayServiceImpl implements AlipayService {
                 //是bid订单
                 log.debug("开始完成 bidOrder");
                 //从Redis中取出bid订单信息
-                Object bidObj = redisUtil.getAndDelete(Constant.REDIS_BID_UNPAID_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
+                Object bidObj = RedisUtil.getAndDelete(Constant.REDIS_BID_UNPAID_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
                 if (bidObj == null) {
                     return false;
                 }
@@ -177,16 +176,16 @@ public class AlipayServiceImpl implements AlipayService {
                         0L, uidSeller
                 );
                 uid = bidOrder.getUidBuyer();
-                //即时消息，不储存
-                sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ALPAY_COMPLETED, "/buyer/bid/");
+                //即时消息，不储存； 通知支付成功
+                sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_BID_ALPAY_COMPLETED, "/buyer/bid/");
             } else {
                 //是form 订单
                 log.debug("开始完成 Order");
-                Object orderObj = redisUtil.getAndDelete(Constant.REDIS_ORDER_UNPAID_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
+                Object orderObj = RedisUtil.getAndDelete(Constant.REDIS_ORDER_UNPAID_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
                 if (orderObj == null) {
                     return false;
                 }
-                redisUtil.getAndDelete(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
+                RedisUtil.getAndDelete(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + Long.parseLong(alipayParamMap.get("out_trade_no")));
                 Order order = (Order) orderObj;
                 order.setOid(Long.parseLong(alipayParamMap.get("out_trade_no")));
                 order.setPayTime(LocalDateTime.parse(alipayParamMap.get("gmt_payment"), dateTimeFormatterAliPay));
@@ -203,7 +202,7 @@ public class AlipayServiceImpl implements AlipayService {
                         0L, order.getUidSeller()
                 );
                 //即时消息，不储存
-                sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ALPAY_COMPLETED, "/buyer/order/" + order.getOid());
+                sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ORDER_ALPAY_COMPLETED, "/buyer/order/" + order.getOid());
 
             }
             return true;

@@ -24,10 +24,15 @@
             <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
             <result column="cover" property="cover" jdbcType="VARCHAR"/>
         </association>
-        <association property="user" javaType="com.lyu.entity.User">
+        <association property="user" javaType="com.lyu.entity.dto.UserWithRatingDTO">
+            <id column="uid" property="uid" jdbcType="VARCHAR"/>
             <result column="username" property="username" jdbcType="VARCHAR"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
             <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+            <result column="good_rating_count_seller" property="goodRatingCountSeller" jdbcType="INTEGER"/>
+            <result column="rating_count_seller" property="ratingCountSeller" jdbcType="INTEGER"/>
+            <result column="good_rating_count_buyer" property="goodRatingCountBuyer" jdbcType="INTEGER"/>
+            <result column="rating_count_buyer" property="ratingCountBuyer" jdbcType="INTEGER"/>
         </association>
         <association property="userAddress">
             <result column="aname" property="name" jdbcType="VARCHAR"/>
@@ -100,9 +105,14 @@
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover,
+               t_user.uid,
                t_user.username,
                t_user.nickname,
                t_user.avatar,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 1 or null) good_rating_count_seller,
+               count(t_order_rating.seller = 1 or null)                              rating_count_seller,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 0 or null) good_rating_count_buyer,
+               count(t_order_rating.seller = 0 or null)                              rating_count_buyer,
                t_user_address.name  aname,
                t_user_address.phone aphone,
                t_user_address.street_code,
@@ -117,7 +127,8 @@
                t_order_status.status_name
         from db_happy_trade.t_order,
              db_happy_trade.t_commodity,
-             db_happy_trade.t_user,
+             db_happy_trade.t_user
+                 left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
              db_happy_trade.t_user_address,
              db_happy_trade.t_province,
              db_happy_trade.t_city,

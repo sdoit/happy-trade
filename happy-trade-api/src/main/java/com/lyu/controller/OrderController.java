@@ -6,6 +6,7 @@ import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.Order;
+import com.lyu.entity.OrderRating;
 import com.lyu.entity.UserAddress;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.entity.dto.OrderSimpleDTO;
@@ -52,8 +53,6 @@ public class OrderController {
     @ApiOperation("创建订单")
     @PostMapping
     public CommonResult<String> createOrder(@RequestBody @NotNull OrderSimpleDTO orderSimpleDTO) {
-
-
         Commodity commodity = new Commodity();
         UserAddress userAddress = new UserAddress();
         commodity.setCid(orderSimpleDTO.getCid());
@@ -94,6 +93,13 @@ public class OrderController {
     @GetMapping("/c/{cid}")
     public CommonResult<OrderDTO> getOrderByCid(@NotNull @PathVariable("cid") Long cid) {
         return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrderByCid(cid));
+    }
+
+    @ApiOperation("确定收货完成订单")
+    @PutMapping
+    public CommonResult<OrderDTO> completeAndRateOrder(@NotNull @RequestBody OrderRating orderRating) {
+        orderService.completeAndRateOrder(orderRating.getOid(), orderRating.getScore(), orderRating.getComment());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
 }

@@ -11,7 +11,7 @@ import javax.validation.constraints.NotBlank;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 
-public class UserDTO {
+public class UserDTO{
     /**
      * 可能是uid、username、phone
      */

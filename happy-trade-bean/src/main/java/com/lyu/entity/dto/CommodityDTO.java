@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.Tag;
-import com.lyu.entity.User;
 import lombok.Data;
 
 import java.util.List;
@@ -27,7 +26,7 @@ public class CommodityDTO extends Commodity {
     /**
      * 卖家信息
      */
-    private User user;
+    private UserWithRatingDTO user;
 
 
     /**

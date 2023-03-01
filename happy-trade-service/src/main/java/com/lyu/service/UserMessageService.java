@@ -1,5 +1,6 @@
 package com.lyu.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.entity.dto.UserMessageDTO;
 
 import java.util.List;
@@ -14,9 +15,9 @@ public interface UserMessageService {
      *
      * @param title
      * @param content
-     * @param url
+     * @param url 如果是用户私信，不存在要跳转的url。要把信息的发送者uid填写到url
      * @param systemNotify 是否为系统通知
-     * @param messageType 消息类型
+     * @param messageType  消息类型
      * @param uidSend
      * @param uidReceive
      */
@@ -42,7 +43,22 @@ public interface UserMessageService {
      * 获取指定发送者发送给本登录用户的信息
      *
      * @param uidSender
+     * @param page
      * @return
      */
-    List<UserMessageDTO> pullMessageBySenderAndMine(Long uidSender);
+    UserMessageDTO pullMessageBySenderAndMine(Page<UserMessageDTO> page,Long uidSender);
+
+
+    /**
+     * 获取登录用户的聊天用户列表
+     *
+     * @return
+     */
+    List<UserMessageDTO> getChatUserList();
+
+    /**
+     * 设置已读
+     * @param uid 对方uid
+     */
+    void setReadByTargetUid(Long uid);
 }

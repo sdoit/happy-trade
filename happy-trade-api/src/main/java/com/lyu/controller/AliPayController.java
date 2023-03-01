@@ -41,11 +41,10 @@ public class AliPayController {
     @Resource
     private DateTimeFormatter dateTimeFormatterAliPay;
     @Resource
-    private SSEService sseService;
+    private SseService sseService;
     @Resource
     private UserMessageService userMessageService;
-    @Resource
-    private RedisUtil redisUtil;
+  
     @Resource
     private AlipayService alipayService;
 
@@ -63,7 +62,7 @@ public class AliPayController {
         long uid = StpUtil.getLoginIdAsLong();
         if (aliPay.getType() != null && aliPay.getType().equals(Constant.ALIPAY_PAY_TYPE_BID)) {
 
-            Object bidObj = redisUtil.get(Constant.REDIS_BID_UNPAID_KEY_PRE + aliPay.getTraceNo().substring(1));
+            Object bidObj = RedisUtil.get(Constant.REDIS_BID_UNPAID_KEY_PRE + aliPay.getTraceNo().substring(1));
             if (bidObj == null) {
                 throw new AliPayException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
             }
@@ -73,7 +72,7 @@ public class AliPayController {
                 throw new AliPayException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
             }
         } else {
-            Object orderObj = redisUtil.get(Constant.REDIS_ORDER_UNPAID_KEY_PRE + aliPay.getTraceNo());
+            Object orderObj = RedisUtil.get(Constant.REDIS_ORDER_UNPAID_KEY_PRE + aliPay.getTraceNo());
             if (orderObj == null) {
                 throw new AliPayException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
             }

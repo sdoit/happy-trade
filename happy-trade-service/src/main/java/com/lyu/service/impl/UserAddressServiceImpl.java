@@ -1,6 +1,7 @@
 package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.UserAddress;
 import com.lyu.entity.dto.UserAddressDTO;
@@ -74,6 +75,6 @@ public class UserAddressServiceImpl implements UserAddressService {
         if (userAddress.getUid() != StpUtil.getLoginIdAsLong()) {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
-        return userAddressMapper.deleteById(aid);
+        return userAddressMapper.update(null, new UpdateWrapper<UserAddress>().set("del", true).eq("aid",aid));
     }
 }

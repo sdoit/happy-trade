@@ -17,19 +17,23 @@
         <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
         <result column="cover" property="cover" jdbcType="VARCHAR"/>
         <result column="bid_count" property="bidCount" jdbcType="INTEGER"/>
-        <association property="user" javaType="com.lyu.entity.User">
+        <association property="user" javaType="com.lyu.entity.dto.UserWithRatingDTO">
             <id column="uuid" property="uid" jdbcType="BIGINT"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
             <result column="username" property="username" jdbcType="VARCHAR"/>
             <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
             <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
             <result column="baned_time" property="banedTime" jdbcType="INTEGER"/>
+            <result column="good_rating_count_seller" property="goodRatingCountSeller" jdbcType="INTEGER"/>
+            <result column="rating_count_seller" property="ratingCountSeller" jdbcType="INTEGER"/>
+            <result column="good_rating_count_buyer" property="goodRatingCountBuyer" jdbcType="INTEGER"/>
+            <result column="rating_count_buyer" property="ratingCountBuyer" jdbcType="INTEGER"/>
         </association>
         <association property="type" javaType="com.lyu.entity.CommodityType">
             <result column="type_id" property="tid" jdbcType="INTEGER"/>
             <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
-           <result column="tid_middle" property="tidMiddle" jdbcType="INTEGER"/>
-           <result column="tid_root" property="tidRoot" jdbcType="INTEGER"/>
+            <result column="tid_middle" property="tidMiddle" jdbcType="INTEGER"/>
+            <result column="tid_root" property="tidRoot" jdbcType="INTEGER"/>
         </association>
         <collection property="tags" ofType="com.lyu.entity.Tag">
             <id column="tid" property="tid" jdbcType="BIGINT"/>
@@ -81,29 +85,33 @@
                t_commodity.launched,
                t_commodity.time,
                t_commodity.view_count,
-               A.tid                                                 `type_id`,
-               CONCAT_WS('/', C.type_name, B.type_name, A.type_name) `type_name`,
-               B.tid                                                 tid_middle,
-               C.tid                                                 tid_root,
+               A.tid                                                                 `type_id`,
+               CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                 `type_name`,
+               B.tid                                                                 tid_middle,
+               C.tid                                                                 tid_root,
                t_commodity_tag.tid,
                t_commodity_tag.tag,
-               t_user.uid                                            uuid,
+               t_user.uid                                                            uuid,
                t_user.username,
                t_user.nickname,
                t_user.avatar,
                t_user.introduction,
-               t_user.baned_time
+               t_user.baned_time,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 1 or null) good_rating_count_seller,
+               count(t_order_rating.seller = 1 or null)                              rating_count_seller,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 0 or null) good_rating_count_buyer,
+               count(t_order_rating.seller = 0 or null)                              rating_count_buyer
         from db_happy_trade.t_commodity
                  LEFT JOIN db_happy_trade.t_commodity_tag_map ON t_commodity.cid = t_commodity_tag_map.cid
                  LEFT JOIN db_happy_trade.t_commodity_tag ON t_commodity_tag_map.tid = t_commodity_tag.tid,
-             db_happy_trade.t_user,
+             db_happy_trade.t_user
+                 left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
              db_happy_trade.t_commodity_type A
                  LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
                  LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
         where t_commodity.type_id = A.tid
           and t_commodity.uid = t_user.uid
           and t_commodity.cid = #{cid}
-        GROUP BY t_commodity.cid
     </select>
     <select id="getCommoditiesFromUser" resultMap="baseMap">
         SELECT t_commodity.cid,
@@ -131,5 +139,192 @@
           AND t_user.uid = t_commodity.uid
           AND t_commodity.uid = #{uid}
         GROUP BY t_commodity.cid
+    </select>
+    <select id="getRecentlyViewedCommodityType" resultType="com.lyu.entity.CommodityTypeViewCount">
+        select count(b.tid) `count`,
+               B.tid        `tip`
+        from t_user_view_history,
+             t_commodity,
+             t_commodity_type A
+                 left join t_commodity_type B on A.p_tid = B.tid
+        where t_user_view_history.uid = 56743241
+          and t_user_view_history.cid = t_commodity.cid
+          and t_commodity.type_id = A.tid
+        group by b.tid
+        limit 100
+    </select>
+    <select id="getCommodityRecommend" resultMap="baseMap">
+        SELECT t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.`name`,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_commodity.cover,
+               t_commodity_type.type_name,
+               t_commodity_type.tid `type_id`,
+               t_user.uid           uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        FROM t_commodity,
+             t_commodity_type,
+             t_user,
+             (SELECT count(b.tid) `count`,
+                     C.tid        `tid`
+              FROM t_user_view_history,
+                   t_commodity,
+                   t_commodity_type A
+                       LEFT JOIN t_commodity_type B ON A.p_tid = B.tid
+                       LEFT JOIN t_commodity_type C ON B.tid = C.p_tid
+              WHERE t_user_view_history.uid = #{uid}
+                AND t_user_view_history.cid = t_commodity.cid
+                AND t_commodity.type_id = A.tid
+              GROUP BY C.tid
+              LIMIT 1000) as temp
+        WHERE (temp.tid = t_commodity.type_id
+            or rand() &lt; 0.0005)
+          AND t_commodity.type_id = t_commodity_type.tid
+          AND t_user.uid = t_commodity.uid
+          AND t_commodity.sold = 0
+        ORDER BY - LOG(1.0 - RAND()) / temp.count
+
+
+    </select>
+    <select id="getCommoditiesLatest" resultMap="baseMap">
+        SELECT t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.`name`,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_commodity.cover,
+               t_commodity_type.type_name,
+               t_commodity_type.tid `type_id`,
+               t_user.uid           uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        FROM db_happy_trade.t_commodity,
+             db_happy_trade.t_commodity_type,
+             db_happy_trade.t_user
+        WHERE t_commodity.type_id = t_commodity_type.tid
+          AND t_user.uid = t_commodity.uid
+          AND t_commodity.sold = 0
+        order by uid desc
+    </select>
+    <select id="getTypeRecommend" resultType="com.lyu.entity.CommodityType">
+        SELECT B.tid,
+               concat_ws('/', C.type_name, B.type_name) 'typeName'
+        FROM t_user_view_history,
+             t_commodity,
+             t_commodity_type A
+                 left join t_commodity_type B on A.p_tid = B.tid
+                 left join t_commodity_type C on B.p_tid = C.tid
+        WHERE t_user_view_history.uid = #{uid}
+          AND t_user_view_history.cid = t_commodity.cid
+          AND t_commodity.type_id = A.tid
+          AND timestampdiff(day, t_user_view_history.time, #{now}) &lt; 30
+        group by B.tid
+        order by count(A.tid) desc
+        limit 5
+    </select>
+    <select id="getTypeHotRecent" resultType="com.lyu.entity.CommodityType">
+        SELECT B.tid,
+               count(A.tid),
+               concat_ws('/', C.type_name, B.type_name) 'typeName'
+        FROM t_user_view_history,
+             t_commodity,
+             t_commodity_type A
+                 left join t_commodity_type B on A.p_tid = B.tid
+                 left join t_commodity_type C on B.p_tid = C.tid
+        WHERE t_user_view_history.cid = t_commodity.cid
+          AND t_commodity.type_id = A.tid
+          and timestampdiff(day, t_user_view_history.time, #{now}) &lt; 30
+        group by B.tid
+        order by count(A.tid) desc
+        limit 5
+    </select>
+    <select id="getCommoditiesByType" resultMap="baseMap">
+        (select t_commodity.cid,
+                t_commodity.uid,
+                t_commodity.`name`,
+                t_commodity.quality,
+                t_commodity.price,
+                t_commodity.sold,
+                t_commodity.launched,
+                t_commodity.time,
+                t_commodity.view_count,
+                t_commodity.cover,
+                C.type_name,
+                C.tid      `type_id`,
+                t_user.uid uid2,
+                t_user.nickname,
+                t_user.username,
+                t_user.avatar
+         from t_commodity,
+              t_user,
+              t_commodity_type A
+                  left join t_commodity_type B on A.tid = B.p_tid
+                  left join t_commodity_type C on B.tid = C.p_tid
+         where A.tid = #{typeId}
+           and t_user.uid = t_commodity.uid
+           and t_commodity.type_id = C.tid)
+        union all
+        (select t_commodity.cid,
+                t_commodity.uid,
+                t_commodity.`name`,
+                t_commodity.quality,
+                t_commodity.price,
+                t_commodity.sold,
+                t_commodity.launched,
+                t_commodity.time,
+                t_commodity.view_count,
+                t_commodity.cover,
+                B.type_name,
+                B.tid      `type_id`,
+                t_user.uid uid2,
+                t_user.nickname,
+                t_user.username,
+                t_user.avatar
+         from t_commodity,
+              t_user,
+              t_commodity_type A
+                  left join t_commodity_type B on A.tid = B.p_tid
+                  left join t_commodity_type C on B.tid = C.p_tid
+         where A.tid = #{typeId}
+           and t_user.uid = t_commodity.uid
+           and t_commodity.type_id = B.tid)
+        union all
+        select t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.`name`,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_commodity.cover,
+               B.type_name,
+               B.tid      `type_id`,
+               t_user.uid uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        from t_commodity,
+             t_user,
+             t_commodity_type A
+                 left join t_commodity_type B on A.tid = B.p_tid
+                 left join t_commodity_type C on B.tid = C.p_tid
+        where A.tid = #{typeId}
+          and t_user.uid = t_commodity.uid
+          and t_commodity.type_id = A.tid
     </select>
 </mapper>

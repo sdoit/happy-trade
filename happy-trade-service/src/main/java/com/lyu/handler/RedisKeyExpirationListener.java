@@ -33,8 +33,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
     private OrderService orderService;
     @Resource
     private CommodityMapper commodityMapper;
-    @Resource
-    private RedisUtil redisUtil;
+    
 
     public RedisKeyExpirationListener(RedisMessageListenerContainer listenerContainer) {
         super(listenerContainer);
@@ -49,7 +48,7 @@ public class RedisKeyExpirationListener extends KeyExpirationEventMessageListene
             if (BooleanUtil.isTrue(exist)) {
                 return;
             }
-            Object cidObj = redisUtil.getAndDelete(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + oid);
+            Object cidObj = RedisUtil.getAndDelete(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + oid);
             if (cidObj == null) {
                 log.info("未获取到cid->" + expiredKey);
                 return;

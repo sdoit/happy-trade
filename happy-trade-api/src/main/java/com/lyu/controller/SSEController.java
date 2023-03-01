@@ -1,6 +1,6 @@
 package com.lyu.controller;
 
-import com.lyu.service.SSEService;
+import com.lyu.service.SseService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,7 +22,7 @@ import javax.annotation.Resource;
 @ApiOperation("SSE接口")
 public class SSEController {
     @Resource
-    private SSEService sseService;
+    private SseService sseService;
 
     @GetMapping("/connect")
     public SseEmitter connect() {

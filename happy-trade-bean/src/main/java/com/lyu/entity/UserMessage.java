@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -11,11 +12,11 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
  * @author LEE
  * @TableName t_user_message
  */
-@TableName(value ="t_user_message")
+@TableName(value = "t_user_message")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @Data
 public class UserMessage implements Serializable {
     /**
@@ -23,7 +24,10 @@ public class UserMessage implements Serializable {
      */
     @TableId(type = IdType.AUTO)
     private Long mid;
-
+    /**
+     * 两个聊天的用户为一个group
+     */
+    private Long groupId;
     /**
      * 标题
      */
@@ -72,6 +76,7 @@ public class UserMessage implements Serializable {
     @TableField(value = "read_already")
     private Boolean read;
 
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -88,15 +93,15 @@ public class UserMessage implements Serializable {
         }
         UserMessage other = (UserMessage) that;
         return (this.getMid() == null ? other.getMid() == null : this.getMid().equals(other.getMid()))
-            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
-            && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
-            && (this.getUrl() == null ? other.getUrl() == null : this.getUrl().equals(other.getUrl()))
-            && (this.getSystemNotify() == null ? other.getSystemNotify() == null : this.getSystemNotify().equals(other.getSystemNotify()))
-            && (this.getMessageType() == null ? other.getMessageType() == null : this.getMessageType().equals(other.getMessageType()))
-            && (this.getUidSend() == null ? other.getUidSend() == null : this.getUidSend().equals(other.getUidSend()))
-            && (this.getUidReceive() == null ? other.getUidReceive() == null : this.getUidReceive().equals(other.getUidReceive()))
-            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-            && (this.getRead() == null ? other.getRead() == null : this.getRead().equals(other.getRead()));
+                && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
+                && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
+                && (this.getUrl() == null ? other.getUrl() == null : this.getUrl().equals(other.getUrl()))
+                && (this.getSystemNotify() == null ? other.getSystemNotify() == null : this.getSystemNotify().equals(other.getSystemNotify()))
+                && (this.getMessageType() == null ? other.getMessageType() == null : this.getMessageType().equals(other.getMessageType()))
+                && (this.getUidSend() == null ? other.getUidSend() == null : this.getUidSend().equals(other.getUidSend()))
+                && (this.getUidReceive() == null ? other.getUidReceive() == null : this.getUidReceive().equals(other.getUidReceive()))
+                && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
+                && (this.getRead() == null ? other.getRead() == null : this.getRead().equals(other.getRead()));
     }
 
     @Override

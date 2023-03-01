@@ -35,7 +35,7 @@ public class UserViewHistoryServiceImpl implements UserViewHistoryService {
     public CommodityDTO saveViewHistory(Long cid) {
         long uid = StpUtil.getLoginIdAsLong();
         CommodityDTO commodity = commodityMapper.getCommodityById(cid);
-        if (commodity == null) {
+        if (commodity == null || commodity.getCid()==null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
         }
         UserViewHistory userViewHistory = new UserViewHistory();

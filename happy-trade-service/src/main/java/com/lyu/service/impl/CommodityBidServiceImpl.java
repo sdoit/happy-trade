@@ -52,8 +52,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
     private OrderMapper orderMapper;
     @Resource
     private IDUtil idUtil;
-    @Resource
-    private RedisUtil redisUtil;
+
 
     @Override
     @Transactional(rollbackFor = {RuntimeException.class})
@@ -91,9 +90,9 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         commodityBidUse.setAid(commodityBid.getAid());
         commodityBidUse.setBid(idUtil.getNextCommodityBidId(commodityBidUse));
         //放置到Redis缓存服务器中，30分钟超时，如果支付再写入数据库
-        redisUtil.set(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), commodityBidUse);
+        RedisUtil.set(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), commodityBidUse);
         //设置过期时间 比支付超时时间稍长
-        redisUtil.expire(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), 60L * (Constant.ALIPAY_TIME_EXPIRE << 1));
+        RedisUtil.expire(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), 60L * (Constant.ALIPAY_TIME_EXPIRE << 1));
 //        int result = commodityBidMapper.insert(commodityBidUse);
 //        if (result != 1) {
 //            throw new OrderException(CodeAndMessage.UNEXPECTED_ERROR.getCode(), CodeAndMessage.UNEXPECTED_ERROR.getMessage());

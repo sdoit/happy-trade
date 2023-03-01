@@ -1,8 +1,10 @@
 package com.lyu.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
+import com.lyu.common.Constant;
 import com.lyu.entity.UserMessage;
 import com.lyu.entity.dto.UserMessageDTO;
 import com.lyu.service.UserMessageService;
@@ -31,7 +33,11 @@ public class UserMessageController {
 
     @PostMapping
     public CommonResult<Object> sendMessage(@NotNull @RequestBody UserMessage userMessage) {
-        userMessageService.sendMessage(null, userMessage.getContent(), null, false, null, StpUtil.getLoginIdAsLong(), userMessage.getUidReceive());
+
+        long uidSend = StpUtil.getLoginIdAsLong();
+        userMessageService.sendMessage(null, userMessage.getContent(), String.valueOf(uidSend),
+                false, null,
+                uidSend, userMessage.getUidReceive());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
@@ -45,9 +51,22 @@ public class UserMessageController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullUnreadMessagesByUidReceiver(StpUtil.getLoginIdAsLong()));
     }
 
-    @GetMapping("/{uidSender}")
-    public CommonResult<List<UserMessageDTO>> pullMessageBySenderAndMine(@NotNull @PathVariable Long uidSender) {
-        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullMessageBySenderAndMine(uidSender));
+    @GetMapping("/{uid}")
+    public CommonResult<UserMessageDTO> pullMessageBySenderAndMine(@NotNull @PathVariable("uid") Long uid, @NotNull Integer page) {
+
+        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullMessageBySenderAndMine(new Page<UserMessageDTO>(page, Constant.MESSAGE_COUNT_PER_PAGE), uid));
     }
 
+    @ApiOperation("获取登录用户的聊天列表")
+    @GetMapping("/list")
+    public CommonResult<List<UserMessageDTO>> getChatUserList() {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.getChatUserList());
+    }
+
+    @ApiOperation("消息设置为已读")
+    @PutMapping("/{uid}")
+    public CommonResult<Object> setReadByTargetUid(@NotNull @PathVariable("uid") Long uid) {
+        userMessageService.setReadByTargetUid(uid);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
 }

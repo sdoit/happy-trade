@@ -2,40 +2,52 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyu.mapper.UserMessageMapper">
     <resultMap id="baseMap" type="com.lyu.entity.dto.UserMessageDTO">
-        <id column="mid" property="mid" jdbcType="BIGINT"/>
-        <result column="title" property="title" jdbcType="VARCHAR"/>
-        <result column="content" property="content" jdbcType="VARCHAR"/>
-        <result column="url" property="url" jdbcType="VARCHAR"/>
-        <result column="system_notify" property="systemNotify" jdbcType="TINYINT"/>
-        <result column="message_type" property="messageType" jdbcType="VARCHAR"/>
-        <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
-        <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
-        <result column="time" property="time" jdbcType="TIMESTAMP"/>
-        <result column="read_already" property="read" jdbcType="TINYINT"/>
-        <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
-        <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
-        <association property="sender" javaType="com.lyu.entity.User"  resultMap="mapUserSend"/>
-        <association property="receiver" javaType="com.lyu.entity.User" resultMap="mapUserReceive"/>
+        <id column="group_id" property="groupId" jdbcType="BIGINT"/>
+        <result column="unread_count" property="unreadCount" jdbcType="BIGINT"/>
+        <association property="targetUser" resultMap="mapUserTarget"/>
+        <association property="lastMessage">
+            <id column="mid_last" property="mid" jdbcType="BIGINT"/>
+            <result column="title_last" property="title" jdbcType="VARCHAR"/>
+            <result column="content_last" property="content" jdbcType="VARCHAR"/>
+            <result column="url_last" property="url" jdbcType="VARCHAR"/>
+            <result column="system_notify_last" property="systemNotify" jdbcType="TINYINT"/>
+            <result column="message_type_last" property="messageType" jdbcType="VARCHAR"/>
+            <result column="uid_send_last" property="uidSend" jdbcType="BIGINT"/>
+            <result column="uid_receive_last" property="uidReceive" jdbcType="BIGINT"/>
+            <result column="time_last" property="time" jdbcType="TIMESTAMP"/>
+            <result column="read_already_last" property="read" jdbcType="TINYINT"/>
+            <result column="uid_send_last" property="uidSend" jdbcType="BIGINT"/>
+            <result column="uid_receive_last" property="uidReceive" jdbcType="BIGINT"/>
+        </association>
+        <collection property="messages" ofType="com.lyu.entity.UserMessage">
+            <id column="mid" property="mid" jdbcType="BIGINT"/>
+            <result column="title" property="title" jdbcType="VARCHAR"/>
+            <result column="content" property="content" jdbcType="VARCHAR"/>
+            <result column="url" property="url" jdbcType="VARCHAR"/>
+            <result column="system_notify" property="systemNotify" jdbcType="TINYINT"/>
+            <result column="message_type" property="messageType" jdbcType="VARCHAR"/>
+            <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
+            <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
+            <result column="time" property="time" jdbcType="TIMESTAMP"/>
+            <result column="read_already" property="read" jdbcType="TINYINT"/>
+            <result column="uid_send" property="uidSend" jdbcType="BIGINT"/>
+            <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
+        </collection>
     </resultMap>
-    <resultMap id="mapUserSend"  type="com.lyu.entity.User">
-        <id column="s_uid" property="uid" jdbcType="BIGINT"/>
-        <result column="s_username" property="username" jdbcType="VARCHAR"/>
-        <result column="s_nickname" property="nickname" jdbcType="VARCHAR"/>
-        <result column="s_avatar" property="avatar" jdbcType="VARCHAR"/>
-        <result column="s_introduction" property="introduction" jdbcType="VARCHAR"/>
-        <result column="s_baned_time" property="banedTime" jdbcType="INTEGER"/>
+    <resultMap id="mapUserTarget" type="com.lyu.entity.User">
+        <id column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="username" property="username" jdbcType="VARCHAR"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+        <result column="baned_time" property="banedTime" jdbcType="INTEGER"/>
     </resultMap>
-    <resultMap id="mapUserReceive" type="com.lyu.entity.User">
-        <id column="s_uid" property="uid" jdbcType="BIGINT"/>
-        <result column="s_username" property="username" jdbcType="VARCHAR"/>
-        <result column="s_nickname" property="nickname" jdbcType="VARCHAR"/>
-        <result column="s_avatar" property="avatar" jdbcType="VARCHAR"/>
-        <result column="s_introduction" property="introduction" jdbcType="VARCHAR"/>
-        <result column="s_baned_time" property="banedTime" jdbcType="INTEGER"/>
-    </resultMap>
+
     <!--携带send的user对象-->
     <sql id="senderMessage">
         select t_user_message.mid,
+               t_user_message.group_id,
                t_user_message.title,
                t_user_message.content,
                t_user_message.url,
@@ -45,12 +57,12 @@
                t_user_message.uid_receive,
                t_user_message.time,
                t_user_message.read_already,
-               t_user.uid          s_uid,
-               t_user.username     s_username,
-               t_user.nickname     s_nickname,
-               t_user.avatar       s_avatar,
-               t_user.introduction s_introduction,
-               t_user.baned_time   s_baned_time
+               t_user.uid,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.introduction,
+               t_user.baned_time
         from db_happy_trade.t_user_message,
              db_happy_trade.t_user
         where t_user_message.uid_send = t_user.uid
@@ -66,7 +78,39 @@
     </select>
     <select id="pullMessageBySenderAndReceiver" resultMap="baseMap">
         <include refid="senderMessage"/>
-        AND t_user_message.uid_receive in (#{uidSender}, #{uidReceiver})
-        AND t_user_message.uid_send in (#{uidSender}, #{uidReceiver})
+        AND t_user_message.group_id=#{groupId}
+        ORDER BY t_user_message.mid DESC
+    </select>
+    <!--获取聊天用户列表，携带未读消息数-->
+    <select id="getChatUserList" resultMap="baseMap">
+        SELECT t_user_message.mid           mid_last,
+               t_user_message.group_id      group_id_last,
+               t_user_message.title         title_last,
+               t_user_message.content       content_last,
+               t_user_message.url           url_last,
+               t_user_message.system_notify system_notify_last,
+               t_user_message.message_type  message_type_last,
+               t_user_message.uid_send      uid_send_last,
+               t_user_message.uid_receive   uid_receive_last,
+               t_user_message.time          time_last,
+               t_user_message.read_already  read_already_last,
+               last_message.unread_count,
+               t_user.uid,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.introduction,
+               t_user.baned_time
+        FROM db_happy_trade.t_user_message,
+             db_happy_trade.t_user,
+             (SELECT max(t_user_message.mid)                        mid,
+                     COUNT(t_user_message.read_already = 0 AND t_user_message.uid_receive = 56743241 OR NULL) unread_count
+              FROM db_happy_trade.t_user_message
+              WHERE t_user_message.uid_send = #{uid}
+                 OR t_user_message.uid_receive = #{uid}
+              GROUP BY t_user_message.group_id) last_message
+        WHERE (t_user_message.uid_send = t_user.uid OR t_user_message.uid_receive = t_user.uid)
+          AND t_user.uid   <![CDATA[ <> ]]> #{uid}
+          AND t_user_message.mid = last_message.mid
     </select>
 </mapper>

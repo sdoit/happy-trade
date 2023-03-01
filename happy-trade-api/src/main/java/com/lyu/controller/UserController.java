@@ -71,7 +71,7 @@ public class UserController {
     public CommonResult<User> checkLogin() {
         User user = userService.checkLogin();
         if (user == null) {
-            CommonResult.Result(CodeAndMessage.USER_NOT_LOGIN, null);
+           return CommonResult.Result(CodeAndMessage.USER_NOT_LOGIN, null);
         }
         return CommonResult.Result(CodeAndMessage.SUCCESS, user);
     }
