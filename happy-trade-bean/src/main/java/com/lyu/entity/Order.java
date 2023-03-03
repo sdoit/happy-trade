@@ -87,6 +87,7 @@ public class Order implements Serializable {
      */
     private LocalDateTime completeTime;
 
+    private String   expressId;
     private String shipId;
 
     /**
@@ -136,6 +137,7 @@ public class Order implements Serializable {
                 && (this.getAid() == null ? other.getAid() == null : this.getAid().equals(other.getAid()))
                 && (this.getRefundTime() == null ? other.getRefundTime() == null : this.getRefundTime().equals(other.getRefundTime()))
                 && (this.getShipId() == null ? other.getShipId() == null : this.getShipId().equals(other.getShipId()))
+                && (this.getExpressId() == null ? other.getExpressId() == null : this.getExpressId().equals(other.getExpressId()))
                 && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
                 && (this.getSsid() == null ? other.getSsid() == null : this.getSsid().equals(other.getSsid()));
     }
@@ -160,6 +162,7 @@ public class Order implements Serializable {
         result = prime * result + ((getAid() == null) ? 0 : getAid().hashCode());
         result = prime * result + ((getRefundTime() == null) ? 0 : getRefundTime().hashCode());
         result = prime * result + ((getShipId() == null) ? 0 : getShipId().hashCode());
+        result = prime * result + ((getExpressId() == null) ? 0 : getExpressId().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getSsid() == null) ? 0 : getSsid().hashCode());
         return result;
@@ -186,6 +189,7 @@ public class Order implements Serializable {
         sb.append(", refundTime=").append(refundTime);
         sb.append(", completeTime=").append(completeTime);
         sb.append(", aid=").append(aid);
+        sb.append(", expressId=").append(expressId);
         sb.append(", shipId=").append(shipId);
         sb.append(", status=").append(status);
         sb.append(", ssid=").append(ssid);

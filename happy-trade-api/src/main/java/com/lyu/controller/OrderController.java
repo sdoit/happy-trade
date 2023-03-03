@@ -8,6 +8,7 @@ import com.lyu.entity.Commodity;
 import com.lyu.entity.Order;
 import com.lyu.entity.OrderRating;
 import com.lyu.entity.UserAddress;
+import com.lyu.entity.dto.ExpressDTO;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.entity.dto.OrderSimpleDTO;
 import com.lyu.service.CommodityBidService;
@@ -28,7 +29,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/order")
-@CrossOrigin(origins = "${vue.address}")
+
 @ApiOperation("订单操作接口")
 public class OrderController {
     @Resource
@@ -95,11 +96,22 @@ public class OrderController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, orderService.getOrderByCid(cid));
     }
 
-    @ApiOperation("确定收货完成订单")
+    @ApiOperation("买家确定收货完成订单/卖家评价买家")
     @PutMapping
     public CommonResult<OrderDTO> completeAndRateOrder(@NotNull @RequestBody OrderRating orderRating) {
         orderService.completeAndRateOrder(orderRating.getOid(), orderRating.getScore(), orderRating.getComment());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
+
+
+    @ApiOperation("卖家发货")
+    @PutMapping("/express")
+    public CommonResult<Object> expressOrder(@NotNull @RequestBody ExpressDTO expressDTO) {
+        orderService.expressOrder(expressDTO.getOid(), expressDTO.getExpressId(), expressDTO.getShipId());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
+
+
+
 
 }

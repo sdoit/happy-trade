@@ -37,8 +37,9 @@ public interface SseService {
      * @param clientId
      * @param message
      * @param url      跳转的地址
+     * @return 发送成功？
      */
-    void sendMsgToClientByClientId(String clientId, Message message, String url);
+    boolean sendMsgToClientByClientId(String clientId, Message message, String url);
 
     /**
      * 推送消息到客户端
@@ -50,8 +51,9 @@ public interface SseService {
      * @param message
      * @param url       如果是系统通知，url为要引导用户跳转的地址；如果是用户私信，url为发送者的uid
      * @param flag      当为系统通知时，通过本flag渲染通知框的类型
+     * @return 发送成功？
      */
-    void sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag);
+    boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag);
 
     /**
      * 关闭SSE连接

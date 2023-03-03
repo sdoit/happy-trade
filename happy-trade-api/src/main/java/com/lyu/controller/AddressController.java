@@ -23,7 +23,6 @@ import java.util.List;
  */
 @Validated
 @ApiOperation("省市区列表api")
-@CrossOrigin(origins = "${vue.address}")
 @RestController()
 @RequestMapping("/api/address")
 public class AddressController {

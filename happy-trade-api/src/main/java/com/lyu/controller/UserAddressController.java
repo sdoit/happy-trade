@@ -23,7 +23,6 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/userAddress")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("用户收获地址操作接口")
 public class UserAddressController {
     @Resource

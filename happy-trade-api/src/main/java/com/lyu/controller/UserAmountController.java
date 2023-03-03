@@ -10,7 +10,6 @@ import com.lyu.service.UserAmountService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +25,6 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/amount")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("用户账户金额接口")
 public class UserAmountController {
     @Resource

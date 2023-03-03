@@ -18,7 +18,7 @@ import javax.annotation.Resource;
 @Validated
 @RestController
 @RequestMapping("/api/sse")
-@CrossOrigin(origins = "${vue.address}")
+
 @ApiOperation("SSE接口")
 public class SSEController {
     @Resource

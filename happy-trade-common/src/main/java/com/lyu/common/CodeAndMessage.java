@@ -45,6 +45,7 @@ public enum CodeAndMessage {
     CANT_BUY_OWN_PRODUCT(false, 3003, "不能购买自己的商品"),
     INCORRECT_SHIPPING_ADDRESS(false, 3004, "错误的收货地址"),
     ORDER_IS_NOT_COMPLETED(false, 3005, "订单还未完成"),
+    ORDER_IS_NOT_SHIP(false, 3006, "订单还未发货"),
 
     INVALID_BID_ID(false, 3050, "无效的报价号"),
 
@@ -66,6 +67,7 @@ public enum CodeAndMessage {
     NO_SUCH_COMMODITY(false, 5001, "不存在该商品"),
     COMMODITY_IS_ALREADY_OUT_THE_SHELF(false, 5002, "商品已经处在下架的状态中"),
     COMMODITY_IS_ALREADY_ON_THE_SHELF(false, 5003, "商品已经处在上架的状态中"),
+    NO_SUCH_COMMODITY_SNAPSHOT(false, 5004, "快照不存在"),
 
 
 

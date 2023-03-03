@@ -103,14 +103,33 @@
                t_user.baned_time
         FROM db_happy_trade.t_user_message,
              db_happy_trade.t_user,
-             (SELECT max(t_user_message.mid)                        mid,
-                     COUNT(t_user_message.read_already = 0 AND t_user_message.uid_receive = 56743241 OR NULL) unread_count
+             (SELECT max(t_user_message.mid) mid,
+                     COUNT(t_user_message.read_already = 0 AND t_user_message.uid_receive = #{uid} OR
+                           NULL)             unread_count
               FROM db_happy_trade.t_user_message
-              WHERE t_user_message.uid_send = #{uid}
-                 OR t_user_message.uid_receive = #{uid}
+              WHERE ((t_user_message.uid_send = #{uid} OR t_user_message.uid_receive = #{uid}) and
+                     t_user_message.system_notify = 0)
               GROUP BY t_user_message.group_id) last_message
         WHERE (t_user_message.uid_send = t_user.uid OR t_user_message.uid_receive = t_user.uid)
           AND t_user.uid   <![CDATA[ <> ]]> #{uid}
           AND t_user_message.mid = last_message.mid
+    </select>
+    <select id="pullUnreadNotificationsByUidReceiver" resultType="com.lyu.entity.UserMessage">
+        select mid,
+               group_id,
+               title,
+               content,
+               url,
+               system_notify,
+               message_type,
+               uid_send,
+               uid_receive,
+               time,
+               read_already
+        from db_happy_trade.t_user_message
+        where t_user_message.system_notify = 1
+          and t_user_message.read_already = 0
+          and t_user_message.uid_receive = #{uid}
+        ORDER BY t_user_message.mid DESC
     </select>
 </mapper>

@@ -25,7 +25,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/commodity")
-@CrossOrigin(origins = "${vue.address}")
+
 @ApiOperation("商品操作接口")
 public class CommodityController {
     @Resource

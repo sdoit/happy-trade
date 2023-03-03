@@ -1,6 +1,8 @@
 package com.lyu.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lyu.common.Message;
+import com.lyu.entity.UserMessage;
 import com.lyu.entity.dto.UserMessageDTO;
 
 import java.util.List;
@@ -15,13 +17,23 @@ public interface UserMessageService {
      *
      * @param title
      * @param content
-     * @param url 如果是用户私信，不存在要跳转的url。要把信息的发送者uid填写到url
-     * @param systemNotify 是否为系统通知
-     * @param messageType  消息类型
+     * @param url         如果是用户私信，不存在要跳转的url。要把信息的发送者uid填写到url
+     * @param messageType 消息类型
      * @param uidSend
      * @param uidReceive
      */
-    void sendMessage(String title, String content, String url, Boolean systemNotify, String messageType, Long uidSend, Long uidReceive);
+    void sendMessage(String title, String content, String url, String messageType, Long uidSend, Long uidReceive);
+
+    /**
+     * 发送通知，
+     * 如果通知发送成功，标记通知为已读，
+     * 如果发送失败，标记为未读，待用户下次登录时消费本通知。
+     *
+     * @param message    要发送的信息
+     * @param url        引导用户跳转的连接
+     * @param uidReceive 接收人id
+     */
+    void sendNotification(Message message, String url, Long uidReceive);
 
     /**
      * 拉取要接受的所有消息
@@ -40,14 +52,28 @@ public interface UserMessageService {
     List<UserMessageDTO> pullUnreadMessagesByUidReceiver(Long uid);
 
     /**
+     * 拉取用户所有还未读的通知
+     *
+     * @param uid
+     * @return
+     */
+    List<UserMessage> pullUnreadNotificationsByUidReceiver(Long uid);
+
+    /**
      * 获取指定发送者发送给本登录用户的信息
      *
      * @param uidSender
      * @param page
      * @return
      */
-    UserMessageDTO pullMessageBySenderAndMine(Page<UserMessageDTO> page,Long uidSender);
+    UserMessageDTO pullMessageBySenderAndMine(Page<UserMessageDTO> page, Long uidSender);
 
+    /**
+     * 尝试推送未读的通知到客户端
+     *
+     * @param uid
+     */
+    void tryPushUnreadNotifications(Long uid);
 
     /**
      * 获取登录用户的聊天用户列表
@@ -57,8 +83,15 @@ public interface UserMessageService {
     List<UserMessageDTO> getChatUserList();
 
     /**
-     * 设置已读
+     * 设置消息为已读
+     *
      * @param uid 对方uid
      */
     void setReadByTargetUid(Long uid);
+    /**
+     * 设置通知为已读
+     *
+     * @param mid 消息id
+     */
+    void setNotificationRead(Long mid);
 }

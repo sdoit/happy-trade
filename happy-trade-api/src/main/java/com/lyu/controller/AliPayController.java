@@ -31,7 +31,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/api/alipay")
-@CrossOrigin(origins = "${vue.address}")
 public class AliPayController {
 
     @Resource

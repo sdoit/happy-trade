@@ -6,9 +6,11 @@ import com.lyu.common.Constant;
 import com.lyu.common.Message;
 import com.lyu.exception.SSEException;
 import com.lyu.service.SseService;
+import com.lyu.service.UserMessageService;
 import com.lyu.sse.SseSession;
 import com.lyu.task.HeartBeatTask;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -29,6 +31,9 @@ public class SseServiceImpl implements SseService {
 
     @Resource
     private ScheduledThreadPoolExecutor ssePoolTaskExecutor;
+    @Lazy
+    @Resource
+    private UserMessageService userMessageService;
 
     @Override
     public SseEmitter createSseConnect() {
@@ -53,6 +58,8 @@ public class SseServiceImpl implements SseService {
         SseSession.add(clientId, sseEmitter);
         SseSession.send(clientId, "ping");
         log.info("创建新的sse连接，当前用户：{}", clientId);
+        //推送未读的通知
+        userMessageService.tryPushUnreadNotifications(Long.valueOf(clientId));
         return sseEmitter;
     }
 
@@ -71,20 +78,20 @@ public class SseServiceImpl implements SseService {
 
 
     @Override
-    public void sendMsgToClientByClientId(String clientId, Message message, String url) {
-        sendCustomMsgToClientByClientId(clientId, message.getId(), message.getNotifyType(), message.getTitle(), message.getMessage(), url, message.getType());
+    public boolean sendMsgToClientByClientId(String clientId, Message message, String url) {
+        return sendCustomMsgToClientByClientId(clientId, message.getId(), message.getNotifyType(), message.getTitle(), message.getMessage(), url, message.getType());
     }
 
     @Override
-    public void sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag) {
+    public boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag) {
         if (!SseSession.exist(clientId)) {
             log.error("SseEmitterServiceImpl[sendMsgToClient]: 推送消息失败：客户端{}未创建长链接,失败消息:{}", clientId, message);
-            return;
+            return false;
         }
 
         SseEmitter.SseEventBuilder sendData = SseEmitter.event().data(StrUtil.emptyIfNull(type)).data(StrUtil.emptyIfNull(messageId)).
                 data(StrUtil.emptyIfNull(title)).data(message, MediaType.APPLICATION_JSON).data(StrUtil.emptyIfNull(url)).data(StrUtil.emptyIfNull(flag));
-        SseSession.send(clientId, sendData);
+        return SseSession.send(clientId, sendData);
     }
 
     @Override

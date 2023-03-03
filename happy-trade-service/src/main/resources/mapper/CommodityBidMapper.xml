@@ -27,12 +27,13 @@
             <result column="agree" property="agree" jdbcType="BOOLEAN"/>
             <result column="time_created" property="timeCreated" jdbcType="TIMESTAMP"/>
             <result column="time_reply" property="timeReply" jdbcType="TIMESTAMP"/>
+            <result column="cancel" property="cancel" jdbcType="TINYINT"/>
             <association property="buyer" resultMap="bid_buyer_map"/>
             <association property="seller" resultMap="bid_seller_map"/>
         </collection>
     </resultMap>
     <resultMap id="bid_buyer_map" type="com.lyu.entity.User">
-        <id column="uid_buyer" property="uid" jdbcType="BIGINT"/>
+        <id column="user_uid_buyer" property="uid" jdbcType="BIGINT"/>
         <result column="username_buyer" property="username" jdbcType="VARCHAR"/>
         <result column="nickname_buyer" property="nickname" jdbcType="VARCHAR"/>
         <result column="avatar_buyer" property="avatar" jdbcType="VARCHAR"/>
@@ -40,12 +41,12 @@
         <result column="introduction_buyer" property="introduction" jdbcType="VARCHAR"/>
     </resultMap>
     <resultMap id="bid_seller_map" type="com.lyu.entity.User">
-        <id column="uid_buyer" property="uid" jdbcType="BIGINT"/>
-        <result column="username_buyer" property="username" jdbcType="VARCHAR"/>
-        <result column="nickname_buyer" property="nickname" jdbcType="VARCHAR"/>
-        <result column="avatar_buyer" property="avatar" jdbcType="VARCHAR"/>
-        <result column="baned_time_buyer" property="banedTime" jdbcType="INTEGER"/>
-        <result column="introduction_buyer" property="introduction" jdbcType="VARCHAR"/>
+        <id column="user_uid_seller" property="uid" jdbcType="BIGINT"/>
+        <result column="username_seller" property="username" jdbcType="VARCHAR"/>
+        <result column="nickname_seller" property="nickname" jdbcType="VARCHAR"/>
+        <result column="avatar_seller" property="avatar" jdbcType="VARCHAR"/>
+        <result column="baned_time_seller" property="banedTime" jdbcType="INTEGER"/>
+        <result column="introduction_seller" property="introduction" jdbcType="VARCHAR"/>
     </resultMap>
 
     <select id="getCommodityBidsPaidByCid" resultMap="baseMap">
@@ -66,7 +67,7 @@
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover,
-               t_user.uid          uid_buyer,
+               t_user.uid          user_uid_buyer,
                t_user.username     username_buyer,
                t_user.nickname     nickname_buyer,
                t_user.avatar       avatar_buyer,
@@ -93,7 +94,7 @@
                t_commodity_bid.`time_created`,
                t_commodity_bid.time_reply,
                t_commodity_bid.cancel,
-               t_user.uid          uid_seller,
+               t_user.uid          user_uid_seller,
                t_user.username     username_seller,
                t_user.nickname     nickname_seller,
                t_user.avatar       avatar_seller,
@@ -136,7 +137,7 @@
                t_commodity_bid.`time_created`,
                t_commodity_bid.time_reply,
                t_commodity_bid.cancel,
-               t_user.uid          uid_buyer,
+               t_user.uid          user_uid_buyer,
                t_user.username     username_buyer,
                t_user.nickname     nickname_buyer,
                t_user.avatar       avatar_buyer,

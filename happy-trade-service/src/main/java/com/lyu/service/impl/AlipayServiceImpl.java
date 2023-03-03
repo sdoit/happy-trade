@@ -60,7 +60,7 @@ public class AlipayServiceImpl implements AlipayService {
     private SseService sseService;
     @Resource
     private UserMessageService userMessageService;
-  
+
 
     @Async("asyncPoolTaskExecutor")
     @Override
@@ -167,13 +167,9 @@ public class AlipayServiceImpl implements AlipayService {
                 commodityBidService.completePay(bidOrder);
                 Long uidSeller = bidOrder.getUidSeller();
                 //储存消息到数据库，待消费
-                userMessageService.sendMessage(
-                        Message.YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM.getTitle(),
-                        Message.YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM.getMessage(),
+                userMessageService.sendNotification(Message.YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM,
                         "/seller/bid/" + bidOrder.getCid(),
-                        true,
-                        Message.YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM.getType(),
-                        0L, uidSeller
+                        uidSeller
                 );
                 uid = bidOrder.getUidBuyer();
                 //即时消息，不储存； 通知支付成功
@@ -193,13 +189,10 @@ public class AlipayServiceImpl implements AlipayService {
                 order.setBuyerAlipayId(alipayParamMap.get("buyer_id"));
                 orderService.completePayOrder(order);
                 uid = order.getUidBuyer();
-                //储存消息到数据库，待消费
-                userMessageService.sendMessage(
-                        Message.A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY.getTitle(),
-                        Message.A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY.getMessage(),
-                        "/seller/order/" + order.getCid(), true,
-                        Message.A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY.getType(),
-                        0L, order.getUidSeller()
+                //发送通知
+                userMessageService.sendNotification(Message.A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY,
+                        "/seller/order/" + order.getOid(),
+                        order.getUidSeller()
                 );
                 //即时消息，不储存
                 sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ORDER_ALPAY_COMPLETED, "/buyer/order/" + order.getOid());

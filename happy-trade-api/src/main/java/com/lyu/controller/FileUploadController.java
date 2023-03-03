@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
  */
 @Slf4j
 @Validated
-@CrossOrigin(origins = "${vue.address}")
+
 @ApiOperation("文件上传接口")
 @RestController()
 @RequestMapping("/api/upload")

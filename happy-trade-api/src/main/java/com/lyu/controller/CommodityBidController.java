@@ -27,7 +27,6 @@ import java.util.List;
  */
 @Validated
 @ApiOperation("用户商品出价api")
-@CrossOrigin(origins = "${vue.address}")
 @RestController()
 @RequestMapping("/api/bid")
 public class CommodityBidController {

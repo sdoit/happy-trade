@@ -5,6 +5,7 @@ import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
+import com.lyu.common.Message;
 import com.lyu.entity.*;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.exception.CommodityException;
@@ -48,9 +49,18 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private UserAmountLogService userAmountLogService;
     @Resource
+    private UserAmountService userAmountService;
+    @Resource
     private CommoditySnapshotService commoditySnapshotService;
     @Resource
     private OrderRateMapper orderRateMapper;
+    @Resource
+    private ExpressService expressService;
+
+    @Resource
+    private SseService sseService;
+    @Resource
+    private UserMessageService userMessageService;
     @Resource
     private IDUtil idUtil;
 
@@ -112,6 +122,16 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
         }
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
+        //如果交易对方已评价，但用户未评价。那么就隐藏对方评价
+        if (orderDTO.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
+            if (orderDTO.getOrderRatingSeller() == null || orderDTO.getOrderRatingSeller().getScore() == null) {
+                orderDTO.setOrderRatingSeller(null);
+            }
+        } else {
+            if (orderDTO.getOrderRatingBuyer() == null || orderDTO.getOrderRatingBuyer().getScore() == null) {
+                orderDTO.setOrderRatingBuyer(null);
+            }
+        }
         return orderDTO;
     }
 
@@ -195,7 +215,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void completePayOrder(Order order) {
         //生成商品快照
-        Long ssid= commoditySnapshotService.createCommoditySnapshot(order.getCid());
+        Long ssid = commoditySnapshotService.createCommoditySnapshot(order.getCid());
         //设置为已付款
         order.setStatus(0);
         order.setSsid(ssid);
@@ -228,6 +248,10 @@ public class OrderServiceImpl implements OrderService {
         if (order == null) {
             throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
         }
+        if (order.getShipTime() == null) {
+            throw new OrderException(CodeAndMessage.ORDER_IS_NOT_SHIP.getCode(), CodeAndMessage.ORDER_IS_NOT_SHIP.getMessage());
+        }
+
         OrderRating orderRating = new OrderRating();
         orderRating.setScore(rating);
         if (rating >= 4) {
@@ -245,14 +269,43 @@ public class OrderServiceImpl implements OrderService {
             updateOrder(order);
             orderRating.setTarget(order.getUidSeller());
             orderRating.setSeller(true);
+            orderRateMapper.insert(orderRating);
+            //发消息给卖家
+            userMessageService.sendNotification(Message.BUYER_HAS_CONFIRMED_RECEIPT_OF_GOODS, "/seller/order/" + order.getOid(), order.getUidSeller());
+            //解除冻结金额
+            userAmountService.thawAmount(order.getUidSeller(), order.getTotalAmount(), order.getOid());
         } else if ((order.getUidSeller().equals(uidLogin))) {
             if (!order.getStatus().equals(Constant.ORDER_STATUS_COMPLETED)) {
                 throw new OrderException(CodeAndMessage.ORDER_IS_NOT_COMPLETED.getCode(), CodeAndMessage.ORDER_IS_NOT_COMPLETED.getMessage());
             }
             orderRating.setTarget(order.getUidBuyer());
             orderRating.setSeller(false);
+            orderRateMapper.insert(orderRating);
+            //发消息给买家 卖家已完成对你的评分
+            userMessageService.sendNotification(Message.SELLER_HAS_FINISHED_RATING_YOU, "/seller/order/" + order.getOid(), order.getUidBuyer());
+
         }
-        orderRateMapper.insert(orderRating);
+    }
+
+    @Override
+    public void expressOrder(Long oid, String expressId, String shipId) {
+        Order order = orderMapper.selectById(oid);
+        if (order == null) {
+            throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
+        }
+        if (!order.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
+            throw new UserException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
+        }
+        Express expressCompany = expressService.getExpressCompany(expressId);
+        if (expressCompany == null) {
+            throw new OrderException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
+        }
+        order.setShipId(shipId);
+        order.setExpressId(expressId);
+        order.setShipTime(LocalDateTime.now());
+        updateOrder(order);
+        userMessageService.sendNotification(Message.YOUR_ORDER_HAS_BEEN_SHIPPED, "/buyer/order/" + order.getOid(), order.getUidBuyer());
+
     }
 
     @Override

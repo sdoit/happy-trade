@@ -28,6 +28,13 @@ public interface UserMessageMapper extends BaseMapper<UserMessage> {
      * @return
      */
     List<UserMessageDTO> pullUnreadMessagesByUidReceiver(Long uid);
+    /**
+     * 拉取要接受的所有未读通知
+     * @param uid
+     * @return
+     */
+    List<UserMessage> pullUnreadNotificationsByUidReceiver(Long uid);
+
 
     /**
      * 获取两用户之间的message

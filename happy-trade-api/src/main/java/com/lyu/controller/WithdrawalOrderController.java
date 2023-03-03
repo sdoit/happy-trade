@@ -20,7 +20,6 @@ import javax.validation.constraints.NotNull;
 @Validated
 @RestController
 @RequestMapping("/api/withdrawal")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("用户提现操作接口")
 public class WithdrawalOrderController {
 

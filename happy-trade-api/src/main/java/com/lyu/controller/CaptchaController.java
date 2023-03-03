@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
  */
 @Validated
 @ApiOperation("验证码api")
-@CrossOrigin(origins = "${vue.address}")
 @RestController
 @RequestMapping("/api/captcha")
 public class CaptchaController {

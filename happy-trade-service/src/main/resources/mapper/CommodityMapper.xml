@@ -111,6 +111,7 @@
                  LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
         where t_commodity.type_id = A.tid
           and t_commodity.uid = t_user.uid
+          and t_commodity.launched = 1
           and t_commodity.cid = #{cid}
     </select>
     <select id="getCommoditiesFromUser" resultMap="baseMap">

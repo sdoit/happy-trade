@@ -17,4 +17,15 @@ public class OrderDTO extends Order {
     private UserAddressDTO userAddress;
     private String statusName;
 
+    private ExpressDTO express;
+
+    /**
+     * 买家对卖家的评价
+     */
+    private OrderRating orderRatingSeller;
+    /**
+     *  卖家对买家的评价
+     */
+    private OrderRating orderRatingBuyer;
+
 }

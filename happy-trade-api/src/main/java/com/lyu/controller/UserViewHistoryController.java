@@ -9,7 +9,6 @@ import com.lyu.entity.dto.UserViewHistoryDTO;
 import com.lyu.service.UserViewHistoryService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,7 +23,6 @@ import java.util.List;
  */
 @Validated
 @ApiOperation("浏览历史api")
-@CrossOrigin(origins = "${vue.address}")
 @RestController
 @RequestMapping("/api/history")
 public class UserViewHistoryController {

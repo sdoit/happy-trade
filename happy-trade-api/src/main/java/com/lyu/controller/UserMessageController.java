@@ -25,7 +25,6 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/message")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("消息操作接口")
 public class UserMessageController {
     @Resource
@@ -36,7 +35,7 @@ public class UserMessageController {
 
         long uidSend = StpUtil.getLoginIdAsLong();
         userMessageService.sendMessage(null, userMessage.getContent(), String.valueOf(uidSend),
-                false, null,
+                 null,
                 uidSend, userMessage.getUidReceive());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }

@@ -30,17 +30,19 @@ public interface UserAmountService {
      *
      * @param uid
      * @param amount 要冻结的金额数
+     * @param sourceId 来源id，订单id或提现id
      * @return
      */
-    Integer frozenAmount(Long uid, BigDecimal amount);
+    Integer frozenAmount(Long uid, BigDecimal amount,Long sourceId);
 
     /**
      * 解冻金额
      *
      * @param uid
      * @param amount 要结冻的金额数
+     * @param sourceId 来源id，订单id或提现id
      * @return
      */
-    Integer thawAmount(Long uid, BigDecimal amount);
+    Integer thawAmount(Long uid, BigDecimal amount,Long sourceId);
 
 }

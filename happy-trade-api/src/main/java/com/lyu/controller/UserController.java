@@ -21,7 +21,6 @@ import javax.validation.constraints.NotNull;
 @Validated
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("用户操作接口")
 public class UserController {
     @Resource

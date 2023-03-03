@@ -18,7 +18,7 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/type")
-@CrossOrigin(origins = "${vue.address}")
+
 @ApiOperation("type接口")
 public class CommodityTypeController {
 

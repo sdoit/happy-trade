@@ -3,6 +3,7 @@ package com.lyu.service.impl;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommoditySnapshot;
+import com.lyu.entity.dto.CommoditySnapshotDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.mapper.CommoditySnapshotMapper;
@@ -46,5 +47,14 @@ public class CommoditySnapshotServiceImpl implements CommoditySnapshotService {
         commoditySnapshot.setViewCount(commodity.getViewCount());
         commoditySnapshotMapper.insert(commoditySnapshot);
         return commoditySnapshot.getSsid();
+    }
+
+    @Override
+    public CommoditySnapshotDTO getCommoditySnapshotBySsid(Long ssid) {
+        CommoditySnapshotDTO commoditySnapshotBySsid = commoditySnapshotMapper.getCommoditySnapshotBySsid(ssid);
+        if (commoditySnapshotBySsid == null) {
+            throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY_SNAPSHOT.getCode(), CodeAndMessage.WRONG_PASSWORD.getMessage());
+        }
+        return commoditySnapshotBySsid;
     }
 }

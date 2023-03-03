@@ -26,7 +26,6 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/favorites")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("用户收藏夹操作接口")
 public class UserFavoriteController {
     @Resource

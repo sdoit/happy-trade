@@ -22,7 +22,6 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/tag")
-@CrossOrigin(origins = "${vue.address}")
 @ApiOperation("tag接口")
 public class TagController {
     @Resource

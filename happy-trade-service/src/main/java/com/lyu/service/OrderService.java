@@ -98,13 +98,21 @@ public interface OrderService {
     void completePayOrder(Order order);
 
     /**
-     * 买家确认收货，并且评分
+     * 买家确认收货，并且评分 / 卖家评价买家
      * @param oid 确认的订单号
      * @param rating 买家评分
      * @param comment 评价
      */
     void completeAndRateOrder(Long oid,Integer rating ,String comment);
 
+
+    /**
+     * 卖家发货
+     * @param oid 要发货的订单id
+     * @param expressId 快递公司id
+     * @param shipId 运单号
+     */
+    void expressOrder(Long oid, String expressId, String shipId);
 
     /**
      * 检查订单是否存在
