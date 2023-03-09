@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.RequestMapper">
+
+    <select id="getRequestById" resultType="com.lyu.entity.dto.RequestDTO"></select>
+    <select id="getRequestsFromUser" resultType="com.lyu.entity.dto.RequestDTO"></select>
+    <select id="getRequestsByKeyWords" resultType="com.lyu.entity.dto.RequestDTO"></select>
+    <select id="getRequestsByType" resultType="com.lyu.entity.dto.RequestDTO"></select>
+    <select id="getRequestRecommend" resultType="com.lyu.entity.dto.RequestDTO"></select>
+    <select id="getRequestsLatest" resultType="com.lyu.entity.dto.RequestDTO"></select>
+</mapper>

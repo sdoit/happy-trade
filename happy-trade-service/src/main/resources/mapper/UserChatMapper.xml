@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserChatMapper">
+    <resultMap id="baseMap" type="com.lyu.service.impl.UserChatDTO">
+        <id column="group_id" property="groupId" jdbcType="BIGINT" />
+        <result column="uid" property="uid" jdbcType="BIGINT" />
+        <result column="uid_target" property="uidTarget" jdbcType="BIGINT" />
+        <result column="last_message" property="lastMessage" jdbcType="VARCHAR" />
+        <result column="content_type" property="contentType" jdbcType="TINYINT" />
+        <result column="time" property="time" jdbcType="TIMESTAMP" />
+        <result column="unread_count" property="unreadCount" jdbcType="INTEGER" />
+        <association property="userTarget" javaType="com.lyu.entity.User">
+            <id column="uid_target" property="uid" jdbcType="BIGINT" />
+            <result column="nickname" property="nickname" jdbcType="VARCHAR" />
+            <result column="avatar" property="avatar" jdbcType="VARCHAR" />
+        </association>
+    </resultMap>
+    <select id="getAllUserChat" resultMap="baseMap" >
+        SELECT t_user_chat_list.group_id,
+               t_user_chat_list.uid,
+               t_user_chat_list.uid_target,
+               t_user_chat_list.last_message,
+               t_user_chat_list.content_type,
+               t_user_chat_list.time,
+               t_user.username,
+               t_user.phone,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.baned_time,
+               count(db_happy_trade.t_user_message.read_already = 0 AND
+                     db_happy_trade.t_user_message.uid_receive = #{uid} OR NULL) unread_count
+        FROM db_happy_trade.t_user_chat_list
+                 LEFT JOIN db_happy_trade.t_user_message ON t_user_message.group_id = t_user_chat_list.group_id
+                 LEFT JOIN db_happy_trade.t_user ON t_user.uid = t_user_chat_list.uid_target
+        WHERE t_user_chat_list.uid = #{uid}
+        GROUP BY t_user_chat_list.group_id
+    </select>
+    <select id="existChat" resultType="java.lang.Boolean">
+        select 1
+        from db_happy_trade.t_user_chat_list
+        where group_id = #{groupId}
+          and uid = #{uid}
+        limit 1
+    </select>
+</mapper>

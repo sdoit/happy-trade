@@ -27,14 +27,19 @@ public class UserFavoritesServiceImpl implements UserFavoritesService {
     private UserFavoriteMapper userFavoriteMapper;
 
     @Override
-    public void saveFavorite(UserFavorite userFavorite) {
+    public boolean saveOrDeleteFavorite(UserFavorite userFavorite) {
         userFavorite.setUid(StpUtil.getLoginIdAsLong());
         userFavorite.setTime(LocalDateTime.now());
-        userFavoriteMapper.insert(userFavorite);
+        UserFavorite userFavoriteInDb = userFavoriteMapper.selectOne(new QueryWrapper<UserFavorite>().eq("uid", userFavorite.getUid()).eq("cid", userFavorite.getCid()));
+        if (userFavoriteInDb == null) {
+            userFavoriteMapper.insert(userFavorite);
+            return true;
+        }
+        deleteFavoriteByFid(userFavoriteInDb.getFid());
+        return false;
     }
 
-    @Override
-    public void deleteFavoriteByFid(Long fid) {
+    private void deleteFavoriteByFid(Long fid) {
         UserFavorite userFavorite = userFavoriteMapper.selectById(fid);
         if (userFavorite == null) {
             throw new UserFavoriteException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
@@ -45,11 +50,7 @@ public class UserFavoritesServiceImpl implements UserFavoritesService {
         userFavoriteMapper.deleteById(fid);
     }
 
-    @Override
-    public void deleteFavoriteByUidAndCid(Long cid) {
-        Long uid = StpUtil.getLoginIdAsLong();
-        userFavoriteMapper.delete(new QueryWrapper<UserFavorite>().eq("uid", uid).eq("cid", cid));
-    }
+
 
     @Override
     public IPage<UserFavoriteDTO> getFavoritesByUid(IPage<UserFavoriteDTO> page) {

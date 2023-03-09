@@ -3,26 +3,11 @@
 <mapper namespace="com.lyu.mapper.UserMessageMapper">
     <resultMap id="baseMap" type="com.lyu.entity.dto.UserMessageDTO">
         <id column="group_id" property="groupId" jdbcType="BIGINT"/>
-        <result column="unread_count" property="unreadCount" jdbcType="BIGINT"/>
-        <association property="targetUser" resultMap="mapUserTarget"/>
-        <association property="lastMessage">
-            <id column="mid_last" property="mid" jdbcType="BIGINT"/>
-            <result column="title_last" property="title" jdbcType="VARCHAR"/>
-            <result column="content_last" property="content" jdbcType="VARCHAR"/>
-            <result column="url_last" property="url" jdbcType="VARCHAR"/>
-            <result column="system_notify_last" property="systemNotify" jdbcType="TINYINT"/>
-            <result column="message_type_last" property="messageType" jdbcType="VARCHAR"/>
-            <result column="uid_send_last" property="uidSend" jdbcType="BIGINT"/>
-            <result column="uid_receive_last" property="uidReceive" jdbcType="BIGINT"/>
-            <result column="time_last" property="time" jdbcType="TIMESTAMP"/>
-            <result column="read_already_last" property="read" jdbcType="TINYINT"/>
-            <result column="uid_send_last" property="uidSend" jdbcType="BIGINT"/>
-            <result column="uid_receive_last" property="uidReceive" jdbcType="BIGINT"/>
-        </association>
         <collection property="messages" ofType="com.lyu.entity.UserMessage">
             <id column="mid" property="mid" jdbcType="BIGINT"/>
             <result column="title" property="title" jdbcType="VARCHAR"/>
             <result column="content" property="content" jdbcType="VARCHAR"/>
+            <result column="content_type" property="contentType" jdbcType="TINYINT"/>
             <result column="url" property="url" jdbcType="VARCHAR"/>
             <result column="system_notify" property="systemNotify" jdbcType="TINYINT"/>
             <result column="message_type" property="messageType" jdbcType="VARCHAR"/>
@@ -34,15 +19,6 @@
             <result column="uid_receive" property="uidReceive" jdbcType="BIGINT"/>
         </collection>
     </resultMap>
-    <resultMap id="mapUserTarget" type="com.lyu.entity.User">
-        <id column="uid" property="uid" jdbcType="BIGINT"/>
-        <result column="username" property="username" jdbcType="VARCHAR"/>
-        <result column="username" property="username" jdbcType="VARCHAR"/>
-        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
-        <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
-        <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
-        <result column="baned_time" property="banedTime" jdbcType="INTEGER"/>
-    </resultMap>
 
     <!--携带send的user对象-->
     <sql id="senderMessage">
@@ -50,6 +26,7 @@
                t_user_message.group_id,
                t_user_message.title,
                t_user_message.content,
+               t_user_message.content_type,
                t_user_message.url,
                t_user_message.system_notify,
                t_user_message.message_type,
@@ -67,6 +44,7 @@
              db_happy_trade.t_user
         where t_user_message.uid_send = t_user.uid
     </sql>
+
     <select id="pullMessagesByUidReceiver" resultMap="baseMap">
         <include refid="senderMessage"/>
         AND t_user_message.uid_receive = #{uid}
@@ -74,46 +52,46 @@
     <select id="pullUnreadMessagesByUidReceiver" resultMap="baseMap">
         <include refid="senderMessage"/>
         AND t_user_message.read=0
+        and t_user_message.system_notify = 0
         AND t_user_message.uid_receive = #{uid}
+        ORDER BY t_user_message.mid DESC
     </select>
     <select id="pullMessageBySenderAndReceiver" resultMap="baseMap">
         <include refid="senderMessage"/>
         AND t_user_message.group_id=#{groupId}
+        and t_user_message.system_notify = 0
         ORDER BY t_user_message.mid DESC
     </select>
-    <!--获取聊天用户列表，携带未读消息数-->
-    <select id="getChatUserList" resultMap="baseMap">
-        SELECT t_user_message.mid           mid_last,
-               t_user_message.group_id      group_id_last,
-               t_user_message.title         title_last,
-               t_user_message.content       content_last,
-               t_user_message.url           url_last,
-               t_user_message.system_notify system_notify_last,
-               t_user_message.message_type  message_type_last,
-               t_user_message.uid_send      uid_send_last,
-               t_user_message.uid_receive   uid_receive_last,
-               t_user_message.time          time_last,
-               t_user_message.read_already  read_already_last,
-               last_message.unread_count,
-               t_user.uid,
-               t_user.username,
-               t_user.nickname,
-               t_user.avatar,
-               t_user.introduction,
-               t_user.baned_time
-        FROM db_happy_trade.t_user_message,
-             db_happy_trade.t_user,
-             (SELECT max(t_user_message.mid) mid,
-                     COUNT(t_user_message.read_already = 0 AND t_user_message.uid_receive = #{uid} OR
-                           NULL)             unread_count
-              FROM db_happy_trade.t_user_message
-              WHERE ((t_user_message.uid_send = #{uid} OR t_user_message.uid_receive = #{uid}) and
-                     t_user_message.system_notify = 0)
-              GROUP BY t_user_message.group_id) last_message
-        WHERE (t_user_message.uid_send = t_user.uid OR t_user_message.uid_receive = t_user.uid)
-          AND t_user.uid   <![CDATA[ <> ]]> #{uid}
-          AND t_user_message.mid = last_message.mid
-    </select>
+    <!--获取聊天用户列表，携带未读消息数  包括系统通知-->
+<!--    <select id="getChatUserList" resultMap="baseMap">-->
+<!--        SELECT t_user_message.mid                                mid_last,-->
+<!--               t_user_message.group_id                           group_id_last,-->
+<!--               t_user_message.title                              title_last,-->
+<!--               t_user_message.content                            content_last,-->
+<!--               t_user_message.url                                url_last,-->
+<!--               t_user_message.system_notify                      system_notify_last,-->
+<!--               t_user_message.message_type                       message_type_last,-->
+<!--               t_user_message.uid_send                           uid_send_last,-->
+<!--               t_user_message.uid_receive                        uid_receive_last,-->
+<!--               t_user_message.time                               time_last,-->
+<!--               t_user_message.read_already                       read_already_last,-->
+<!--               last_message.unread_count,-->
+<!--               IF(A.uid is null, B.uid, A.uid)                   `uid`,-->
+<!--               IF(A.uid is null, B.username, A.username)         `username`,-->
+<!--               IF(A.uid is null, B.nickname, A.nickname)         `nickname`,-->
+<!--               IF(A.uid is null, B.avatar, A.avatar)             `avatar`,-->
+<!--               IF(A.uid is null, B.introduction, A.introduction) `introduction`,-->
+<!--               IF(A.uid is null, B.baned_time, A.baned_time)     `baned_time`-->
+<!--        FROM (SELECT max(t_user_message.mid)                                                                mid,-->
+<!--                     COUNT(t_user_message.read_already = 0 AND t_user_message.uid_receive = #{uid} OR NULL) unread_count-->
+<!--              FROM db_happy_trade.t_user_message-->
+<!--              WHERE (t_user_message.uid_send = #{uid} OR t_user_message.uid_receive = #{uid})-->
+<!--              GROUP BY t_user_message.group_id) last_message,-->
+<!--             db_happy_trade.t_user_message-->
+<!--                 left join db_happy_trade.t_user A on (t_user_message.uid_send = A.uid and A.uid <![CDATA[ <> ]]>  #{uid})-->
+<!--                 left join db_happy_trade.t_user B on (t_user_message.uid_receive = B.uid and B.uid  <![CDATA[ <> ]]>  #{uid})-->
+<!--        WHERE t_user_message.mid = last_message.mid-->
+<!--    </select>-->
     <select id="pullUnreadNotificationsByUidReceiver" resultType="com.lyu.entity.UserMessage">
         select mid,
                group_id,
@@ -130,6 +108,24 @@
         where t_user_message.system_notify = 1
           and t_user_message.read_already = 0
           and t_user_message.uid_receive = #{uid}
+        ORDER BY t_user_message.mid DESC
+    </select>
+
+    <select id="pullNotificationsByUidReceiver" resultMap="baseMap">
+        select t_user_message.mid,
+               t_user_message.group_id,
+               t_user_message.title,
+               t_user_message.content,
+               t_user_message.url,
+               t_user_message.system_notify,
+               t_user_message.message_type,
+               t_user_message.uid_send,
+               t_user_message.uid_receive,
+               t_user_message.time,
+               t_user_message.read_already
+        from db_happy_trade.t_user_message
+        where t_user_message.group_id = #{uid}
+          and t_user_message.system_notify = 1
         ORDER BY t_user_message.mid DESC
     </select>
 </mapper>

@@ -37,6 +37,11 @@ public enum CodeAndMessage {
     USER_ALREADY_EXISTS(false, 2004, "用户名已存在"),
     USER_NOT_LOGIN(false, 2005, "用户未登录"),
     ACTIONS_WITHOUT_ACCESS(false, 2006, "用户没有权限操作"),
+    CODE_NOT_FOUND(false, 2007, "验证码不存在或已过期"),
+    CODE_IS_INCORRECT(false, 2008, "验证码不正确"),
+    CODE_IS_SEND_TRY_AGAIN_LATER(false, 2009, "上次发送验证码处于有效期中，请稍后重试"),
+    CODE_SEND_FAILED(false, 2010, "验证码发送失败，请稍后重试"),
+    PLEASE_ENTER_VERIFICATION_CODE(false, 2011, "请输入验证码"),
     /**
      * 订单
      */

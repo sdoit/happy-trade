@@ -34,6 +34,13 @@ public interface UserMessageMapper extends BaseMapper<UserMessage> {
      * @return
      */
     List<UserMessage> pullUnreadNotificationsByUidReceiver(Long uid);
+    /**
+     * 拉取要接受的所有通知
+     * @param page
+     * @param uid
+     * @return
+     */
+    IPage<UserMessageDTO> pullNotificationsByUidReceiver(Page<UserMessageDTO> page, Long uid);
 
 
     /**
@@ -44,10 +51,10 @@ public interface UserMessageMapper extends BaseMapper<UserMessage> {
      */
      IPage<UserMessageDTO> pullMessageBySenderAndReceiver(Page<UserMessageDTO> page, Long groupId);
 
-    /**
-     * 获取用户的聊天用户列表
-     * @param uid
-     * @return 携带另一用户对象
-     */
-    List<UserMessageDTO> getChatUserList(Long uid);
+//    /**
+//     * 获取用户的聊天用户列表
+//     * @param uid
+//     * @return 携带另一用户对象
+//     */
+//    List<UserMessageDTO> getChatUserList(Long uid);
 }

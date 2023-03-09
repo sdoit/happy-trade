@@ -6,6 +6,8 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.lyu.common.AlipayConstant;
+import com.lyu.common.BidConstant;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
 import com.lyu.entity.Commodity;
@@ -92,7 +94,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         //放置到Redis缓存服务器中，30分钟超时，如果支付再写入数据库
         RedisUtil.set(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), commodityBidUse);
         //设置过期时间 比支付超时时间稍长
-        RedisUtil.expire(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), 60L * (Constant.ALIPAY_TIME_EXPIRE << 1));
+        RedisUtil.expire(Constant.REDIS_BID_UNPAID_KEY_PRE + commodityBidUse.getBid(), 60L * (AlipayConstant.ALIPAY_TIME_EXPIRE << 1));
 //        int result = commodityBidMapper.insert(commodityBidUse);
 //        if (result != 1) {
 //            throw new OrderException(CodeAndMessage.UNEXPECTED_ERROR.getCode(), CodeAndMessage.UNEXPECTED_ERROR.getMessage());
@@ -113,7 +115,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         if (commodity.getSold()) {
             //已卖出 发起退款
             log.info("商品已售出，发起退款 cid:" + commodityBid.getCid());
-            alipayService.refund(commodityBid.getTradeId(), commodityBid.getPrice(), Constant.REFUND_DUE_TO_DIRECT_PURCHASE, String.valueOf(commodityBid.getBid()), Constant.ALIPAY_PAY_TYPE_BID);
+            alipayService.refund(commodityBid.getTradeId(), commodityBid.getPrice(), AlipayConstant.REFUND_DUE_TO_DIRECT_PURCHASE, String.valueOf(commodityBid.getBid()), AlipayConstant.ALIPAY_PAY_TYPE_BID);
             throw new CommodityException(CodeAndMessage.ITEM_SOLD.getCode(), CodeAndMessage.ITEM_SOLD.getMessage());
         }
         commodity.setSold(true);
@@ -138,7 +140,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
                 order.getCid()).isNull("agree"));
         //拒绝其他报价
         commodityBidRefundList.forEach((commodityBidRefund) -> {
-            this.rejectCommodityBid(commodityBidRefund.getBid(), Constant.REFUND_DUE_TO_SELLER_AGREES_TO_ANOTHER_BID);
+            this.rejectCommodityBid(commodityBidRefund.getBid(), AlipayConstant.REFUND_DUE_TO_SELLER_AGREES_TO_ANOTHER_BID);
         });
         return result;
     }
@@ -171,7 +173,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         int result = commodityBidMapper.updateById(commodityBid);
         //发起退款
         alipayService.refund(commodityBid.getTradeId(), commodityBid.getPrice(), String.valueOf(commodityBid.getBid()),
-                Constant.REFUND_DUE_TO_REJECTED, Constant.ALIPAY_PAY_TYPE_BID);
+                AlipayConstant.REFUND_DUE_TO_REJECTED, AlipayConstant.ALIPAY_PAY_TYPE_BID);
         return result;
     }
 
@@ -198,13 +200,13 @@ public class CommodityBidServiceImpl implements CommodityBidService {
 
     @Override
     public IPage<CommodityBidDTO> getCommodityBidsBySellerUid(Long uid, IPage<CommodityBidDTO> page, String type) {
-        if (Constant.BID_GET_RESPONDED.equals(type)) {
+        if (BidConstant.BID_GET_RESPONDED.equals(type)) {
             return commodityBidMapper.getCommodityBidsRespondedBySellerUid(page, uid);
-        } else if (Constant.BID_GET_NO_RESPONSE.equals(type)) {
+        } else if (BidConstant.BID_GET_NO_RESPONSE.equals(type)) {
             return commodityBidMapper.getCommodityBidsNoResponseBySellerUid(page, uid);
-        } else if (Constant.BID_GET_AGREED.equals(type)) {
+        } else if (BidConstant.BID_GET_AGREED.equals(type)) {
             return commodityBidMapper.getCommodityBidsAgreedBySellerUid(page, uid);
-        } else if (Constant.BID_GET_REJECTED.equals(type)) {
+        } else if (BidConstant.BID_GET_REJECTED.equals(type)) {
             return commodityBidMapper.getCommodityBidsRejectedBySellerUid(page, uid);
         }
         return commodityBidMapper.getCommodityBidsBySellerUid(page, uid);
@@ -232,7 +234,7 @@ public class CommodityBidServiceImpl implements CommodityBidService {
         }
         //发起退款
         alipayService.refund(commodityBid.getTradeId(), commodityBid.getPrice(), String.valueOf(commodityBid.getBid()),
-                Constant.REFUND_DUE_USER_VOLUNTARILY_CANCEL, Constant.ALIPAY_PAY_TYPE_BID);
+                AlipayConstant.REFUND_DUE_USER_VOLUNTARILY_CANCEL, AlipayConstant.ALIPAY_PAY_TYPE_BID);
         return commodityBidMapper.update(null, new UpdateWrapper<CommodityBid>()
                 .set("cancel", 1)
                 .set("refund_time", LocalDateTime.now())

@@ -13,17 +13,20 @@ import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.api.response.AlipayTradeRefundResponse;
 import com.alipay.easysdk.factory.Factory;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.lyu.common.AlipayConstant;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
 import com.lyu.common.Message;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.Order;
+import com.lyu.entity.User;
 import com.lyu.entity.WithdrawalOrder;
 import com.lyu.exception.AliPayException;
 import com.lyu.mapper.CommodityBidMapper;
 import com.lyu.mapper.WithdrawalOrderMapper;
 import com.lyu.service.*;
 import com.lyu.util.RedisUtil;
+import com.lyu.util.aliyun.Sms;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
@@ -59,6 +62,11 @@ public class AlipayServiceImpl implements AlipayService {
     @Resource
     private SseService sseService;
     @Resource
+    private UserService userService;
+
+    @Resource
+    private Sms sms;
+    @Resource
     private UserMessageService userMessageService;
 
 
@@ -84,7 +92,7 @@ public class AlipayServiceImpl implements AlipayService {
             request.setBizModel(model);
             response = alipayClient.certificateExecute(request);
             String status = response.getStatus();
-            if (!Constant.ALIPAY_PAY_STATUS_SUCCESS.equals(status)) {
+            if (!AlipayConstant.ALIPAY_PAY_STATUS_SUCCESS.equals(status)) {
                 throw new AliPayException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
             }
         } catch (Exception e) {
@@ -118,10 +126,10 @@ public class AlipayServiceImpl implements AlipayService {
             request.setBizContent(bizContent.toString());
             AlipayTradeRefundResponse response = alipayClient.certificateExecute(request);
             if (response.isSuccess()) {
-                if (Constant.ALIPAY_REFUND_SUCCESSFUL_LOGO.equals(response.getFundChange())) {
+                if (AlipayConstant.ALIPAY_REFUND_SUCCESSFUL_LOGO.equals(response.getFundChange())) {
                     //退款成功,修改数据库
                     log.info(alipayTradeId + "-￥" + amount + "退款成功");
-                    if (Constant.ALIPAY_PAY_TYPE_BID.equals(type)) {
+                    if (AlipayConstant.ALIPAY_PAY_TYPE_BID.equals(type)) {
                         commodityBidMapper.update(null, new UpdateWrapper<CommodityBid>().set("refund_time", LocalDateTime.now()));
                     }
                 } else {
@@ -152,7 +160,7 @@ public class AlipayServiceImpl implements AlipayService {
             Long uid;
             // 开始更新订单信息
             //判断是否是bidOrder
-            if (StrUtil.startWith(alipayParamMap.get("out_trade_no"), Constant.BID_ORDER_PREFIX)) {
+            if (StrUtil.startWith(alipayParamMap.get("out_trade_no"), AlipayConstant.BID_ORDER_PREFIX)) {
                 //是bid订单
                 log.debug("开始完成 bidOrder");
                 //从Redis中取出bid订单信息
@@ -171,6 +179,9 @@ public class AlipayServiceImpl implements AlipayService {
                         "/seller/bid/" + bidOrder.getCid(),
                         uidSeller
                 );
+                //发送短信给卖家 通知有用户购买了他的订单
+                User userSeller = userService.getUserByUid(bidOrder.getUidSeller());
+                sms.sendPaySuccessNotification(userSeller.getPhone());
                 uid = bidOrder.getUidBuyer();
                 //即时消息，不储存； 通知支付成功
                 sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_BID_ALPAY_COMPLETED, "/buyer/bid/");
@@ -194,6 +205,9 @@ public class AlipayServiceImpl implements AlipayService {
                         "/seller/order/" + order.getOid(),
                         order.getUidSeller()
                 );
+                //发送短信给卖家 通知有用户购买了他的订单
+                User userSeller = userService.getUserByUid(order.getUidSeller());
+                sms.sendPaySuccessNotification(userSeller.getPhone());
                 //即时消息，不储存
                 sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ORDER_ALPAY_COMPLETED, "/buyer/order/" + order.getOid());
 

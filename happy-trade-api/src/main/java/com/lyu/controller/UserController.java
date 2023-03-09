@@ -30,28 +30,42 @@ public class UserController {
     @PostMapping("/login")
     public CommonResult<User> login(@NotNull @RequestBody UserDTO userDTO) {
         User user = new User();
-        try {
-            user.setUid(Long.parseLong(userDTO.getCertificate()));
-        } catch (NumberFormatException exception) {
-            log.debug("凭证不是uid");
-        }
         user.setPhone(userDTO.getCertificate());
         user.setUsername(userDTO.getCertificate());
         user.setPassword(userDTO.getPassword());
+        user.setValidationCode(userDTO.getValidationCode());
         User userWithToken = userService.login(user);
         if (userWithToken != null) {
             return CommonResult.Result(CodeAndMessage.SUCCESS, userWithToken);
         }
         return CommonResult.Result(CodeAndMessage.UNEXPECTED_ERROR, null);
+    }
+
+    @ApiOperation("用户注册")
+    @PostMapping("/register")
+    public CommonResult<Object> register(@NotNull @RequestBody User user) {
+        User register = userService.register(user);
+        if (register != null) {
+            register = userService.login(user);
+            if (register != null) {
+                return CommonResult.Result(CodeAndMessage.SUCCESS, register);
+            }
+        }
+        return CommonResult.Result(CodeAndMessage.UNEXPECTED_ERROR, null);
+    }
 
 
+    @PostMapping("/code/{phone}")
+    public CommonResult<Object> sendCode(@NotNull @PathVariable("phone") String phone) {
+        userService.sendCode(phone);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
     @ApiOperation("用户登出")
     @PostMapping("/logout")
     public CommonResult<String> login() {
         userService.logout();
-        return CommonResult.Result(CodeAndMessage.SUCCESS,null);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
     @PostMapping("/update")
@@ -70,7 +84,7 @@ public class UserController {
     public CommonResult<User> checkLogin() {
         User user = userService.checkLogin();
         if (user == null) {
-           return CommonResult.Result(CodeAndMessage.USER_NOT_LOGIN, null);
+            return CommonResult.Result(CodeAndMessage.USER_NOT_LOGIN, null);
         }
         return CommonResult.Result(CodeAndMessage.SUCCESS, user);
     }

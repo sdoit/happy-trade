@@ -5,10 +5,14 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
+ * @author LEE
  * @TableName t_user
  */
 @TableName(value = "t_user")
@@ -24,21 +28,28 @@ public class User implements Serializable {
     /**
      * 用户名，必须字母开头，可作为登录凭证
      */
+    @NotBlank
+    @Length(min = 5,max = 20)
     private String username;
 
     /**
      * 密码
      */
+    @NotBlank
+    @Length(min = 6,max = 20)
     private String password;
 
     /**
      * 手机号码，可作为登录凭证
      */
+    @NotBlank
+    @Pattern(regexp = "^1[3-9]\\d{9}$")
     private String phone;
 
     /**
      * 昵称
      */
+    @NotBlank
     private String nickname;
 
     /**
@@ -50,6 +61,13 @@ public class User implements Serializable {
      * 个人简介
      */
     private String introduction;
+
+
+    /**
+     * 手机登录验证码
+     */
+    @TableField(exist = false)
+    private String validationCode;
 
     /**
      * 解封时间：-1永久封禁 0未封禁 0+ 解封时间 单位（h）

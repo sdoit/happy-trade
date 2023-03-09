@@ -27,11 +27,14 @@ public class CommodityDTO extends Commodity {
      * 卖家信息
      */
     private UserWithRatingDTO user;
-
-
     /**
      * 商品标签
      */
     private List<Tag> tags;
+
+    /**
+     * 已收藏？
+     */
+    private Boolean favorite;
 
 }

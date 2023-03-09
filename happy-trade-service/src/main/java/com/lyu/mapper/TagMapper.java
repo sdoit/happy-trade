@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -24,7 +23,7 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @param time
      * @return
      */
-    Integer mapCommodityAndTags(Collection<Tag> tags, Long cid, LocalDateTime time);
+    Integer mapCommodityAndTags(Tag[] tags, Long cid, LocalDateTime time);
 
     /**
      * 根据cid获取目前所有的tags
@@ -39,5 +38,5 @@ public interface TagMapper extends BaseMapper<Tag> {
      * @param tags
      * @return
      */
-    Integer cancelAllTagsMap(Long cid, Collection<Tag> tags);
+    Integer cancelAllTagsMap(Long cid, Tag[] tags);
 }

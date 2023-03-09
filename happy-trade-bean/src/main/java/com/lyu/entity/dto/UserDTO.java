@@ -13,13 +13,18 @@ import javax.validation.constraints.NotBlank;
 
 public class UserDTO{
     /**
-     * 可能是uid、username、phone
+     * 可能username、phone
      */
     @NotBlank(message = "登录凭证不可为空")
     private String certificate;
-    @NotBlank(message = "[密码]不能为空")
     @ApiModelProperty("密码")
     private String password;
+
+
+    /**
+     * 手机登录验证码
+     */
+    private String validationCode;
 
     public String getCertificate() {
         return certificate;
@@ -35,6 +40,14 @@ public class UserDTO{
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getValidationCode() {
+        return validationCode;
+    }
+
+    public void setValidationCode(String validationCode) {
+        this.validationCode = validationCode;
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
-import com.lyu.common.Constant;
 import com.lyu.common.Message;
+import com.lyu.common.SseConstant;
 import com.lyu.exception.SSEException;
 import com.lyu.service.SseService;
 import com.lyu.service.UserMessageService;
@@ -42,7 +42,7 @@ public class SseServiceImpl implements SseService {
         }
         String clientId = StpUtil.getLoginIdAsString();
         SseEmitter sseEmitter = new SseEmitter(0L);
-        final ScheduledFuture<?> future = ssePoolTaskExecutor.scheduleAtFixedRate(new HeartBeatTask(clientId), 0, Constant.SSE_HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
+        final ScheduledFuture<?> future = ssePoolTaskExecutor.scheduleAtFixedRate(new HeartBeatTask(clientId), 0, SseConstant.SSE_HEARTBEAT_INTERVAL, TimeUnit.SECONDS);
         sseEmitter.onCompletion(() -> {
             log.info("MSG: SseConnectCompletion | EmitterHash: {} |ID: {} | Date: {}", sseEmitter.hashCode(), clientId, LocalDateTime.now());
             SseSession.onCompletion(clientId, future);

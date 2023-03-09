@@ -50,12 +50,12 @@
             <id column="express_id" property="expressId" jdbcType="CHAR"/>
             <result column="express_name" property="expressName" jdbcType="VARCHAR"/>
         </association>
-        <association property="orderRatingSeller" javaType="com.lyu.entity.OrderRating">
+        <association property="orderRatingToSeller" javaType="com.lyu.entity.OrderRating">
             <result column="rating_seller_level" property="level"/>
             <result column="rating_seller_score" property="score"/>
             <result column="rating_seller_comment" property="comment"/>
         </association>
-        <association property="orderRatingBuyer" javaType="com.lyu.entity.OrderRating">
+        <association property="orderRatingToBuyer" javaType="com.lyu.entity.OrderRating">
             <result column="rating_buyer_level" property="level"/>
             <result column="rating_buyer_score" property="score"/>
             <result column="rating_buyer_comment" property="comment"/>
@@ -154,7 +154,7 @@
         from db_happy_trade.t_order
                  left join db_happy_trade.t_express on t_order.express_id = t_express.id
                  LEFT JOIN db_happy_trade.t_order_rating A ON A.oid = t_order.oid and A.target = t_order.uid_seller
-                 LEFT JOIN db_happy_trade.t_order_rating B ON B.target = t_order.uid_buyer,
+                 LEFT JOIN db_happy_trade.t_order_rating B ON B.oid = A.oid and B.target = t_order.uid_buyer,
              db_happy_trade.t_commodity,
              db_happy_trade.t_user
                  left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,

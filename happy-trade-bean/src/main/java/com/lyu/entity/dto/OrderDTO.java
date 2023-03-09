@@ -22,10 +22,10 @@ public class OrderDTO extends Order {
     /**
      * 买家对卖家的评价
      */
-    private OrderRating orderRatingSeller;
+    private OrderRating orderRatingToSeller;
     /**
      *  卖家对买家的评价
      */
-    private OrderRating orderRatingBuyer;
+    private OrderRating orderRatingToBuyer;
 
 }

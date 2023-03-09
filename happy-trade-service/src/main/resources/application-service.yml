@@ -29,8 +29,16 @@ alipay:
   rootCertPath: D:\Develop\alipayCert\alipayRootCert.crt
   certPath: D:\Develop\alipayCert\appPublicCert.crt
   alipayPublicCertPath: D:\Develop\alipayCert\alipayPublicCert.crt
-  notifyUrl: http://v3x2v6.natappfree.cc/api/alipay/notify
+  notifyUrl: http://262tfb.natappfree.cc/api/alipay/notify
   returnUrl: http://localhost:5173
   withdrawalOrder:
     title: Happy-Trade 金额提现
     remark:
+
+
+aliyun:
+  accessKeyId: LTAI5tEn7VtaerxgxcLEV4TE
+  accessKeySecret: eK2ENOHRhOWz4SLYo9owKRXY0JRglY
+  signName: 换乐购毕设
+  templateCodeSendCode: SMS_272470741
+  templateCodeSendPaySuccessNotification: SMS_272570758

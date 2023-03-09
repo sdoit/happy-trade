@@ -1,23 +1,21 @@
 package com.lyu.common;
 
-import lombok.Getter;
 
 /**
  * @author LEE
  * @time 2023/2/9 10:16
  */
-@Getter
 public enum Message {
     /**
      * 后端向前端推送的消息集合
      */
-    SSE_ORDER_ALPAY_COMPLETED(Constant.SSE_PAYMENT_RESULTS_MESSAGE, "201",  "success", "支付已成功", "你的订单已支付成功。"),
-    SSE_BID_ALPAY_COMPLETED(Constant.SSE_PAYMENT_RESULTS_MESSAGE, "202",  "success", "支付已成功", "你的出价已支付成功。"),
-    A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY(Constant.SSE_MESSAGE_ID_NOTIFY,"203", "success", "购买通知", "有买家直接购买了你的商品。"),
-    YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM(Constant.SSE_MESSAGE_ID_NOTIFY, "204","success", "通知", "你的商品有了一个新的出价"),
-    BUYER_HAS_CONFIRMED_RECEIPT_OF_GOODS(Constant.SSE_MESSAGE_ID_NOTIFY, "205","success", "通知", "买家已确认收货"),
-    SELLER_HAS_FINISHED_RATING_YOU(Constant.SSE_MESSAGE_ID_NOTIFY, "206","success", "通知", "卖家已完成对你的评分"),
-    YOUR_ORDER_HAS_BEEN_SHIPPED(Constant.SSE_MESSAGE_ID_NOTIFY, "207","success", "通知", "你的订单已发货");
+    SSE_ORDER_ALPAY_COMPLETED(SseConstant.SSE_PAYMENT_RESULTS_MESSAGE, "201",  "success", "支付已成功", "你的订单已支付成功。"),
+    SSE_BID_ALPAY_COMPLETED(SseConstant.SSE_PAYMENT_RESULTS_MESSAGE, "202",  "success", "支付已成功", "你的出价已支付成功。"),
+    A_BUYER_BOUGHT_YOUR_PRODUCT_DIRECTLY(SseConstant.SSE_MESSAGE_ID_NOTIFY,"203", "success", "购买通知", "有买家直接购买了你的商品。"),
+    YOU_HAVE_A_NEW_BID_ON_YOUR_ITEM(SseConstant.SSE_MESSAGE_ID_NOTIFY, "204","success", "通知", "你的商品有了一个新的出价"),
+    BUYER_HAS_CONFIRMED_RECEIPT_OF_GOODS(SseConstant.SSE_MESSAGE_ID_NOTIFY, "205","success", "通知", "买家已确认收货"),
+    SELLER_HAS_FINISHED_RATING_YOU(SseConstant.SSE_MESSAGE_ID_NOTIFY, "206","success", "通知", "卖家已完成对你的评分"),
+    YOUR_ORDER_HAS_BEEN_SHIPPED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "207","success", "通知", "你的订单已发货");
 
 
     private final String notifyType;
@@ -34,4 +32,23 @@ public enum Message {
         this.message = message;
     }
 
+    public String getNotifyType() {
+        return notifyType;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getMessage() {
+        return message;
+    }
 }

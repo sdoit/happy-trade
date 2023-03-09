@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,7 +67,13 @@ public class CommodityServiceImpl implements CommodityService {
         if (uid != uidLogin) {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
-        //删除tag
+        //先保存tag
+        if (commodity.getTags().size() == 1) {
+            commodity.setTags(List.of(tagService.insertTagIfNotExist(commodity.getTags().get(0))));
+        } else if (commodity.getTags().size() > 1) {
+            commodity.setTags(tagService.insertTagsIfNotExist(commodity.getTags()));
+        }
+        //映射tag 并删除旧tags
         tagService.cancelTagsNotIncludedAndAddIncluded(commodity.getCid(), commodity.getTags());
 
 
@@ -167,7 +174,17 @@ public class CommodityServiceImpl implements CommodityService {
 //        for (CommodityTypeViewCount commodityTypeViewCount : recentlyViewedCommodityType) {
 //            commodityTypeViewCount.setRate((double) commodityTypeViewCount.getCount() / count);
 //        }
-        return commodityMapper.getCommodityRecommend(page, StpUtil.getLoginIdAsLong()).getRecords();
+        IPage<CommodityDTO> commodityRecommend = commodityMapper.getCommodityRecommend(page, StpUtil.getLoginIdAsLong());
+        List<CommodityDTO> records = commodityRecommend.getRecords();
+        if (records.size() < Constant.COMMODITY_PER_PAGE) {
+            //如果过一页都不够，添加最新商品
+            List<CommodityDTO> commoditiesLatest = getCommoditiesLatest(page);
+            List<CommodityDTO> commodityListResult = new ArrayList<>(Constant.COMMODITY_PER_PAGE);
+            commodityListResult.addAll(records);
+            commodityListResult.addAll(commoditiesLatest.subList(0, Constant.COMMODITY_PER_PAGE - records.size()));
+            return commodityListResult;
+        }
+        return records;
     }
 
     @Override

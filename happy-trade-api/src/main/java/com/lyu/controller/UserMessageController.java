@@ -4,7 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
-import com.lyu.common.Constant;
+import com.lyu.common.MessageConstant;
 import com.lyu.entity.UserMessage;
 import com.lyu.entity.dto.UserMessageDTO;
 import com.lyu.service.UserMessageService;
@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -32,10 +33,9 @@ public class UserMessageController {
 
     @PostMapping
     public CommonResult<Object> sendMessage(@NotNull @RequestBody UserMessage userMessage) {
-
         long uidSend = StpUtil.getLoginIdAsLong();
-        userMessageService.sendMessage(null, userMessage.getContent(), String.valueOf(uidSend),
-                 null,
+        userMessageService.sendMessage(null, userMessage.getContent(), userMessage.getContentType(), String.valueOf(uidSend),
+                null,
                 uidSend, userMessage.getUidReceive());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
@@ -50,16 +50,20 @@ public class UserMessageController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullUnreadMessagesByUidReceiver(StpUtil.getLoginIdAsLong()));
     }
 
+    @GetMapping("/notification")
+    public CommonResult<UserMessageDTO> pullNotificationsByUidReceiver(@Nullable Integer page) {
+        if (page == null) {
+            page = 1;
+        }
+        Page<UserMessageDTO> iPage = new Page<>(page, MessageConstant.MESSAGE_COUNT_PER_PAGE);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullNotificationsByUidReceiver(iPage, StpUtil.getLoginIdAsLong()));
+    }
+
     @GetMapping("/{uid}")
     public CommonResult<UserMessageDTO> pullMessageBySenderAndMine(@NotNull @PathVariable("uid") Long uid, @NotNull Integer page) {
 
-        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullMessageBySenderAndMine(new Page<UserMessageDTO>(page, Constant.MESSAGE_COUNT_PER_PAGE), uid));
-    }
-
-    @ApiOperation("获取登录用户的聊天列表")
-    @GetMapping("/list")
-    public CommonResult<List<UserMessageDTO>> getChatUserList() {
-        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.getChatUserList());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, userMessageService.pullMessageBySenderAndMine(
+                new Page<>(page, MessageConstant.MESSAGE_COUNT_PER_PAGE), uid));
     }
 
     @ApiOperation("消息设置为已读")

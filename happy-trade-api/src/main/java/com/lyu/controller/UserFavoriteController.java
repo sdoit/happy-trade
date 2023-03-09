@@ -31,27 +31,13 @@ public class UserFavoriteController {
     @Resource
     private UserFavoritesService userFavoritesService;
 
-    @ApiOperation("添加收藏")
+    @ApiOperation("添加收藏/移除收藏")
     @PostMapping
     public CommonResult<Object> saveFavorite(@RequestBody @NotNull UserFavorite userFavorite) {
-        userFavoritesService.saveFavorite(userFavorite);
-        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+        return CommonResult.Result(CodeAndMessage.SUCCESS,  userFavoritesService.saveOrDeleteFavorite(userFavorite));
     }
 
-    @ApiOperation("通过fid删除收藏")
-    @DeleteMapping("/{fid}")
-    public CommonResult<Object> deleteFavoriteByFid(@NotNull @PathVariable("fid") Long fid) {
-        userFavoritesService.deleteFavoriteByFid(fid);
-        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
 
-    }
-
-    @ApiOperation("通过uid和cid删除收藏")
-    @DeleteMapping("/c/{cid}")
-    public CommonResult<Object> deleteFavoriteByUidAndCid(@NotNull @PathVariable("cid") Long cid) {
-        userFavoritesService.deleteFavoriteByUidAndCid(cid);
-        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
-    }
 
     @ApiOperation("[分页]获取用户的收藏夹")
     @GetMapping

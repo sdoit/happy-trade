@@ -1,6 +1,7 @@
 package com.lyu.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lyu.common.ContentType;
 import com.lyu.common.Message;
 import com.lyu.entity.UserMessage;
 import com.lyu.entity.dto.UserMessageDTO;
@@ -17,12 +18,13 @@ public interface UserMessageService {
      *
      * @param title
      * @param content
+     * @param contentType 内容类型
      * @param url         如果是用户私信，不存在要跳转的url。要把信息的发送者uid填写到url
      * @param messageType 消息类型
      * @param uidSend
      * @param uidReceive
      */
-    void sendMessage(String title, String content, String url, String messageType, Long uidSend, Long uidReceive);
+    void sendMessage(String title, String content, ContentType contentType, String url, String messageType, Long uidSend, Long uidReceive);
 
     /**
      * 发送通知，
@@ -52,6 +54,15 @@ public interface UserMessageService {
     List<UserMessageDTO> pullUnreadMessagesByUidReceiver(Long uid);
 
     /**
+     * 拉取要接受的所有通知
+     *
+     * @param page
+     * @param uid
+     * @return
+     */
+    UserMessageDTO pullNotificationsByUidReceiver(Page<UserMessageDTO> page, Long uid);
+
+    /**
      * 拉取用户所有还未读的通知
      *
      * @param uid
@@ -76,18 +87,12 @@ public interface UserMessageService {
     void tryPushUnreadNotifications(Long uid);
 
     /**
-     * 获取登录用户的聊天用户列表
-     *
-     * @return
-     */
-    List<UserMessageDTO> getChatUserList();
-
-    /**
      * 设置消息为已读
      *
      * @param uid 对方uid
      */
     void setReadByTargetUid(Long uid);
+
     /**
      * 设置通知为已读
      *

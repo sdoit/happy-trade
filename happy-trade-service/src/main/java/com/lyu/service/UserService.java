@@ -23,6 +23,13 @@ public interface UserService {
     void logout();
 
     /**
+     * 发送手机验证码
+     * @param phone
+     * @throws UserException
+     */
+    void sendCode(String phone) throws UserException;
+
+    /**
      * 注册用户
      *
      * @param user

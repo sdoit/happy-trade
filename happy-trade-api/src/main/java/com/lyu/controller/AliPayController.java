@@ -3,6 +3,7 @@ package com.lyu.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.alipay.easysdk.factory.Factory.Payment;
 import com.alipay.easysdk.payment.page.models.AlipayTradePagePayResponse;
+import com.lyu.common.AlipayConstant;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
 import com.lyu.entity.AliPay;
@@ -59,7 +60,7 @@ public class AliPayController {
             throw new AliPayException(CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getCode(), CodeAndMessage.ALIPAY_WRONG_PAYMENT_PARAMETER.getMessage());
         }
         long uid = StpUtil.getLoginIdAsLong();
-        if (aliPay.getType() != null && aliPay.getType().equals(Constant.ALIPAY_PAY_TYPE_BID)) {
+        if (aliPay.getType() != null && aliPay.getType().equals(AlipayConstant.ALIPAY_PAY_TYPE_BID)) {
 
             Object bidObj = RedisUtil.get(Constant.REDIS_BID_UNPAID_KEY_PRE + aliPay.getTraceNo().substring(1));
             if (bidObj == null) {
@@ -82,7 +83,7 @@ public class AliPayController {
             }
         }
         AlipayTradePagePayResponse response;
-        LocalDateTime timeExpire = LocalDateTime.now().plusMinutes(Constant.ALIPAY_TIME_EXPIRE);
+        LocalDateTime timeExpire = LocalDateTime.now().plusMinutes(AlipayConstant.ALIPAY_TIME_EXPIRE);
 //        String format = timeExpire.format(dateTimeFormatterAliPay);
         try {
 //            response = Payment.Page().pay(aliPay.getSubject(), aliPay.getTraceNo(), String.valueOf(aliPay.getTotalAmount()), aliPay.getReturnUrl());
@@ -103,7 +104,7 @@ public class AliPayController {
      */
     @PostMapping("/notify")
     public String payNotify(HttpServletRequest request) throws Exception {
-        if (request.getParameter(Constant.ALIPAY_PAY_STATUS_KEY).equals(Constant.ALIPAY_PAY_SUCCESS_VALUE)) {
+        if (request.getParameter(AlipayConstant.ALIPAY_PAY_STATUS_KEY).equals(AlipayConstant.ALIPAY_PAY_SUCCESS_VALUE)) {
             Map<String, String> alipayParamMap = new HashMap<>(75);
             Map<String, String[]> requestParams = request.getParameterMap();
             for (String name : requestParams.keySet()) {

@@ -10,7 +10,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.lyu.common.Constant;
+import com.lyu.common.CaptchaConstant;
 import com.lyu.entity.dto.ImageCaptchaInfoWithTokenDTO;
 import com.lyu.entity.dto.ImageCaptchaTrackWithTokenDTO;
 import com.lyu.entity.dto.ValidCaptchaResultDTO;
@@ -35,18 +35,18 @@ public class CaptchaUtil {
      */
     public static boolean needVerify() {
         String uidLogin = StpUtil.getLoginIdAsString();
-        Integer requestCount = (Integer) RedisUtil.get(Constant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin);
+        Integer requestCount = (Integer) RedisUtil.get(CaptchaConstant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin);
         log.info(uidLogin + "-请求数量：" + requestCount);
         if (requestCount != null) {
-            RedisUtil.increment(Constant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin, 1);
-            return requestCount > Constant.MAXIMUM_NUMBER_OF_REQUESTS_PER_MINUTES;
+            RedisUtil.increment(CaptchaConstant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin, 1);
+            return requestCount > CaptchaConstant.MAXIMUM_NUMBER_OF_REQUESTS_PER_MINUTES;
         }
-        RedisUtil.set(Constant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin, 1, 60);
+        RedisUtil.set(CaptchaConstant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin, 1, 60);
         return false;
     }
 
     public static boolean needVerify(String uidLogin, String passToken) {
-        Object passTokenInRedisObj = RedisUtil.get(Constant.REDIS_PASS_TOKEN_KEY + uidLogin);
+        Object passTokenInRedisObj = RedisUtil.get(CaptchaConstant.REDIS_PASS_TOKEN_KEY + uidLogin);
         if (passTokenInRedisObj == null) {
             return true;
         }
@@ -86,9 +86,9 @@ public class CaptchaUtil {
             imageCaptchaInfo = imageCaptchaInfoWithTokenDTO;
         }
         //储存到redis
-        RedisUtil.addMap(Constant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin, validDataMap);
+        RedisUtil.addMap(CaptchaConstant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin, validDataMap);
         //等待验证时间3分钟
-        RedisUtil.expire(Constant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin, 180);
+        RedisUtil.expire(CaptchaConstant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin, 180);
         return imageCaptchaInfo;
     }
 
@@ -100,16 +100,16 @@ public class CaptchaUtil {
             uidLogin = imageCaptchaTrack.getCaptchaToken();
         }
         ImageCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
-        Map<String, Object> validDataMap = RedisUtil.getHashEntries(Constant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin);
+        Map<String, Object> validDataMap = RedisUtil.getHashEntries(CaptchaConstant.REDIS_REQUEST_CAPTCHA_VALID_DATA_KEY + uidLogin);
         boolean validResult = sliderCaptchaValidator.valid(imageCaptchaTrack, validDataMap);
         ValidCaptchaResultDTO validCaptchaResultDTO = new ValidCaptchaResultDTO();
         if (validResult) {
-            RedisUtil.delete(Constant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin);
+            RedisUtil.delete(CaptchaConstant.REDIS_USER_NUMBER_OF_REQUESTS_PER_MINUTE_KEY_PRE + uidLogin);
             if (!StpUtil.isLogin()) {
                 //如果是登录验证，生成一个通行证发送给客户端，并存放在redis中，避免无限验证。
                 String passToken = RandomUtil.randomString(30);
                 validCaptchaResultDTO.setPassToken(passToken);
-                RedisUtil.set(Constant.REDIS_PASS_TOKEN_KEY + uidLogin, passToken, 180);
+                RedisUtil.set(CaptchaConstant.REDIS_PASS_TOKEN_KEY + uidLogin, passToken, 180);
             }
         }
         validCaptchaResultDTO.setPass(validResult);

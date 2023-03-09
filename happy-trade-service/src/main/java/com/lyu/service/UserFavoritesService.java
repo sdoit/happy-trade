@@ -11,26 +11,13 @@ import com.lyu.entity.dto.UserFavoriteDTO;
  */
 public interface UserFavoritesService {
     /**
-     * 添加收藏到收藏夹
+     * 添加收藏到收藏夹/移除收藏
      *
      * @param userFavorite
      */
-    void saveFavorite(UserFavorite userFavorite);
+    boolean saveOrDeleteFavorite(UserFavorite userFavorite);
 
-    /**
-     * 删除收藏
-     *
-     * @param fid 收藏id
-     */
-    void deleteFavoriteByFid(Long fid);
 
-    /**
-     * 删除收藏
-     *
-     * @param uid
-     * @param cid
-     */
-    void deleteFavoriteByUidAndCid(Long cid);
 
     /**
      * [分页]获取用户的收藏

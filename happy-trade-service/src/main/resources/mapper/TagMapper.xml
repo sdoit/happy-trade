@@ -14,7 +14,7 @@
         delete
         from db_happy_trade.t_commodity_tag_map
         where tid in
-        <foreach collection="tags" item="tags" open="(" close=")">
+        <foreach collection="tags" item="tag" separator="," open="(" close=")">
             #{tag.tid}
         </foreach>
         and cid=#{cid}

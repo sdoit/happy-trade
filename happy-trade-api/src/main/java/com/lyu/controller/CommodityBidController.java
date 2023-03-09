@@ -4,10 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.lyu.common.CodeAndMessage;
-import com.lyu.common.CommonResult;
-import com.lyu.common.CommonResultPage;
-import com.lyu.common.Constant;
+import com.lyu.common.*;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.dto.CommodityBidDTO;
 import com.lyu.entity.dto.CommodityBidSimplyDTO;
@@ -52,7 +49,7 @@ public class CommodityBidController {
 
         //创建支付链接
         String payUrl = StrUtil.format("{}://{}:{}/api/alipay/pay?traceNo={}&totalAmount={}&subject={}&type={}&returnUrl={}",
-                protocol, hostname, port, "0" + commodityBidResult.getBid(), commodityBidResult.getPrice(), commodityBidResult.getName(), Constant.ALIPAY_PAY_TYPE_BID, returnUrl);
+                protocol, hostname, port, "0" + commodityBidResult.getBid(), commodityBidResult.getPrice(), commodityBidResult.getName(), AlipayConstant.ALIPAY_PAY_TYPE_BID, returnUrl);
         return CommonResult.Result(CodeAndMessage.ORDER_NEED_PAY, payUrl);
 
     }
@@ -92,11 +89,11 @@ public class CommodityBidController {
     @GetMapping("/seller")
     public CommonResultPage<List<CommodityBidDTO>> getCommodityBidsBySellerUid(Integer page, String type) {
 
-        if (!Constant.BID_GET_ALL.equals(type) &&
-                !Constant.BID_GET_REJECTED.equals(type) &&
-                !Constant.BID_GET_NO_RESPONSE.equals(type) &&
-                !Constant.BID_GET_RESPONDED.equals(type) &&
-                !Constant.BID_GET_AGREED.equals(type)) {
+        if (!BidConstant.BID_GET_ALL.equals(type) &&
+                !BidConstant.BID_GET_REJECTED.equals(type) &&
+                !BidConstant.BID_GET_NO_RESPONSE.equals(type) &&
+                !BidConstant.BID_GET_RESPONDED.equals(type) &&
+                !BidConstant.BID_GET_AGREED.equals(type)) {
             return CommonResultPage.Result(CodeAndMessage.WRONG_REQUEST_PARAMETER, null, 0L);
 
         }

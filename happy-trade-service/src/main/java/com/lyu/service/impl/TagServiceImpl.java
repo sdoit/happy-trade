@@ -1,17 +1,16 @@
 package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lyu.entity.Tag;
 import com.lyu.mapper.TagMapper;
 import com.lyu.service.TagService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public class TagServiceImpl implements TagService {
     @Override
     public void mapCommodityAndTags(List<Tag> tags, Long cid) {
         if (tags != null && !tags.isEmpty()) {
-            tagMapper.mapCommodityAndTags(tags, cid, LocalDateTime.now());
+            tagMapper.mapCommodityAndTags(tags.toArray(Tag[]::new), cid, LocalDateTime.now());
         }
     }
 
@@ -66,10 +65,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancelTagsNotIncludedAndAddIncluded(Long cid, List<Tag> tags) {
         List<Tag> allTagsNow = tagMapper.getAllTagsByCid(cid);
-        Collection<Tag> disjunction = CollectionUtil.disjunction(allTagsNow, tags);
-        tagMapper.cancelAllTagsMap(cid, disjunction);
-        tagMapper.mapCommodityAndTags(disjunction, cid, LocalDateTime.now());
+        //需要删除的
+        Tag[] tagsDelete = allTagsNow.stream().filter(tag -> !(tags.contains(tag))).toArray(Tag[]::new);
+        //需要添加的
+        Tag[] tagsNew = tags.stream().filter(tag -> !allTagsNow.contains(tag)).toArray(Tag[]::new);
+        if (tagsNew.length > 0) {
+            tagMapper.mapCommodityAndTags(tagsNew, cid, LocalDateTime.now());
+        }
+        if (tagsDelete.length > 0) {
+            tagMapper.cancelAllTagsMap(cid, tagsDelete);
+        }
     }
 }

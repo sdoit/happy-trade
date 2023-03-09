@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.lyu.common.ContentType;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -38,6 +39,12 @@ public class UserMessage implements Serializable {
      */
     @NotNull
     private String content;
+    /**
+     * 0:文本
+     * 1：图片
+     * 2：视频
+     */
+    private ContentType contentType;
 
     /**
      * 消息引导用户跳转的地址

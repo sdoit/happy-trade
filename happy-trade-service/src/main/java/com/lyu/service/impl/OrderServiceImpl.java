@@ -3,6 +3,7 @@ package com.lyu.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.lyu.common.AlipayConstant;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
 import com.lyu.common.Message;
@@ -107,11 +108,11 @@ public class OrderServiceImpl implements OrderService {
         //将待支付的订单记录到Redis ，支付成功后写入数据库，超时后自动删除
         RedisUtil.set(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(), order);
         RedisUtil.expire(Constant.REDIS_ORDER_UNPAID_KEY_PRE + order.getOid(),
-                Constant.ALIPAY_TIME_EXPIRE * 60 + 60);
+                AlipayConstant.ALIPAY_TIME_EXPIRE * 60 + 60);
 
         RedisUtil.set(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(), order.getCid());
         RedisUtil.expire(Constant.REDIS_ORDER_MAP_COMMODITY_KEY_PRE + order.getOid(),
-                Constant.ALIPAY_TIME_EXPIRE * 60 + 120);
+                AlipayConstant.ALIPAY_TIME_EXPIRE * 60 + 120);
         return order;
     }
 
@@ -124,12 +125,12 @@ public class OrderServiceImpl implements OrderService {
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
         //如果交易对方已评价，但用户未评价。那么就隐藏对方评价
         if (orderDTO.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
-            if (orderDTO.getOrderRatingSeller() == null || orderDTO.getOrderRatingSeller().getScore() == null) {
-                orderDTO.setOrderRatingSeller(null);
+            if (orderDTO.getOrderRatingToBuyer() == null || orderDTO.getOrderRatingToBuyer().getScore() == null) {
+                orderDTO.setOrderRatingToSeller(null);
             }
         } else {
-            if (orderDTO.getOrderRatingBuyer() == null || orderDTO.getOrderRatingBuyer().getScore() == null) {
-                orderDTO.setOrderRatingBuyer(null);
+            if (orderDTO.getOrderRatingToSeller() == null || orderDTO.getOrderRatingToSeller().getScore() == null) {
+                orderDTO.setOrderRatingToBuyer(null);
             }
         }
         return orderDTO;
@@ -208,7 +209,7 @@ public class OrderServiceImpl implements OrderService {
         Commodity commodity = commodityMapper.selectById(cid);
         commodity.setSold(false);
         commodityMapper.updateById(commodity);
-        order.setStatus(Constant.ORDER_STATUS_CLOSED);
+        order.setStatus(AlipayConstant.ORDER_STATUS_CLOSED);
         return orderMapper.updateById(order);
     }
 
@@ -226,7 +227,7 @@ public class OrderServiceImpl implements OrderService {
         //发起其他用户的退款
         commodityBidRefundList.forEach((commodityBidRefund) -> {
             alipayService.refund(commodityBidRefund.getTradeId(), commodityBidRefund.getPrice(),
-                    String.valueOf(commodityBidRefund.getBid()), Constant.REFUND_DUE_TO_DIRECT_PURCHASE, Constant.ALIPAY_PAY_TYPE_BID);
+                    String.valueOf(commodityBidRefund.getBid()), AlipayConstant.REFUND_DUE_TO_DIRECT_PURCHASE, AlipayConstant.ALIPAY_PAY_TYPE_BID);
         });
         //记录日志
         UserAmountLog userAmountLog = new UserAmountLog();
@@ -264,7 +265,7 @@ public class OrderServiceImpl implements OrderService {
         orderRating.setOid(oid);
         orderRating.setComment(comment);
         if (order.getUidBuyer().equals(uidLogin)) {
-            order.setStatus(Constant.ORDER_STATUS_COMPLETED);
+            order.setStatus(AlipayConstant.ORDER_STATUS_COMPLETED);
             order.setCompleteTime(LocalDateTime.now());
             updateOrder(order);
             orderRating.setTarget(order.getUidSeller());
@@ -275,7 +276,7 @@ public class OrderServiceImpl implements OrderService {
             //解除冻结金额
             userAmountService.thawAmount(order.getUidSeller(), order.getTotalAmount(), order.getOid());
         } else if ((order.getUidSeller().equals(uidLogin))) {
-            if (!order.getStatus().equals(Constant.ORDER_STATUS_COMPLETED)) {
+            if (!order.getStatus().equals(AlipayConstant.ORDER_STATUS_COMPLETED)) {
                 throw new OrderException(CodeAndMessage.ORDER_IS_NOT_COMPLETED.getCode(), CodeAndMessage.ORDER_IS_NOT_COMPLETED.getMessage());
             }
             orderRating.setTarget(order.getUidBuyer());

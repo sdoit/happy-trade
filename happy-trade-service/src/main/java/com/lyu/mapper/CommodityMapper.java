@@ -76,10 +76,10 @@ public interface CommodityMapper extends BaseMapper<Commodity> {
      */
     IPage<CommodityDTO> getCommoditiesByKeyWords(IPage<CommodityDTO> page, String[] words);
     /**
-     * 获取用户最近浏览的商品类型
+     * 根据商品类别获取商品
      *
      * @param page  分页参数
-     * @param typeId 关键词
+     * @param typeId 类别id
      * @return
      */
     IPage<CommodityDTO> getCommoditiesByType(IPage<CommodityDTO> page,Integer typeId);

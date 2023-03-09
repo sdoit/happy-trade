@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RedisUtil {
 
-    private static RedisTemplate redisTemplate = SpringUtil.getBean("redisTemplate");
+    private static final RedisTemplate redisTemplate = SpringUtil.getBean("redisTemplate");
 
 
     /**
@@ -27,7 +27,7 @@ public class RedisUtil {
      * @return
      */
     public static boolean expire(String key, long time) {
-        return redisTemplate.expire(key, time, TimeUnit.SECONDS);
+        return Boolean.TRUE.equals(redisTemplate.expire(key, time, TimeUnit.SECONDS));
     }
 
     /**
@@ -47,7 +47,7 @@ public class RedisUtil {
      * @return
      */
     public static boolean hasKey(String key) {
-        return redisTemplate.hasKey(key);
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
     /**
@@ -57,7 +57,7 @@ public class RedisUtil {
      * @return
      */
     public static boolean persist(String key) {
-        return redisTemplate.boundValueOps(key).persist();
+        return Boolean.TRUE.equals(redisTemplate.boundValueOps(key).persist());
     }
 
     //- - - - - - - - - - - - - - - - - - - - -  String类型 - - - - - - - - - - - - - - - - - - - -
@@ -84,6 +84,7 @@ public class RedisUtil {
 
     /**
      * 删除
+     *
      * @param key
      * @return
      */
@@ -114,6 +115,8 @@ public class RedisUtil {
     public static void set(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
+
+
 
     /**
      * 将值放入缓存并设置时间
