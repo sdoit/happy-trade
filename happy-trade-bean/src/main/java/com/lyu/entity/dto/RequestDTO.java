@@ -26,6 +26,8 @@ public class RequestDTO extends Request {
      */
     private List<Tag> tags;
 
+
+    private Integer cidCount;
     /**
      * 已收藏？
      */
@@ -69,6 +71,14 @@ public class RequestDTO extends Request {
 
     public void setFavorite(Boolean favorite) {
         this.favorite = favorite;
+    }
+
+    public Integer getCidCount() {
+        return cidCount;
+    }
+
+    public void setCidCount(Integer cidCount) {
+        this.cidCount = cidCount;
     }
 
     @Override

@@ -98,6 +98,7 @@ public class Commodity implements Serializable {
      * 浏览数
      */
     private Integer viewCount;
+    private Long requestId;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -126,6 +127,7 @@ public class Commodity implements Serializable {
                 && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
                 && (this.getSold() == null ? other.getSold() == null : this.getSold().equals(other.getSold()))
                 && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
+                && (this.getRequestId() == null ? other.getRequestId() == null : this.getRequestId().equals(other.getRequestId()))
                 && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
     }
 
@@ -146,6 +148,7 @@ public class Commodity implements Serializable {
         result = prime * result + ((getDescription() == null) ? 0 : getDescription().hashCode());
         result = prime * result + ((getSold() == null) ? 0 : getSold().hashCode());
         result = prime * result + ((getLaunched() == null) ? 0 : getLaunched().hashCode());
+        result = prime * result + ((getRequestId() == null) ? 0 : getRequestId().hashCode());
         result = prime * result + ((getViewCount() == null) ? 0 : getViewCount().hashCode());
         return result;
     }
@@ -170,6 +173,7 @@ public class Commodity implements Serializable {
         sb.append(", sold=").append(sold);
         sb.append(", launched=").append(launched);
         sb.append(", viewCount=").append(viewCount);
+        sb.append(", requestId=").append(requestId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

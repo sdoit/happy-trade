@@ -18,6 +18,7 @@
         <result column="cover" property="cover" jdbcType="VARCHAR"/>
         <result column="bid_count" property="bidCount" jdbcType="INTEGER"/>
         <result column="favorite" property="favorite" jdbcType="INTEGER"/>
+        <result column="request_id" property="requestId" jdbcType="BIGINT"/>
         <association property="user" javaType="com.lyu.entity.dto.UserWithRatingDTO">
             <id column="uuid" property="uid" jdbcType="BIGINT"/>
             <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
@@ -40,7 +41,6 @@
             <id column="tid" property="tid" jdbcType="BIGINT"/>
             <result column="tag" property="tag" jdbcType="VARCHAR"/>
         </collection>
-
     </resultMap>
     <select id="getCommoditiesByKeyWords" resultMap="baseMap">
         SELECT t_commodity.cid,
@@ -86,6 +86,7 @@
                t_commodity.launched,
                t_commodity.time,
                t_commodity.view_count,
+               t_commodity.request_id,
                A.tid                                                                 `type_id`,
                CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                 `type_name`,
                B.tid                                                                 tid_middle,
@@ -129,6 +130,7 @@
                t_commodity.time,
                t_commodity.view_count,
                t_commodity.cover,
+               t_commodity.request_id,
                COUNT(t_commodity_bid.bid) bid_count,
                t_commodity_type.type_name,
                t_commodity_type.tid       `type_id`,
@@ -331,5 +333,53 @@
         where A.tid = #{typeId}
           and t_user.uid = t_commodity.uid
           and t_commodity.type_id = A.tid
+    </select>
+    <select id="getCommodityForRequest" resultMap="baseMap">
+        select t_commodity.cid,
+               t_commodity.uid,
+               t_commodity.name,
+               t_commodity.cover,
+               t_commodity.quality,
+               t_commodity.price,
+               t_commodity.fare,
+               t_commodity.freight_collect,
+               t_commodity.free_shipping,
+               t_commodity.description,
+               t_commodity.sold,
+               t_commodity.launched,
+               t_commodity.time,
+               t_commodity.view_count,
+               t_commodity.request_id,
+               A.tid                                                                 `type_id`,
+               CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                 `type_name`,
+               B.tid                                                                 tid_middle,
+               C.tid                                                                 tid_root,
+               t_commodity_tag.tid,
+               t_commodity_tag.tag,
+               t_user.uid                                                            uuid,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.introduction,
+               t_user.baned_time,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 1 or null) good_rating_count_seller,
+               count(t_order_rating.seller = 1 or null)                              rating_count_seller,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 0 or null) good_rating_count_buyer,
+               count(t_order_rating.seller = 0 or null)                              rating_count_buyer,
+               count(t_user_favorites.fid)                                           favorite
+        from db_happy_trade.t_commodity
+                 LEFT JOIN db_happy_trade.t_commodity_tag_map ON t_commodity.cid = t_commodity_tag_map.cid
+                 LEFT JOIN db_happy_trade.t_commodity_tag ON t_commodity_tag_map.tid = t_commodity_tag.tid
+                 left join db_happy_trade.t_user_favorites on t_commodity.uid = t_user_favorites.uid,
+             db_happy_trade.t_user
+                 left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
+             db_happy_trade.t_commodity_type A
+                 LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
+                 LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
+        where t_commodity.type_id = A.tid
+          and t_commodity.uid = t_user.uid
+          and t_commodity.launched = 1
+          and t_commodity.request_id = #{rid}
+        GROUP BY cid
     </select>
 </mapper>

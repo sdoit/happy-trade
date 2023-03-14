@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
 import com.lyu.common.Constant;
+import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.entity.dto.RequestDTO;
+import com.lyu.service.CommodityService;
 import com.lyu.service.RequestService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,8 @@ import java.util.List;
 public class RequestController {
     @Resource
     private RequestService requestService;
+    @Resource
+    private CommodityService commodityService;
 
     @ApiOperation("发布新求购")
     @PostMapping
@@ -58,17 +62,26 @@ public class RequestController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
+    @ApiOperation("获取求购下的所有商品")
+    @GetMapping("/commodity/{rid}")
+    public CommonResult<List<CommodityDTO>> getCommodityForRequest(@NotNull @PathVariable("rid") Long rid) {
+        List<CommodityDTO> commodityList = commodityService.getCommodityForRequest(rid);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityList);
+    }
 
     @ApiOperation("根据id获取指定求购商品")
     @GetMapping("/{id}")
     public CommonResult<RequestDTO> getRequestById(@NotNull @PathVariable("id") Long id) {
-        RequestDTO request =requestService.getRequestById(id);
+        RequestDTO request = requestService.getRequestById(id);
         return CommonResult.Result(CodeAndMessage.SUCCESS, request);
     }
 
     @ApiOperation("获取指定用户的商品")
     @GetMapping("/u")
-    public CommonResult<List<RequestDTO>> getCommoditiesFromUser(@NotNull Integer page) {
+    public CommonResult<List<RequestDTO>> getCommoditiesFromUser(@Nullable Integer page) {
+        if (page == null) {
+            page = 1;
+        }
         List<RequestDTO> requests = requestService.getRequestsFromUser(
                 new Page<>(page, Constant.COMMODITY_PER_PAGE),
                 StpUtil.getLoginIdAsLong());
@@ -86,17 +99,17 @@ public class RequestController {
     @ApiOperation("根据关键词获取商品（分页）/ 如果keyword为null，则依据用户浏览习惯返回推荐商品")
     @GetMapping
     public CommonResult<List<RequestDTO>> getCommoditiesByKeyWords(@Nullable String keyword, @NotNull Integer page) {
-        Page<RequestDTO> requestDTOPage = new Page<>(page, Constant.COMMODITY_PER_PAGE);
+        Page<RequestDTO> requestPage = new Page<>(page, Constant.COMMODITY_PER_PAGE);
         if (Strings.isBlank(keyword)) {
             if (StpUtil.isLogin()) {
                 //如果用户已登录，根据用户浏览历史推荐
-                return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsRecommendations(requestDTOPage));
+                return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsRecommendations(requestPage));
             } else {
                 //如果未登录，就随机最新商品
-                return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsLatest(requestDTOPage));
+                return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsLatest(requestPage));
             }
         }
-        return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsByKeyWordsPage(keyword, requestDTOPage));
+        return CommonResult.Result(CodeAndMessage.SUCCESS, requestService.getRequestsByKeyWordsPage(keyword, requestPage));
     }
 
     @ApiOperation("删除商品")

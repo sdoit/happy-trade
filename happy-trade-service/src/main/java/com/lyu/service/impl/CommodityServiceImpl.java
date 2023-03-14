@@ -141,6 +141,12 @@ public class CommodityServiceImpl implements CommodityService {
         return commodityDTO;
     }
 
+    @Override
+    public List<CommodityDTO> getCommodityForRequest(Long rid) {
+        return commodityMapper.getCommodityForRequest(rid);
+
+    }
+
 
     @Override
     public List<CommodityDTO> getCommoditiesFromUser(Page<CommodityDTO> page, Long uid) {

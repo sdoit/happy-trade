@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyu.mapper.UserFavoritesRequestMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.UserFavoritesRequestDTO">
+        <id column="fid" property="fid" jdbcType="BIGINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <association property="request" javaType="com.lyu.entity.Request">
+            <id column="rid" property="rid" jdbcType="BIGINT"/>
+            <result column="name" property="name" jdbcType="VARCHAR"/>
+            <result column="quality" property="quality" jdbcType="FLOAT"/>
+            <result column="price" property="price" jdbcType="DECIMAL"/>
+            <result column="completed" property="completed" jdbcType="TINYINT"/>
+            <result column="launched" property="launched" jdbcType="TINYINT"/>
+            <result column="ctime" property="time" jdbcType="TIMESTAMP"/>
+            <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+            <result column="cover" property="cover" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
+    <select id="getFavoritesByUid" resultMap="baseMap">
+        select t_user_favorites_request.fid,
+               t_user_favorites_request.time,
+               t_request.rid,
+               t_request.name,
+               t_request.quality,
+               t_request.price,
+               t_request.completed,
+               t_request.launched,
+               t_request.time ctime,
+               t_request.view_count,
+               t_request.cover
+        from db_happy_trade.t_user_favorites_request,
+             db_happy_trade.t_request
+        where t_request.rid = t_user_favorites_request.rid
+          and t_user_favorites_request.uid = #{uid}
+    </select>
+</mapper>

@@ -68,6 +68,12 @@ public interface CommodityMapper extends BaseMapper<Commodity> {
     CommodityDTO getCommodityById(Long cid);
 
     /**
+     * 根据request id 获取商品
+     * @param rid
+     * @return
+     */
+    List<CommodityDTO> getCommodityForRequest(Long rid);
+    /**
      * 根据关键词获取商品列表
      *
      * @param page  分页参数

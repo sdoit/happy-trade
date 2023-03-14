@@ -72,6 +72,7 @@ public class Request implements Serializable {
      * 
      */
     private Integer viewCount;
+    private Boolean completed;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -98,7 +99,8 @@ public class Request implements Serializable {
             && (this.getDescription() == null ? other.getDescription() == null : this.getDescription().equals(other.getDescription()))
             && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
             && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-            && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
+            && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()))
+            && (this.getCompleted() == null ? other.getCompleted() == null : this.getCompleted().equals(other.getCompleted()));
     }
 
     @Override
@@ -116,6 +118,7 @@ public class Request implements Serializable {
         result = prime * result + ((getLaunched() == null) ? 0 : getLaunched().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         result = prime * result + ((getViewCount() == null) ? 0 : getViewCount().hashCode());
+        result = prime * result + ((getCompleted() == null) ? 0 : getCompleted().hashCode());
         return result;
     }
 
@@ -136,6 +139,7 @@ public class Request implements Serializable {
         sb.append(", launched=").append(launched);
         sb.append(", time=").append(time);
         sb.append(", viewCount=").append(viewCount);
+        sb.append(", completed=").append(completed);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

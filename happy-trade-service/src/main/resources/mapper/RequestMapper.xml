@@ -1,11 +1,281 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyu.mapper.RequestMapper">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.RequestDTO">
+        <id column="rid" property="rid" jdbcType="BIGINT"/>
+        <result column="uid" property="uid" jdbcType="BIGINT"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="quality" property="quality" jdbcType="FLOAT"/>
+        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="description" property="description" jdbcType="LONGNVARCHAR"/>
+        <result column="launched" property="launched" jdbcType="TINYINT"/>
+        <result column="time" property="time" jdbcType="TIMESTAMP"/>
+        <result column="view_count" property="viewCount" jdbcType="INTEGER"/>
+        <result column="cover" property="cover" jdbcType="VARCHAR"/>
+        <result column="cid_count" property="cidCount" jdbcType="INTEGER"/>
+        <result column="favorite" property="favorite" jdbcType="INTEGER"/>
+        <result column="completed" property="completed" jdbcType="INTEGER"/>
+        <association property="user" javaType="com.lyu.entity.dto.UserWithRatingDTO">
+            <id column="uuid" property="uid" jdbcType="BIGINT"/>
+            <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+            <result column="username" property="username" jdbcType="VARCHAR"/>
+            <result column="avatar" property="avatar" jdbcType="VARCHAR"/>
+            <result column="introduction" property="introduction" jdbcType="VARCHAR"/>
+            <result column="baned_time" property="banedTime" jdbcType="INTEGER"/>
+            <result column="good_rating_count_seller" property="goodRatingCountSeller" jdbcType="INTEGER"/>
+            <result column="rating_count_seller" property="ratingCountSeller" jdbcType="INTEGER"/>
+            <result column="good_rating_count_buyer" property="goodRatingCountBuyer" jdbcType="INTEGER"/>
+            <result column="rating_count_buyer" property="ratingCountBuyer" jdbcType="INTEGER"/>
+        </association>
+        <association property="type" javaType="com.lyu.entity.CommodityType">
+            <result column="type_id" property="tid" jdbcType="INTEGER"/>
+            <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+            <result column="tid_middle" property="tidMiddle" jdbcType="INTEGER"/>
+            <result column="tid_root" property="tidRoot" jdbcType="INTEGER"/>
+        </association>
+        <collection property="tags" ofType="com.lyu.entity.Tag">
+            <id column="tid" property="tid" jdbcType="BIGINT"/>
+            <result column="tag" property="tag" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
 
-    <select id="getRequestById" resultType="com.lyu.entity.dto.RequestDTO"></select>
-    <select id="getRequestsFromUser" resultType="com.lyu.entity.dto.RequestDTO"></select>
-    <select id="getRequestsByKeyWords" resultType="com.lyu.entity.dto.RequestDTO"></select>
-    <select id="getRequestsByType" resultType="com.lyu.entity.dto.RequestDTO"></select>
-    <select id="getRequestRecommend" resultType="com.lyu.entity.dto.RequestDTO"></select>
-    <select id="getRequestsLatest" resultType="com.lyu.entity.dto.RequestDTO"></select>
+
+    <select id="getRequestById" resultMap="baseMap">
+        select t_request.rid,
+               t_request.uid,
+               t_request.name,
+               t_request.cover,
+               t_request.quality,
+               t_request.price,
+               t_request.description,
+               t_request.launched,
+               t_request.time,
+               t_request.view_count,
+               t_request.completed,
+               A.tid                                                                 `type_id`,
+               CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                 `type_name`,
+               B.tid                                                                 tid_middle,
+               C.tid                                                                 tid_root,
+               t_user.uid                                                            uuid,
+               t_user.username,
+               t_user.nickname,
+               t_user.avatar,
+               t_user.introduction,
+               t_user.baned_time,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 1 or null) good_rating_count_seller,
+               count(t_order_rating.seller = 1 or null)                              rating_count_seller,
+               count(t_order_rating.level = 2 and t_order_rating.seller = 0 or null) good_rating_count_buyer,
+               count(t_order_rating.seller = 0 or null)                              rating_count_buyer,
+               count(t_user_favorites_request.fid)                                   favorite
+        from db_happy_trade.t_request
+                 left join db_happy_trade.t_user_favorites_request on t_request.uid = t_user_favorites_request.uid,
+             db_happy_trade.t_user
+                 left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
+             db_happy_trade.t_commodity_type A
+                 LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
+                 LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
+        where t_request.type_id = A.tid
+          and t_request.uid = t_user.uid
+          and t_request.launched = 1
+          and t_request.rid = #{id}
+    </select>
+    <select id="getRequestsFromUser" resultMap="baseMap">
+        SELECT t_request.rid,
+               t_request.uid,
+               t_request.`name`,
+               t_request.quality,
+               t_request.price,
+               t_request.launched,
+               t_request.time,
+               t_request.view_count,
+               t_request.cover,
+               t_request.completed,
+               COUNT(t_commodity.cid) cid_count,
+               t_commodity_type.type_name,
+               t_commodity_type.tid   `type_id`,
+               t_user.uid             uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        FROM db_happy_trade.t_request
+                 LEFT JOIN db_happy_trade.t_commodity ON t_commodity.request_id = t_request.rid
+                 LEFT JOIN db_happy_trade.t_user ON t_commodity.uid = t_user.uid,
+             db_happy_trade.t_commodity_type
+        WHERE t_request.type_id = t_commodity_type.tid
+          AND t_request.uid = #{uid}
+        GROUP BY t_request.rid
+
+    </select>
+    <select id="getRequestsByKeyWords" resultMap="baseMap">
+        SELECT t_request.rid,
+        t_request.uid,
+        t_request.`name`,
+        t_request.quality,
+        t_request.price,
+        t_request.completed,
+        t_request.launched,
+        t_request.time,
+        t_request.view_count,
+        t_request.cover,
+        t_request.completed,
+        t_commodity_type.type_name,
+        t_commodity_type.tid `type_id`,
+        t_user.uid uid2,
+        t_user.nickname,
+        t_user.username,
+        t_user.avatar
+        FROM db_happy_trade.t_request,
+        db_happy_trade.t_commodity_type,
+        db_happy_trade.t_user
+        WHERE
+        <foreach collection="words" item="word" separator="AND">
+            t_request.name like CONCAT('%',#{word},'%')
+        </foreach>
+        AND t_request.type_id = t_commodity_type.tid
+        AND t_user.uid=t_request.uid
+        AND t_request.completed=0
+
+    </select>
+    <select id="getRequestsByType" resultMap="baseMap">
+        (select t_request.rid,
+                t_request.uid,
+                t_request.`name`,
+                t_request.quality,
+                t_request.price,
+                t_request.completed,
+                t_request.launched,
+                t_request.time,
+                t_request.view_count,
+                t_request.cover,
+                C.type_name,
+                C.tid      `type_id`,
+                t_user.uid uid2,
+                t_user.nickname,
+                t_user.username,
+                t_user.avatar
+         from db_happy_trade.t_request,
+              db_happy_trade.t_user,
+              db_happy_trade.t_commodity_type A
+                  left join db_happy_trade.t_commodity_type B on A.tid = B.p_tid
+                  left join db_happy_trade.t_commodity_type C on B.tid = C.p_tid
+         where A.tid = #{typeId}
+           and t_user.uid = t_request.uid
+           and t_request.type_id = C.tid)
+        union all
+        (select t_request.rid,
+                t_request.uid,
+                t_request.`name`,
+                t_request.quality,
+                t_request.price,
+                t_request.completed,
+                t_request.launched,
+                t_request.time,
+                t_request.view_count,
+                t_request.cover,
+                B.type_name,
+                B.tid      `type_id`,
+                t_user.uid uid2,
+                t_user.nickname,
+                t_user.username,
+                t_user.avatar
+         from db_happy_trade.t_request,
+              db_happy_trade.t_user,
+              db_happy_trade.t_commodity_type A
+                  left join db_happy_trade.t_commodity_type B on A.tid = B.p_tid
+                  left join db_happy_trade.t_commodity_type C on B.tid = C.p_tid
+         where A.tid = #{typeId}
+           and t_user.uid = t_request.uid
+           and t_request.type_id = B.tid)
+        union all
+        select t_request.rid,
+               t_request.uid,
+               t_request.`name`,
+               t_request.quality,
+               t_request.price,
+               t_request.completed,
+               t_request.launched,
+               t_request.time,
+               t_request.view_count,
+               t_request.cover,
+               B.type_name,
+               B.tid      `type_id`,
+               t_user.uid uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        from db_happy_trade.t_request,
+             db_happy_trade.t_user,
+             db_happy_trade.t_commodity_type A
+                 left join db_happy_trade.t_commodity_type B on A.tid = B.p_tid
+                 left join db_happy_trade.t_commodity_type C on B.tid = C.p_tid
+        where A.tid = #{typeId}
+          and t_user.uid = t_request.uid
+          and t_request.type_id = A.tid
+    </select>
+    <select id="getRequestRecommend" resultMap="baseMap">
+        SELECT t_request.rid,
+               t_request.uid,
+               t_request.`name`,
+               t_request.quality,
+               t_request.price,
+               t_request.completed,
+               t_request.launched,
+               t_request.time,
+               t_request.view_count,
+               t_request.cover,
+               t_commodity_type.type_name,
+               t_commodity_type.tid `type_id`,
+               t_user.uid           uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        FROM db_happy_trade.t_request,
+             db_happy_trade.t_commodity_type,
+             db_happy_trade.t_user,
+             (SELECT count(b.tid) `count`,
+                     C.tid        `tid`
+              FROM db_happy_trade.t_user_view_history,
+                   db_happy_trade.t_request,
+                   db_happy_trade.t_commodity_type A
+                       LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
+                       LEFT JOIN db_happy_trade.t_commodity_type C ON B.tid = C.p_tid
+              WHERE t_user_view_history.uid = #{uid}
+                AND t_user_view_history.cid = t_request.rid
+                AND t_request.type_id = A.tid
+              GROUP BY C.tid
+              LIMIT 1000) as temp
+        WHERE (temp.tid = t_request.type_id
+            or rand() &lt; 0.0005)
+          AND t_request.type_id = t_commodity_type.tid
+          AND t_user.uid = t_request.uid
+          AND t_request.completed = 0
+        ORDER BY - LOG(1.0 - RAND()) / temp.count
+
+    </select>
+    <select id="getRequestsLatest" resultMap="baseMap">
+        SELECT t_request.rid,
+               t_request.uid,
+               t_request.`name`,
+               t_request.quality,
+               t_request.price,
+               t_request.completed,
+               t_request.launched,
+               t_request.time,
+               t_request.view_count,
+               t_request.cover,
+               t_commodity_type.type_name,
+               t_commodity_type.tid `type_id`,
+               t_user.uid           uid2,
+               t_user.nickname,
+               t_user.username,
+               t_user.avatar
+        FROM db_happy_trade.t_request,
+             db_happy_trade.t_commodity_type,
+             db_happy_trade.t_user
+        WHERE t_request.type_id = t_commodity_type.tid
+          AND t_user.uid = t_request.uid
+          AND t_request.completed = 0
+        order by uid desc
+
+    </select>
 </mapper>

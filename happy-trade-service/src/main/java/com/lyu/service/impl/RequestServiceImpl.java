@@ -43,6 +43,7 @@ public class RequestServiceImpl implements RequestService {
         request.setTypeId(request.getType().getTid());
         request.setLaunched(true);
         request.setTime(LocalDateTime.now());
+        requestMapper.insert(request);
         return request.getRid();
     }
 
@@ -53,8 +54,6 @@ public class RequestServiceImpl implements RequestService {
         if (uid != uidLogin) {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
-
-
         return requestMapper.updateById(request);
     }
 
@@ -132,8 +131,8 @@ public class RequestServiceImpl implements RequestService {
         if (type == null) {
             throw new CommodityException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
         }
-        IPage<RequestDTO> requestDTOIPage = requestMapper.getRequestsByType(page, type);
-        return requestDTOIPage.getRecords();
+        IPage<RequestDTO> requestPage = requestMapper.getRequestsByType(page, type);
+        return requestPage.getRecords();
     }
 
     @Override

@@ -27,6 +27,7 @@ public interface CommodityService {
      * @return
      */
     Integer updateCommodity(CommodityDTO commodity);
+
     /**
      * 下架商品
      *
@@ -34,6 +35,7 @@ public interface CommodityService {
      * @return
      */
     void takeDownCommodity(Long cid);
+
     /**
      * 上架商品
      *
@@ -58,6 +60,13 @@ public interface CommodityService {
      */
     CommodityDTO getCommodityById(Long cid);
 
+    /**
+     * 根据求购id获取商品
+     *
+     * @param rid
+     * @return
+     */
+    List<CommodityDTO> getCommodityForRequest(Long rid);
 
     /**
      * 获取指定用户在线商品
