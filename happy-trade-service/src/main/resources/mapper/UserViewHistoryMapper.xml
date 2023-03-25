@@ -18,13 +18,13 @@
 
     </resultMap>
     <insert id="insertOrUpdate">
-        insert into db_happy_trade.t_user_view_history(cid, uid, `time`)
-        values (#{cid}, #{uid}, #{time})
+        insert into db_happy_trade.t_user_view_history(id, uid, `time`,request)
+        values (#{cid}, #{uid}, #{time},0)
         ON DUPLICATE KEY
             UPDATE `time`=#{time};
     </insert>
     <select id="getAllViewHistoryByUid" resultMap="baseMap">
-        select t_user_view_history.cid,
+        select t_user_view_history.id,
                t_user_view_history.uid,
                t_user_view_history.time,
                t_commodity.cid  ccid,
@@ -38,14 +38,16 @@
                t_commodity.cover
         from db_happy_trade.t_user_view_history,
              db_happy_trade.t_commodity
-        where t_user_view_history.cid = t_commodity.cid
+        where t_user_view_history.id = t_commodity.cid
+          and t_user_view_history.request=0
           AND t_user_view_history.uid = #{uid}
     </select>
     <select id="exists" resultType="java.lang.Boolean">
         SELECT 1
         FROM db_happy_trade.t_user_view_history
         WHERE t_user_view_history.uid = #{uid}
-          AND t_user_view_history.cid = #{cid}
+          AND t_user_view_history.id = #{cid}
+          and t_user_view_history.request = 0
         LIMIT 1
     </select>
 </mapper>

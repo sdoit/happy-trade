@@ -22,6 +22,7 @@ import com.lyu.entity.Order;
 import com.lyu.entity.User;
 import com.lyu.entity.WithdrawalOrder;
 import com.lyu.exception.AliPayException;
+import com.lyu.exception.SmsException;
 import com.lyu.mapper.CommodityBidMapper;
 import com.lyu.mapper.WithdrawalOrderMapper;
 import com.lyu.service.*;
@@ -181,7 +182,11 @@ public class AlipayServiceImpl implements AlipayService {
                 );
                 //发送短信给卖家 通知有用户购买了他的订单
                 User userSeller = userService.getUserByUid(bidOrder.getUidSeller());
-                sms.sendPaySuccessNotification(userSeller.getPhone());
+                try {
+                    sms.sendNotification(userSeller.getPhone(), Sms.SmsNotifyType.NewBid);
+                } catch (SmsException e) {
+                    log.error(e.getMessage());
+                }
                 uid = bidOrder.getUidBuyer();
                 //即时消息，不储存； 通知支付成功
                 sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_BID_ALPAY_COMPLETED, "/buyer/bid/");
@@ -207,10 +212,9 @@ public class AlipayServiceImpl implements AlipayService {
                 );
                 //发送短信给卖家 通知有用户购买了他的订单
                 User userSeller = userService.getUserByUid(order.getUidSeller());
-                sms.sendPaySuccessNotification(userSeller.getPhone());
+                sms.sendNotification(userSeller.getPhone(), Sms.SmsNotifyType.PayOrder);
                 //即时消息，不储存
                 sseService.sendMsgToClientByClientId(String.valueOf(uid), Message.SSE_ORDER_ALPAY_COMPLETED, "/buyer/order/" + order.getOid());
-
             }
             return true;
         }

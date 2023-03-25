@@ -41,9 +41,9 @@
 
 
     <select id="getRequestById" resultMap="baseMap">
-        select t_request.rid,
+        SELECT t_request.rid,
                t_request.uid,
-               t_request.name,
+               t_request.NAME,
                t_request.cover,
                t_request.quality,
                t_request.price,
@@ -52,32 +52,45 @@
                t_request.time,
                t_request.view_count,
                t_request.completed,
-               A.tid                                                                 `type_id`,
-               CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                 `type_name`,
-               B.tid                                                                 tid_middle,
-               C.tid                                                                 tid_root,
-               t_user.uid                                                            uuid,
+               A.tid                                                                `type_id`,
+               CONCAT_WS('/', C.type_name, B.type_name, A.type_name)                `type_name`,
+               B.tid                                                                tid_middle,
+               C.tid                                                                tid_root,
+               t_user.uid                                                           uuid,
                t_user.username,
                t_user.nickname,
                t_user.avatar,
                t_user.introduction,
                t_user.baned_time,
-               count(t_order_rating.level = 2 and t_order_rating.seller = 1 or null) good_rating_count_seller,
-               count(t_order_rating.seller = 1 or null)                              rating_count_seller,
-               count(t_order_rating.level = 2 and t_order_rating.seller = 0 or null) good_rating_count_buyer,
-               count(t_order_rating.seller = 0 or null)                              rating_count_buyer,
-               count(t_user_favorites_request.fid)                                   favorite
-        from db_happy_trade.t_request
-                 left join db_happy_trade.t_user_favorites_request on t_request.uid = t_user_favorites_request.uid,
-             db_happy_trade.t_user
-                 left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
+               counter.good_rating_count_seller,
+               counter.rating_count_seller,
+               counter.good_rating_count_buyer,
+               counter.rating_count_buyer,
+               counter.favorite,
+               COUNT(db_happy_trade.t_commodity.request_id = t_request.rid OR NULL) cid_count
+        FROM (SELECT count(t_order_rating.LEVEL = 2 AND t_order_rating.seller = 1 OR NULL) good_rating_count_seller,
+                     count(t_order_rating.seller = 1 OR NULL)                              rating_count_seller,
+                     count(t_order_rating.LEVEL = 2 AND t_order_rating.seller = 0 OR NULL) good_rating_count_buyer,
+                     count(t_order_rating.seller = 0 OR NULL)                              rating_count_buyer,
+                     COUNT(db_happy_trade.t_user_favorites.fid)                            favorite
+              FROM db_happy_trade.t_request
+                       LEFT JOIN db_happy_trade.t_user_favorites ON t_request.rid = t_user_favorites.id
+                  AND t_user_favorites.request = 1,
+                   db_happy_trade.t_user
+                       LEFT JOIN db_happy_trade.t_order_rating ON t_order_rating.target = t_user.uid
+              WHERE t_request.uid = t_user.uid
+                AND t_request.launched = 1
+                AND t_request.rid = #{id}) counter,
+             db_happy_trade.t_request,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_user,
              db_happy_trade.t_commodity_type A
                  LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
                  LEFT JOIN db_happy_trade.t_commodity_type C ON B.p_tid = C.tid
-        where t_request.type_id = A.tid
-          and t_request.uid = t_user.uid
-          and t_request.launched = 1
-          and t_request.rid = #{id}
+        WHERE t_request.type_id = A.tid
+          AND t_request.uid = t_user.uid
+          AND t_request.launched = 1
+          AND t_request.rid = #{id}
     </select>
     <select id="getRequestsFromUser" resultMap="baseMap">
         SELECT t_request.rid,
@@ -240,7 +253,8 @@
                        LEFT JOIN db_happy_trade.t_commodity_type B ON A.p_tid = B.tid
                        LEFT JOIN db_happy_trade.t_commodity_type C ON B.tid = C.p_tid
               WHERE t_user_view_history.uid = #{uid}
-                AND t_user_view_history.cid = t_request.rid
+                AND t_user_view_history.id = t_request.rid
+                and t_user_view_history.request=0
                 AND t_request.type_id = A.tid
               GROUP BY C.tid
               LIMIT 1000) as temp

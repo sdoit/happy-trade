@@ -121,4 +121,9 @@ public interface CommodityService {
     List<CommodityType> getTypeRecommend();
 
 
+    /**
+     * 将与求购绑定的商品转成普通商品
+     * @param rid
+     */
+    void transferToGeneral(Long rid);
 }

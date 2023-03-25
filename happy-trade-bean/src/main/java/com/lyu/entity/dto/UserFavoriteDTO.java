@@ -1,6 +1,7 @@
 package com.lyu.entity.dto;
 
 import com.lyu.entity.Commodity;
+import com.lyu.entity.Request;
 import com.lyu.entity.UserFavorite;
 import com.lyu.entity.UserResource;
 import lombok.Data;
@@ -12,6 +13,7 @@ import lombok.Data;
 @Data
 public class UserFavoriteDTO extends UserFavorite {
     private Commodity commodity;
+    private Request request;
     private UserResource cover;
 
 }

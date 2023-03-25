@@ -74,6 +74,7 @@ public enum CodeAndMessage {
     COMMODITY_IS_ALREADY_ON_THE_SHELF(false, 5003, "商品已经处在上架的状态中"),
     NO_SUCH_COMMODITY_SNAPSHOT(false, 5004, "快照不存在"),
 
+    NO_SUCH_REQUEST(false, 5051, "求购不存在或已下架"),
 
 
     WRONG_REQUEST_PARAMETER(false, 6001, "请求参数错误"),

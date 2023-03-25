@@ -23,8 +23,9 @@ public interface UserMessageService {
      * @param messageType 消息类型
      * @param uidSend
      * @param uidReceive
+     * @return 过滤后的文本
      */
-    void sendMessage(String title, String content, ContentType contentType, String url, String messageType, Long uidSend, Long uidReceive);
+    String sendMessage(String title, String content, ContentType contentType, String url, String messageType, Long uidSend, Long uidReceive);
 
     /**
      * 发送通知，

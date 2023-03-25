@@ -30,7 +30,7 @@
                t_commodity.cover
         from db_happy_trade.t_user_favorites,
              db_happy_trade.t_commodity
-        where t_commodity.cid = t_user_favorites.cid
+        where t_commodity.cid = t_user_favorites.id
           and t_user_favorites.uid = #{uid}
     </select>
 </mapper>

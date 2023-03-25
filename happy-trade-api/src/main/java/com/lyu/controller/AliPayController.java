@@ -35,16 +35,8 @@ import java.util.Map;
 public class AliPayController {
 
     @Resource
-    private OrderService orderService;
-    @Resource
-    private CommodityBidService commodityBidService;
-    @Resource
     private DateTimeFormatter dateTimeFormatterAliPay;
-    @Resource
-    private SseService sseService;
-    @Resource
-    private UserMessageService userMessageService;
-  
+
     @Resource
     private AlipayService alipayService;
 

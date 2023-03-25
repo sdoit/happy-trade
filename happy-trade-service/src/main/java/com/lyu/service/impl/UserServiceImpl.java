@@ -147,7 +147,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUid(Long uid) {
-        StpUtil.checkLogin();
         User user = userMapper.selectById(uid);
         user.setPassword(null);
         return user;

@@ -27,7 +27,7 @@ public class UserFavorite implements Serializable {
     private Long uid;
 
     @NotNull
-    private Long cid;
+    private Long id;
     private LocalDateTime time;
 
     @TableField(exist = false)
@@ -47,7 +47,7 @@ public class UserFavorite implements Serializable {
         UserFavorite other = (UserFavorite) that;
         return (this.getFid() == null ? other.getFid() == null : this.getFid().equals(other.getFid()))
                 && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
-                && (this.getCid() == null ? other.getCid() == null : this.getCid().equals(other.getCid()))
+                && (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
@@ -57,7 +57,7 @@ public class UserFavorite implements Serializable {
         int result = 1;
         result = prime * result + ((getFid() == null) ? 0 : getFid().hashCode());
         result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
-        result = prime * result + ((getCid() == null) ? 0 : getCid().hashCode());
+        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         return result;
     }
@@ -70,7 +70,7 @@ public class UserFavorite implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", fid=").append(fid);
         sb.append(", uid=").append(uid);
-        sb.append(", cid=").append(cid);
+        sb.append(", id=").append(id);
         sb.append(", time=").append(time);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

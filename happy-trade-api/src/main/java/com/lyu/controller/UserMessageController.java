@@ -32,12 +32,12 @@ public class UserMessageController {
     private UserMessageService userMessageService;
 
     @PostMapping
-    public CommonResult<Object> sendMessage(@NotNull @RequestBody UserMessage userMessage) {
+    public CommonResult<String> sendMessage(@NotNull @RequestBody UserMessage userMessage) {
         long uidSend = StpUtil.getLoginIdAsLong();
-        userMessageService.sendMessage(null, userMessage.getContent(), userMessage.getContentType(), String.valueOf(uidSend),
+        String text = userMessageService.sendMessage(null, userMessage.getContent(), userMessage.getContentType(), String.valueOf(uidSend),
                 null,
                 uidSend, userMessage.getUidReceive());
-        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, text);
     }
 
     @GetMapping

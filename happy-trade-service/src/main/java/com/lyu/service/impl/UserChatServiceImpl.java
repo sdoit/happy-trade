@@ -43,7 +43,7 @@ public class UserChatServiceImpl implements UserChatService {
     public void addOrUpdateUserChat(Long uid, Long uidTarget, String lastMessage, ContentType contentType) {
         long groupId = getGroupId(uid, uidTarget);
         if (BooleanUtil.isTrue(userChatMapper.existChat(groupId, uid))) {
-            userChatMapper.update(null, new UpdateWrapper<UserChat>().set("last_message", lastMessage).eq("group_id", groupId).eq("uid", uid));
+            userChatMapper.update(null, new UpdateWrapper<UserChat>().set("last_message", lastMessage).set("content_type",contentType.getCode()).eq("group_id", groupId).eq("uid", uid));
         } else {
             UserChat userChat = new UserChat();
             userChat.setUid(uid);

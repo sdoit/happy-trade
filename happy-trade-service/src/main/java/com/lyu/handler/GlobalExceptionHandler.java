@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     /**
      * 自定义全局异常
      */
-    @ExceptionHandler({UserException.class, CommodityException.class, OrderException.class, CommodityBidException.class})
+    @ExceptionHandler(GlobalException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResult<Object> globalExceptionHandler(GlobalException e) {
         return new CommonResult<>(e.getCode(), false, e.getMessage(), null);

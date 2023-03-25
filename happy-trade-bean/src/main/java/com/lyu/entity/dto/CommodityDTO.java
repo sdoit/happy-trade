@@ -5,6 +5,7 @@ import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.Tag;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ import java.util.List;
  * @author LEE
  * @time 2023/1/29 15:35
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommodityDTO extends Commodity {

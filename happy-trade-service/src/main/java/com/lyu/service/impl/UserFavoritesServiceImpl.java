@@ -30,7 +30,7 @@ public class UserFavoritesServiceImpl implements UserFavoritesService {
     public boolean saveOrDeleteFavorite(UserFavorite userFavorite) {
         userFavorite.setUid(StpUtil.getLoginIdAsLong());
         userFavorite.setTime(LocalDateTime.now());
-        UserFavorite userFavoriteInDb = userFavoriteMapper.selectOne(new QueryWrapper<UserFavorite>().eq("uid", userFavorite.getUid()).eq("cid", userFavorite.getCid()));
+        UserFavorite userFavoriteInDb = userFavoriteMapper.selectOne(new QueryWrapper<UserFavorite>().eq("uid", userFavorite.getUid()).eq("cid", userFavorite.getId()));
         if (userFavoriteInDb == null) {
             userFavoriteMapper.insert(userFavorite);
             return true;

@@ -6,6 +6,7 @@ import com.aliyun.dysmsapi20170525.models.SendSmsRequest;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
+import com.lyu.exception.SmsException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,34 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Sms {
+    public enum SmsNotifyType {
+
+        /**
+         * 商品有了新出价
+         */
+        NewBid,
+        /**
+         * 用户支付了你的订单
+         */
+        PayOrder,
+        /**
+         * 订单被确定收货
+         */
+        OrderComplete,
+        /**
+         * 出价被同意
+         */
+        BidRejected,
+        /**
+         * 出价被拒绝
+         */
+        BidAgreed,
+        /**
+         * 求购被下架或删除
+         */
+        RequestCancel,
+
+    }
 
     private final Client client;
     @Value("${aliyun.signName}")
@@ -51,14 +80,34 @@ public class Sms {
         return client.sendSmsWithOptions(sendSmsRequest, runtime);
     }
 
-    public SendSmsResponse sendPaySuccessNotification(String phoneNumber ) throws Exception {
-
+    public SendSmsResponse sendNotification(String phoneNumber, SmsNotifyType smsNotifyType) throws SmsException {
         SendSmsRequest sendSmsRequest = new SendSmsRequest()
                 .setPhoneNumbers(phoneNumber)
-                .setSignName(signName)
-                .setTemplateCode(templateCodeSendPaySuccessNotification);
+                .setSignName(signName);
+        switch (smsNotifyType) {
+            case PayOrder:
+                sendSmsRequest.setTemplateCode(templateCodeSendPaySuccessNotification);
+                break;
+            case OrderComplete:
+                //模板未申请
+                return null;
+            case BidRejected:
+                //模板未申请
+                return null;
+
+            case BidAgreed:
+                //模板未申请
+                return null;
+            default:
+                return null;
+        }
         RuntimeOptions runtime = new RuntimeOptions();
-        return client.sendSmsWithOptions(sendSmsRequest, runtime);
+        try {
+            return client.sendSmsWithOptions(sendSmsRequest, runtime);
+        } catch (Exception e) {
+            throw new SmsException(0, e.getMessage());
+        }
     }
+
 
 }

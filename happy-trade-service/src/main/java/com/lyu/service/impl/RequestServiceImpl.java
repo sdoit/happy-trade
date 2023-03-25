@@ -6,16 +6,23 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
+import com.lyu.common.Message;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.Request;
+import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.entity.dto.RequestDTO;
 import com.lyu.exception.CommodityException;
+import com.lyu.exception.RequestException;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.RequestMapper;
+import com.lyu.service.CommodityService;
 import com.lyu.service.RequestService;
+import com.lyu.service.UserMessageService;
 import com.lyu.util.IDUtil;
+import com.lyu.util.aliyun.Sms;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
@@ -31,7 +38,12 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService {
     @Resource
     private RequestMapper requestMapper;
-
+    @Resource
+    private CommodityService commodityService;
+    @Resource
+    private Sms sms;
+    @Resource
+    private UserMessageService userMessageService;
     @Resource
     private IDUtil idUtil;
 
@@ -59,6 +71,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public void takeDownRequest(Long id) {
+
         Request request = requestMapper.selectById(id);
         if (request == null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
@@ -70,6 +83,16 @@ public class RequestServiceImpl implements RequestService {
             throw new CommodityException(CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getCode(), CodeAndMessage.COMMODITY_IS_ALREADY_OUT_THE_SHELF.getMessage());
         }
         request.setLaunched(false);
+        //转换商品为普通商品
+        commodityService.transferToGeneral(id);
+        //通知此求购下的所有商品发布者
+        List<CommodityDTO> commodities = commodityService.getCommodityForRequest(id);
+        commodities.forEach(commodity -> {
+            //发送站内通知
+            userMessageService.sendNotification(Message.REQUEST_DELETED, "/commodity/" + commodity.getCid(), commodity.getUid());
+            //发送短信通知
+            sms.sendNotification(commodity.getUser().getPhone(), Sms.SmsNotifyType.RequestCancel);
+        });
         requestMapper.updateById(request);
     }
 
@@ -91,6 +114,7 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Integer deleteRequestById(Long id) {
         Request request = requestMapper.selectById(id);
         Long uid = request.getUid();
@@ -98,13 +122,27 @@ public class RequestServiceImpl implements RequestService {
         if (uid != uidLogin) {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
-
-        return requestMapper.deleteById(request.getRid());
+        //将求购下的所有商品转为普通商品
+        commodityService.transferToGeneral(id);
+        requestMapper.deleteById(request.getRid());
+        //通知此求购下的所有商品发布者
+        List<CommodityDTO> commodities = commodityService.getCommodityForRequest(id);
+        commodities.forEach(commodity -> {
+            //发送站内通知
+            userMessageService.sendNotification(Message.REQUEST_DELETED, "/commodity/" + commodity.getCid(), commodity.getUid());
+            //发送短信通知
+            sms.sendNotification(commodity.getUser().getPhone(), Sms.SmsNotifyType.RequestCancel);
+        });
+        //发送短信通知
+        return 1;
     }
 
     @Override
     public RequestDTO getRequestById(Long id) {
-        RequestDTO requestDTO= requestMapper.getRequestById(id);;
+        RequestDTO requestDTO = requestMapper.getRequestById(id);
+        if (requestDTO == null || requestDTO.getRid() == null) {
+            throw new RequestException(CodeAndMessage.NO_SUCH_REQUEST.getCode(), CodeAndMessage.NO_SUCH_REQUEST.getMessage());
+        }
         //设置typePath
         CommodityType commodityType = requestDTO.getType();
         commodityType.setTypePath(new Integer[]{requestDTO.getType().getTidRoot(),

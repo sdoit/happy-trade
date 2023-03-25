@@ -15,6 +15,7 @@ import com.lyu.mapper.UserMessageMapper;
 import com.lyu.service.SseService;
 import com.lyu.service.UserChatService;
 import com.lyu.service.UserMessageService;
+import com.lyu.util.BadWordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -36,15 +37,17 @@ public class UserMessageServiceImpl implements UserMessageService {
     private UserChatService userChatService;
     @Resource
     private SseService sseService;
+    @Resource
+    private BadWordUtil badWordUtil;
 
     @Override
-    @Async("asyncPoolTaskExecutor")
-    public void sendMessage(String title, String content, ContentType contentType, String url, String messageType, Long uidSend, Long uidReceive) {
+//    @Async("asyncPoolTaskExecutor")
+    public String sendMessage(String title, String content, ContentType contentType, String url, String messageType, Long uidSend, Long uidReceive) {
         UserMessage userMessage = new UserMessage();
         userMessage.setGroupId(getGroupId(uidSend, uidReceive));
         log.debug("GroupId:" + userMessage.getGroupId());
-        userMessage.setTitle(title);
-        userMessage.setContent(content);
+        userMessage.setTitle(badWordUtil.sensitiveProcess(title));
+        userMessage.setContent(badWordUtil.sensitiveProcess(content));
         userMessage.setContentType(contentType);
         userMessage.setUrl(url);
         userMessage.setSystemNotify(false);
@@ -54,10 +57,11 @@ public class UserMessageServiceImpl implements UserMessageService {
         userMessage.setTime(LocalDateTime.now());
         userMessage.setRead(false);
         //修改用户聊天列表最后一条消息
-        userChatService.addOrUpdateUserChat(uidSend, uidReceive, content,contentType);
+        userChatService.addOrUpdateUserChat(uidSend, uidReceive, userMessage.getContent(), contentType);
         //尝试直接推送
         sseService.sendCustomMsgToClientByClientId(String.valueOf(userMessage.getUidReceive()), "0", SseConstant.SSE_MESSAGE_ID_USER_MESSAGE, userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), null);
         userMessageMapper.insert(userMessage);
+        return userMessage.getContent();
     }
 
     @Override

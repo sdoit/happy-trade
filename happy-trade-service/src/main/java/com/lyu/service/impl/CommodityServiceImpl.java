@@ -2,6 +2,7 @@ package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
@@ -213,6 +214,11 @@ public class CommodityServiceImpl implements CommodityService {
             return typeRecommend;
         }
         return commodityMapper.getTypeHotRecent(LocalDateTime.now());
+    }
+
+    @Override
+    public void transferToGeneral(Long rid) {
+        commodityMapper.update(null, new UpdateWrapper<Commodity>().set("request_id", null).eq("request_id", rid).eq("sold", 0));
     }
 
 }

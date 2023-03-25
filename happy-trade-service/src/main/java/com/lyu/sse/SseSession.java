@@ -81,7 +81,7 @@ public class SseSession {
         final SseEmitter emitter = SESSION.get(id);
         if (emitter != null) {
             try {
-                emitter.send(msg);
+                emitter.  send(msg);
                 return true;
             } catch (IOException e) {
                 log.error("MSG: SendMessageError-IOException | ID: " + id + " | Date: " + LocalDateTime.now() + " |", e);

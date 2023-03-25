@@ -1,5 +1,6 @@
 package com.lyu.controller;
 
+import cn.dev33.satoken.stp.StpUtil;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
 import com.lyu.entity.User;
@@ -76,6 +77,7 @@ public class UserController {
 
     @GetMapping("/{uid}")
     public CommonResult<User> getUserByUid(@NotNull @PathVariable("uid") Long uid) {
+        StpUtil.checkLogin();
         return CommonResult.Result(CodeAndMessage.SUCCESS, userService.getUserByUid(uid));
 
     }

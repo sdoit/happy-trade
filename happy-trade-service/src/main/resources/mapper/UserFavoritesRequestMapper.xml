@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyu.mapper.UserFavoritesRequestMapper">
-    <resultMap id="baseMap" type="com.lyu.entity.dto.UserFavoritesRequestDTO">
+    <resultMap id="baseMap" type="com.lyu.entity.dto.UserFavoriteDTO">
         <id column="fid" property="fid" jdbcType="BIGINT"/>
         <result column="time" property="time" jdbcType="TIMESTAMP"/>
         <association property="request" javaType="com.lyu.entity.Request">
@@ -17,8 +17,8 @@
         </association>
     </resultMap>
     <select id="getFavoritesByUid" resultMap="baseMap">
-        select t_user_favorites_request.fid,
-               t_user_favorites_request.time,
+        select t_user_favorites.fid,
+               t_user_favorites.time,
                t_request.rid,
                t_request.name,
                t_request.quality,
@@ -28,9 +28,10 @@
                t_request.time ctime,
                t_request.view_count,
                t_request.cover
-        from db_happy_trade.t_user_favorites_request,
+        from db_happy_trade.t_user_favorites,
              db_happy_trade.t_request
-        where t_request.rid = t_user_favorites_request.rid
-          and t_user_favorites_request.uid = #{uid}
+        where t_request.rid = t_user_favorites.id
+          and t_user_favorites.request=1
+          and t_user_favorites.uid = #{uid}
     </select>
 </mapper>
