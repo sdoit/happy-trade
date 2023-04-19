@@ -7,16 +7,18 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
+import com.lyu.common.Message;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.dto.CommodityDTO;
+import com.lyu.entity.dto.RequestDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
-import com.lyu.service.CommodityService;
-import com.lyu.service.TagService;
-import com.lyu.service.UserViewHistoryService;
+import com.lyu.service.*;
 import com.lyu.util.IDUtil;
+import com.lyu.util.aliyun.Sms;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,7 +38,13 @@ public class CommodityServiceImpl implements CommodityService {
     private UserViewHistoryService userViewHistoryService;
     @Resource
     private TagService tagService;
-
+    @Resource
+    private UserMessageService userMessageService;
+    @Lazy
+    @Resource
+    private RequestService requestService;
+    @Resource
+    private Sms sms;
     @Resource
     private IDUtil idUtil;
 
@@ -58,6 +66,13 @@ public class CommodityServiceImpl implements CommodityService {
         //映射
         tagService.mapCommodityAndTags(commodity.getTags(), commodity.getCid());
         commodityMapper.insert(commodity);
+        if (commodity.getRequestId() != null) {
+            //通知求购
+            RequestDTO request = requestService.getRequestById(commodity.getRequestId());
+            userMessageService.sendNotification(Message.NEW_COMMODITY_FOR_REQUEST, "/commodity/" + commodity.getCid(), request.getUid());
+            //短信通知
+            sms.sendNotification(request.getUser().getPhone(), Sms.SmsNotifyType.NewCommodityForRequest);
+        }
         return commodity.getCid();
     }
 
@@ -134,6 +149,8 @@ public class CommodityServiceImpl implements CommodityService {
         } else {
             commodityDTO = commodityMapper.getCommodityById(cid);
         }
+
+
         //设置typePath
         CommodityType commodityType = commodityDTO.getType();
         commodityType.setTypePath(new Integer[]{commodityDTO.getType().getTidRoot(),

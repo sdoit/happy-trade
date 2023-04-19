@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -29,15 +30,18 @@ public class User implements Serializable {
      * 用户名，必须字母开头，可作为登录凭证
      */
     @NotBlank
-    @Length(min = 5,max = 20)
+    @Length(min = 5, max = 20)
     private String username;
 
     /**
      * 密码
      */
     @NotBlank
-    @Length(min = 6,max = 20)
+    @Size(min = 6, max = 20)
     private String password;
+    @TableField(exist = false)
+    @Size(min = 6, max = 20)
+    private String oldPassword;
 
     /**
      * 手机号码，可作为登录凭证
@@ -45,7 +49,8 @@ public class User implements Serializable {
     @NotBlank
     @Pattern(regexp = "^1[3-9]\\d{9}$")
     private String phone;
-
+    @TableField(exist = false)
+    private String newPhone;
     /**
      * 昵称
      */
@@ -61,6 +66,7 @@ public class User implements Serializable {
      * 个人简介
      */
     private String introduction;
+    private Boolean admin;
 
 
     /**

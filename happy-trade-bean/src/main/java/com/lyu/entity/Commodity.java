@@ -99,6 +99,14 @@ public class Commodity implements Serializable {
      */
     private Integer viewCount;
     private Long requestId;
+    /**
+     * 是否被强制删除
+     */
+    private Boolean forceDelete;
+    /**
+     * 是否被强制下架
+     */
+    private Boolean forceDown;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -128,7 +136,9 @@ public class Commodity implements Serializable {
                 && (this.getSold() == null ? other.getSold() == null : this.getSold().equals(other.getSold()))
                 && (this.getLaunched() == null ? other.getLaunched() == null : this.getLaunched().equals(other.getLaunched()))
                 && (this.getRequestId() == null ? other.getRequestId() == null : this.getRequestId().equals(other.getRequestId()))
-                && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()));
+                && (this.getViewCount() == null ? other.getViewCount() == null : this.getViewCount().equals(other.getViewCount()))
+                && (this.getForceDelete() == null ? other.getForceDelete() == null : this.getForceDelete().equals(other.getForceDelete()))
+                && (this.getForceDown() == null ? other.getForceDown() == null : this.getForceDown().equals(other.getForceDown()));
     }
 
     @Override
@@ -150,6 +160,8 @@ public class Commodity implements Serializable {
         result = prime * result + ((getLaunched() == null) ? 0 : getLaunched().hashCode());
         result = prime * result + ((getRequestId() == null) ? 0 : getRequestId().hashCode());
         result = prime * result + ((getViewCount() == null) ? 0 : getViewCount().hashCode());
+        result = prime * result + ((getForceDelete() == null) ? 0 : getForceDelete().hashCode());
+        result = prime * result + ((getForceDown() == null) ? 0 : getForceDown().hashCode());
         return result;
     }
 
@@ -174,6 +186,8 @@ public class Commodity implements Serializable {
         sb.append(", launched=").append(launched);
         sb.append(", viewCount=").append(viewCount);
         sb.append(", requestId=").append(requestId);
+        sb.append(", forceDelete=").append(forceDelete);
+        sb.append(", forceDown=").append(forceDown);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

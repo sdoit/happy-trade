@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.lyu.entity.SearchCandidateWord;
 import com.lyu.mapper.SearchCandidateWordMapper;
 import com.lyu.service.SearchCandidateWordService;
+import com.lyu.util.BadWordUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,9 @@ public class SearchCandidateWordServiceImpl implements SearchCandidateWordServic
     @Resource
     private SearchCandidateWordMapper searchCandidateWordMapper;
 
+    @Resource
+    private BadWordUtil badWordUtil;
+
     @Override
     public List<SearchCandidateWord> getCandidateWords(String keyword) {
         if (StrUtil.isBlank(keyword)) {
@@ -34,8 +38,14 @@ public class SearchCandidateWordServiceImpl implements SearchCandidateWordServic
     }
 
     @Override
-    public Integer saveCandidateWord(SearchCandidateWord searchCandidateWord) {
-
+    public Integer saveCandidateWord(String keyword) {
+        //安全检查，关键词不能包含敏感词
+        if (badWordUtil.hasBadWord(keyword)) {
+            return -1;
+        }
+        SearchCandidateWord searchCandidateWord = new SearchCandidateWord();
+        searchCandidateWord.setSearchIndex(0L);
+        searchCandidateWord.setKeyword(keyword);
         return searchCandidateWordMapper.insert(searchCandidateWord);
     }
 

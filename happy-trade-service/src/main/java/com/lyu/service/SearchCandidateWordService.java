@@ -18,10 +18,10 @@ public interface SearchCandidateWordService {
 
     /**
      * 将候选词保存到数据库，需进行安全检查
-     * @param searchCandidateWord
+     * @param keyword
      * @return
      */
-    Integer saveCandidateWord(SearchCandidateWord searchCandidateWord);
+    Integer saveCandidateWord(String keyword);
 
     /**
      * 更新搜索指数

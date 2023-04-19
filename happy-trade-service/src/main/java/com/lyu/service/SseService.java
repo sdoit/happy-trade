@@ -1,5 +1,6 @@
 package com.lyu.service;
 
+import com.lyu.common.ContentType;
 import com.lyu.common.Message;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -51,9 +52,10 @@ public interface SseService {
      * @param message
      * @param url       如果是系统通知，url为要引导用户跳转的地址；如果是用户私信，url为发送者的uid
      * @param flag      当为系统通知时，通过本flag渲染通知框的类型
+     * @param contentType      消息内容类型
      * @return 发送成功？
      */
-    boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag);
+    boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag, ContentType contentType);
 
     /**
      * 关闭SSE连接

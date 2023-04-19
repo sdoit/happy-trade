@@ -108,7 +108,7 @@
                  LEFT JOIN db_happy_trade.t_commodity_tag_map ON t_commodity.cid = t_commodity_tag_map.cid
                  LEFT JOIN db_happy_trade.t_commodity_tag ON t_commodity_tag_map.tid = t_commodity_tag.tid
                  left join db_happy_trade.t_user_favorites
-                           on t_commodity.cid = t_user_favorites.id and t_user_favorites.request = 0,
+                           on t_commodity.cid = t_user_favorites.id and t_user_favorites.is_request = 0,
              db_happy_trade.t_user
                  left join db_happy_trade.t_order_rating on t_order_rating.target = t_user.uid,
              db_happy_trade.t_commodity_type A

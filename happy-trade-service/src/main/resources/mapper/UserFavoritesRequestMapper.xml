@@ -31,7 +31,7 @@
         from db_happy_trade.t_user_favorites,
              db_happy_trade.t_request
         where t_request.rid = t_user_favorites.id
-          and t_user_favorites.request=1
+          and t_user_favorites.is_request=1
           and t_user_favorites.uid = #{uid}
     </select>
 </mapper>

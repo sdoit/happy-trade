@@ -9,7 +9,7 @@ public class CaptchaConstant {
     /**
      * 一分钟内无需验证的最多的请求次数
      */
-    public static final Integer MAXIMUM_NUMBER_OF_REQUESTS_PER_MINUTES = 5;
+    public static final Integer MAXIMUM_NUMBER_OF_REQUESTS_PER_MINUTES = 30;
 
     /**
      * 记录用户每分钟的请求数 后面需要加 {uid}

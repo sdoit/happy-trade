@@ -29,8 +29,15 @@ public class UserFavoritesServiceImpl implements UserFavoritesService {
     @Override
     public boolean saveOrDeleteFavorite(UserFavorite userFavorite) {
         userFavorite.setUid(StpUtil.getLoginIdAsLong());
+        if (userFavorite.getCid() != null) {
+            userFavorite.setId(userFavorite.getCid());
+            userFavorite.setIsRequest(false);
+        } else {
+            userFavorite.setId(userFavorite.getRid());
+            userFavorite.setIsRequest(true);
+        }
         userFavorite.setTime(LocalDateTime.now());
-        UserFavorite userFavoriteInDb = userFavoriteMapper.selectOne(new QueryWrapper<UserFavorite>().eq("uid", userFavorite.getUid()).eq("cid", userFavorite.getId()));
+        UserFavorite userFavoriteInDb = userFavoriteMapper.selectOne(new QueryWrapper<UserFavorite>().eq("uid", userFavorite.getUid()).eq("id", userFavorite.getId()).eq("is_request", userFavorite.getIsRequest() ? 1 : 0));
         if (userFavoriteInDb == null) {
             userFavoriteMapper.insert(userFavorite);
             return true;
@@ -49,7 +56,6 @@ public class UserFavoritesServiceImpl implements UserFavoritesService {
         }
         userFavoriteMapper.deleteById(fid);
     }
-
 
 
     @Override

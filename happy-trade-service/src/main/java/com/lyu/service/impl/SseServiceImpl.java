@@ -2,6 +2,7 @@ package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
+import com.lyu.common.ContentType;
 import com.lyu.common.Message;
 import com.lyu.common.SseConstant;
 import com.lyu.exception.SSEException;
@@ -79,18 +80,18 @@ public class SseServiceImpl implements SseService {
 
     @Override
     public boolean sendMsgToClientByClientId(String clientId, Message message, String url) {
-        return sendCustomMsgToClientByClientId(clientId, message.getId(), message.getNotifyType(), message.getTitle(), message.getMessage(), url, message.getType());
+        return sendCustomMsgToClientByClientId(clientId, message.getId(), message.getNotifyType(), message.getTitle(), message.getMessage(), url, message.getType(), ContentType.TEXT);
     }
 
     @Override
-    public boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag) {
+    public boolean sendCustomMsgToClientByClientId(String clientId, String messageId, String type, String title, String message, String url, String flag, ContentType contentType) {
         if (!SseSession.exist(clientId)) {
             log.error("SseEmitterServiceImpl[sendMsgToClient]: 推送消息失败：客户端{}未创建长链接,失败消息:{}", clientId, message);
             return false;
         }
 
         SseEmitter.SseEventBuilder sendData = SseEmitter.event().data(StrUtil.emptyIfNull(type)).data(StrUtil.emptyIfNull(messageId)).
-                data(StrUtil.emptyIfNull(title)).data(message, MediaType.APPLICATION_JSON).data(StrUtil.emptyIfNull(url)).data(StrUtil.emptyIfNull(flag));
+                data(StrUtil.emptyIfNull(title)).data(message, MediaType.APPLICATION_JSON).data(StrUtil.emptyIfNull(url)).data(StrUtil.emptyIfNull(flag)).data(contentType.getName());
         return SseSession.send(clientId, sendData);
     }
 

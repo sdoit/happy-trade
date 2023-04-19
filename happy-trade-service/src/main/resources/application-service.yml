@@ -29,7 +29,7 @@ alipay:
   rootCertPath: D:\Develop\alipayCert\alipayRootCert.crt
   certPath: D:\Develop\alipayCert\appPublicCert.crt
   alipayPublicCertPath: D:\Develop\alipayCert\alipayPublicCert.crt
-  notifyUrl: http://yh5khr.natappfree.cc/api/alipay/notify
+  notifyUrl: http://jukkjh.natappfree.cc/api/alipay/notify
   returnUrl: http://localhost:5173
   withdrawalOrder:
     title: Happy-Trade 金额提现

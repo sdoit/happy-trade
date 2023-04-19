@@ -25,6 +25,10 @@ public class Sms {
          */
         NewBid,
         /**
+         * 求购有了新商品
+         */
+        NewCommodityForRequest,
+        /**
          * 用户支付了你的订单
          */
         PayOrder,
@@ -44,6 +48,10 @@ public class Sms {
          * 求购被下架或删除
          */
         RequestCancel,
+        /**
+         * 新的违规消息
+         */
+        newViolation;
 
     }
 

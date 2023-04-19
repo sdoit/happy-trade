@@ -3,15 +3,18 @@ package com.lyu.controller;
 import cn.dev33.satoken.stp.StpUtil;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
+import com.lyu.common.UserConstant;
 import com.lyu.entity.User;
 import com.lyu.entity.dto.UserDTO;
 import com.lyu.service.UserService;
+import com.lyu.util.RedisUtil;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -69,9 +72,52 @@ public class UserController {
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
-    @PostMapping("/update")
-    public CommonResult<Object> update(@NotNull User user) {
-        userService.update(user);
+    @PutMapping("/update")
+    public CommonResult<Object> update(@NotNull @RequestBody User user) {
+        User newUser = new User();
+        newUser.setUid(user.getUid());
+        newUser.setNickname(user.getNickname());
+        newUser.setPhone(user.getPhone());
+        newUser.setIntroduction(user.getIntroduction());
+        userService.update(newUser);
+        //移除缓存
+        RedisUtil.delete(UserConstant.REDIS_USER_LOGGED_KEY_PRE + user.getUid());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
+
+    @PutMapping("/update/password")
+    public CommonResult<Object> updatePassword(@NotNull @Valid @RequestBody User user) {
+        User newUser = new User();
+        newUser.setUid(user.getUid());
+        newUser.setPassword(user.getPassword());
+        newUser.setOldPassword(user.getOldPassword());
+        userService.update(newUser);
+        //移除缓存
+        RedisUtil.delete(UserConstant.REDIS_USER_LOGGED_KEY_PRE + user.getUid());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
+
+    @PutMapping("/update/avatar")
+    public CommonResult<Object> updateAvatar(@NotNull @RequestBody User user) {
+        User newUser = new User();
+        newUser.setUid(user.getUid());
+        newUser.setAvatar(user.getAvatar());
+        userService.update(newUser);
+        //移除缓存
+        RedisUtil.delete(UserConstant.REDIS_USER_LOGGED_KEY_PRE + user.getUid());
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
+
+    @PutMapping("/update/phone")
+    public CommonResult<Object> updatePhone(@NotNull @RequestBody User user) {
+        User newUser = new User();
+        newUser.setUid(user.getUid());
+        newUser.setPhone(user.getPhone());
+        newUser.setNewPhone(user.getNewPhone());
+        newUser.setValidationCode(user.getValidationCode());
+        userService.update(newUser);
+        //移除缓存
+        RedisUtil.delete(UserConstant.REDIS_USER_LOGGED_KEY_PRE + user.getUid());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 

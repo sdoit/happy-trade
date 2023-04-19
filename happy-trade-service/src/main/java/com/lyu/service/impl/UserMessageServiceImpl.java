@@ -46,8 +46,8 @@ public class UserMessageServiceImpl implements UserMessageService {
         UserMessage userMessage = new UserMessage();
         userMessage.setGroupId(getGroupId(uidSend, uidReceive));
         log.debug("GroupId:" + userMessage.getGroupId());
-        userMessage.setTitle(badWordUtil.sensitiveProcess(title));
-        userMessage.setContent(badWordUtil.sensitiveProcess(content));
+        userMessage.setTitle(contentType == ContentType.TEXT ? badWordUtil.sensitiveProcess(title) : title);
+        userMessage.setContent(contentType == ContentType.TEXT ? badWordUtil.sensitiveProcess(content) : content);
         userMessage.setContentType(contentType);
         userMessage.setUrl(url);
         userMessage.setSystemNotify(false);
@@ -59,7 +59,7 @@ public class UserMessageServiceImpl implements UserMessageService {
         //修改用户聊天列表最后一条消息
         userChatService.addOrUpdateUserChat(uidSend, uidReceive, userMessage.getContent(), contentType);
         //尝试直接推送
-        sseService.sendCustomMsgToClientByClientId(String.valueOf(userMessage.getUidReceive()), "0", SseConstant.SSE_MESSAGE_ID_USER_MESSAGE, userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), null);
+        sseService.sendCustomMsgToClientByClientId(String.valueOf(userMessage.getUidReceive()), "0", SseConstant.SSE_MESSAGE_ID_USER_MESSAGE, userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), null, contentType);
         userMessageMapper.insert(userMessage);
         return userMessage.getContent();
     }
@@ -81,7 +81,7 @@ public class UserMessageServiceImpl implements UserMessageService {
         //修改用户通知最后一条消息
         userChatService.addOrUpdateUserChatForNotification(uidReceive, message);
         //尝试直接推送
-        if (sseService.sendCustomMsgToClientByClientId(String.valueOf(userMessage.getUidReceive()), "0", SseConstant.SSE_MESSAGE_ID_NOTIFY, userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), userMessage.getMessageType())) {
+        if (sseService.sendCustomMsgToClientByClientId(String.valueOf(userMessage.getUidReceive()), "0", SseConstant.SSE_MESSAGE_ID_NOTIFY, userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), userMessage.getMessageType(), ContentType.TEXT)) {
             //标记通知为已读
             userMessage.setRead(true);
         }
@@ -121,7 +121,7 @@ public class UserMessageServiceImpl implements UserMessageService {
     public void tryPushUnreadNotifications(Long uid) {
         List<UserMessage> userMessages = pullUnreadNotificationsByUidReceiver(uid);
         userMessages.forEach(userMessage -> {
-            boolean sendResult = sseService.sendCustomMsgToClientByClientId(String.valueOf(uid), String.valueOf(userMessage.getMid()), "0", userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), userMessage.getMessageType());
+            boolean sendResult = sseService.sendCustomMsgToClientByClientId(String.valueOf(uid), String.valueOf(userMessage.getMid()), "0", userMessage.getTitle(), userMessage.getContent(), userMessage.getUrl(), userMessage.getMessageType(), ContentType.TEXT);
             if (sendResult) {
                 setNotificationRead(userMessage.getMid());
                 try {

@@ -54,6 +54,8 @@ public class FileUploadServiceImpl implements FileUploadService {
             String[] splitFileName = file.getOriginalFilename().split("\\.");
             if (splitFileName.length > 1) {
                 suffix = splitFileName[splitFileName.length - 1];
+            } else {
+                suffix = "jpg";
             }
         }
         LocalDateTime now = LocalDateTime.now();

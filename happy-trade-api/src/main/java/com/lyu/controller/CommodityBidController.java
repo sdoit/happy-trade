@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Validated
 @ApiOperation("用户商品出价api")
-@RestController()
+@RestController
 @RequestMapping("/api/bid")
 public class CommodityBidController {
 

@@ -43,5 +43,8 @@ public class BadWordUtil {
         }
         return String.valueOf(textChar);
     }
+    public boolean hasBadWord(String text) {
+        return SensitiveUtil.containsSensitive(text);
+    }
 
 }

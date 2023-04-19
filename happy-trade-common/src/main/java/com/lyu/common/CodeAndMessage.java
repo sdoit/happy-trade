@@ -12,14 +12,14 @@ public enum CodeAndMessage {
 
     UNEXPECTED_ERROR(false, 0, "发生意外的错误，请稍后重试"),
     INCONCLUSIVE_RESULT(false, 1, "Operation complete, but not sure if successful"),
-    THIS_OPERATION_NEEDS_FURTHER_VERIFICATION(false,2,"本次操作需要进行验证"),
+    THIS_OPERATION_NEEDS_FURTHER_VERIFICATION(false, 2, "本次操作需要进行验证"),
 
     ORDER_NEED_PAY(true, 300, "订单待支付"),
 
     SUCCESS(true, 200, "成功"),
 
-    VERIFICATION_PASSED(true,200,"验证通过"),
-    VERIFICATION_FAILURE(true,0,"验证失败，请重试"),
+    VERIFICATION_PASSED(true, 200, "验证通过"),
+    VERIFICATION_FAILURE(true, 0, "验证失败，请重试"),
 
     /**
      * ======================================================================
@@ -42,6 +42,9 @@ public enum CodeAndMessage {
     CODE_IS_SEND_TRY_AGAIN_LATER(false, 2009, "上次发送验证码处于有效期中，请稍后重试"),
     CODE_SEND_FAILED(false, 2010, "验证码发送失败，请稍后重试"),
     PLEASE_ENTER_VERIFICATION_CODE(false, 2011, "请输入验证码"),
+    WRONG_OLD_PASSWORD(false, 2012, "旧密码输入错误，请重试"),
+    PHONE_OCCUPIED(false, 2013, "手机号码已被占用"),
+
     /**
      * 订单
      */
@@ -51,12 +54,15 @@ public enum CodeAndMessage {
     INCORRECT_SHIPPING_ADDRESS(false, 3004, "错误的收货地址"),
     ORDER_IS_NOT_COMPLETED(false, 3005, "订单还未完成"),
     ORDER_IS_NOT_SHIP(false, 3006, "订单还未发货"),
+    COMMODITY_ONLY_FOR_REQUEST(false, 3007, "此商品仅限求购发起者购买"),
 
     INVALID_BID_ID(false, 3050, "无效的报价号"),
 
     BID_ALREADY_EXISTS(false, 3051, "你已经对这个商品有一个报价了"),
     BID_NOT_VALID_FOR_24_HOURS(false, 3052, "24小时内不能撤销出价"),
     BID_HAS_BEEN_CANCELED_OR_PROCESSED(false, 3053, "出价已被取消或已被处理"),
+
+
     /**
      * alipay
      */
@@ -75,15 +81,20 @@ public enum CodeAndMessage {
     NO_SUCH_COMMODITY_SNAPSHOT(false, 5004, "快照不存在"),
 
     NO_SUCH_REQUEST(false, 5051, "求购不存在或已下架"),
+    REQUEST_IS_ALREADY_OUT_THE_SHELF(false, 5052, "求购已经处在下架的状态中"),
 
 
     WRONG_REQUEST_PARAMETER(false, 6001, "请求参数错误"),
-
     /**
      * SSE
      */
-    SSE_WENT_WRONG(false, 8001, "SSE推送服务创建失败");
-
+    SSE_WENT_WRONG(false, 8001, "SSE推送服务创建失败"),
+    /**
+     * 管理员
+     */
+    NO_SUCH_VIOLATION(false, 10001, "违规记录不存在"),
+    NO_SUCH_REPORT(false, 10002, "举报记录不存在"),
+    NO_SUCH_COMPLAINT(false, 10003, "申诉记录不存在");
     private final int code;
     private final boolean flag;
 

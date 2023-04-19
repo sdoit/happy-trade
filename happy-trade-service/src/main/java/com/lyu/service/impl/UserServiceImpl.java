@@ -142,7 +142,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        return null;
+        long uidLogin = StpUtil.getLoginIdAsLong();
+        if (!user.getUid().equals(uidLogin)) {
+            throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
+        //本次修改是否为修改密码
+        if (user.getPassword() != null) {
+            User userInDb = userMapper.selectById(user.getUid());
+            if (!userInDb.getPassword().equals(SaSecureUtil.sha1(user.getOldPassword()))) {
+                throw new UserException(CodeAndMessage.WRONG_OLD_PASSWORD.getCode(), CodeAndMessage.WRONG_OLD_PASSWORD.getMessage());
+            }
+            user.setPassword(SaSecureUtil.sha1(user.getPassword()));
+        } else if (user.getPhone() != null) {
+            //如果是修改手机号码
+            Object codeObj = RedisUtil.get(UserConstant.REDIS_USER_VALIDATION_CODE_KEY_PRE + user.getNewPhone());
+            if (codeObj == null) {
+                throw new UserException(CodeAndMessage.CODE_NOT_FOUND.getCode(), CodeAndMessage.CODE_SEND_FAILED.getMessage());
+            }
+            if (!user.getValidationCode().equals(codeObj.toString())) {
+                throw new UserException(CodeAndMessage.CODE_IS_INCORRECT.getCode(), CodeAndMessage.CODE_IS_INCORRECT.getMessage());
+            }
+            //验证手机号码是否被占用
+            boolean exists = userMapper.exists(new QueryWrapper<User>().eq("phone", user.getNewPhone()));
+            if (exists) {
+                throw new UserException(CodeAndMessage.PHONE_OCCUPIED.getCode(), CodeAndMessage.PHONE_OCCUPIED.getMessage());
+            }
+        }
+        userMapper.updateById(user);
+        return user;
     }
 
     @Override

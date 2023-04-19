@@ -9,6 +9,7 @@ import com.lyu.common.Constant;
 import com.lyu.common.Message;
 import com.lyu.entity.*;
 import com.lyu.entity.dto.OrderDTO;
+import com.lyu.entity.dto.RequestDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.OrderException;
 import com.lyu.exception.UserException;
@@ -57,7 +58,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderRateMapper orderRateMapper;
     @Resource
     private ExpressService expressService;
-
+@Resource
+private RequestService requestService;
     @Resource
     private SseService sseService;
     @Resource
@@ -84,7 +86,14 @@ public class OrderServiceImpl implements OrderService {
         if (uidLogin == commodity.getUid()) {
             throw new OrderException(CodeAndMessage.CANT_BUY_OWN_PRODUCT.getCode(), CodeAndMessage.CANT_BUY_OWN_PRODUCT.getMessage());
         }
-
+        //检查是否为求购下的商品
+        if (commodity.getRequestId() != null) {
+            //如果时求购下的商品，只能时求购发起者购买
+            RequestDTO request= requestService.getRequestById(commodity.getRequestId());
+            if (uidLogin != request.getUid()) {
+                throw new UserException(CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getCode(), CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getMessage());
+            }
+        }
         Boolean exist = commodityBidService.orderOrBidExist(commodity.getCid());
         if (BooleanUtil.isTrue(exist)) {
             throw new OrderException(CodeAndMessage.BID_ALREADY_EXISTS.getCode(), CodeAndMessage.BID_ALREADY_EXISTS.getMessage());
