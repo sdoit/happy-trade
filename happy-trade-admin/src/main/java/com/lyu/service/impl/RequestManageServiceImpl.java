@@ -2,8 +2,6 @@ package com.lyu.service.impl;
 
 import cn.hutool.core.util.BooleanUtil;
 import com.lyu.common.CodeAndMessage;
-import com.lyu.common.reason.DeleteRequestReason;
-import com.lyu.common.reason.GetDownRequestReason;
 import com.lyu.entity.Request;
 import com.lyu.exception.RequestException;
 import com.lyu.mapper.RequestMapper;
@@ -21,7 +19,7 @@ public class RequestManageServiceImpl implements RequestManageService {
     @Resource
     private RequestMapper requestMapper;
     @Override
-    public void getDownRequestForce(Long rid, GetDownRequestReason reason) {
+    public void getDownRequestForce(Long rid, String reason) {
         Request request = requestMapper.selectById(rid);
         if (request == null) {
             throw new RequestException(CodeAndMessage.NO_SUCH_REQUEST.getCode(), CodeAndMessage.NO_SUCH_REQUEST.getMessage());
@@ -34,7 +32,7 @@ public class RequestManageServiceImpl implements RequestManageService {
 
     }
     @Override
-    public void deleteRequestForce(Long rid, DeleteRequestReason reason) {
+    public void deleteRequestForce(Long rid, String reason) {
         Request request = requestMapper.selectById(rid);
         if (request == null) {
             throw new RequestException(CodeAndMessage.NO_SUCH_REQUEST.getCode(), CodeAndMessage.NO_SUCH_REQUEST.getMessage());

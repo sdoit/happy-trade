@@ -16,8 +16,14 @@ public enum Message {
     BUYER_HAS_CONFIRMED_RECEIPT_OF_GOODS(SseConstant.SSE_MESSAGE_ID_NOTIFY, "205", "success", "通知", "买家已确认收货"),
     SELLER_HAS_FINISHED_RATING_YOU(SseConstant.SSE_MESSAGE_ID_NOTIFY, "206", "success", "通知", "卖家已完成对你的评分"),
     YOUR_ORDER_HAS_BEEN_SHIPPED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "207", "success", "通知", "你的订单已发货"),
+    ORDER_HAS_BEEN_CLOSED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "208", "warning", "订单被取消", "你的订单被卖家关闭，相关款项已原路返回。"),
     REQUEST_DELETED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "301", "info", "求购已被下架或删除", "你的商品已转为普通商品发布到商品库供其他买家选购"),
     NEW_COMMODITY_FOR_REQUEST(SseConstant.SSE_MESSAGE_ID_NOTIFY, "302", "info", "新商品", "你的求购有了新商品"),
+    ORDER_RETURN(SseConstant.SSE_MESSAGE_ID_NOTIFY, "303", "info", "退货申请", "买家申请了退货"),
+    ORDER_RETURN_AGREED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "304", "success", "退货申请", "卖家已同意你的退货申请，请按照卖家提供的商品进行回寄"),
+    ORDER_RETURN_REJECTED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "305", "error", "退货申请", "卖家拒绝了你的退货申请"),
+    ORDER_RETURN_SHIPPED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "305", "success", "退款", "买家已回寄你的商品"),
+    ORDER_RETURN_COMPLETED(SseConstant.SSE_MESSAGE_ID_NOTIFY, "306", "success", "退款", "你的退货已完成，相关款项已原路返回"),
 
     /**
      * ***************************************************

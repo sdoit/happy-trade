@@ -40,7 +40,6 @@ public class ComplaintController {
 
     }
     @SaCheckRole("admin")
-
     @PostMapping("/pass/{cno}")
     public CommonResult<Object> complaintPass(@PathVariable("cno") @NotNull Long cno) {
         complaintService.complaintPass(cno);

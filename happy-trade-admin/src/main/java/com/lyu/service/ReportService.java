@@ -2,9 +2,7 @@ package com.lyu.service;
 
 import com.lyu.common.PenaltyAction;
 import com.lyu.common.TargetType;
-import com.lyu.common.reason.Reason;
 import com.lyu.entity.Report;
-import com.lyu.entity.Violation;
 
 import java.util.List;
 
@@ -31,17 +29,17 @@ public interface ReportService {
      * @param duration       封禁时间【当且仅当处罚对象为账号时此参数才有效】
      * @param reason         处罚原因
      * @param complaintCount 可申诉次数
-     * @return 处罚记录
      */
-    Violation reportPass(Long rno, PenaltyAction penaltyAction, Integer duration, Reason reason, Integer complaintCount) ;
+    void reportPass(Long rno, PenaltyAction penaltyAction, Integer duration, String reason, Integer complaintCount) ;
 
     /**
      * 举报不通过
      *
      * @param rno
+     * @param reply
      * @return 处罚记录
      */
-    void reportReject(Long rno);
+    void reportReject(Long rno,String reply);
 
 
     /**

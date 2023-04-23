@@ -35,22 +35,25 @@ public class ReportController {
     @SaCheckRole("admin")
     @PostMapping("/pass")
     public CommonResult<Object> reportPass(@RequestBody ReportDTO report) {
-        reportService.reportPass(report.getRno(), report.getPenaltyAction(), report.getDuration(), report.getReason(), report.getComplaintCount());
+        reportService.reportPass(report.getRno(), report.getPenaltyAction(), report.getDurationLevel(), report.getReason(), report.getComplaintCount());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 
+
     @SaCheckRole("admin")
-    @PostMapping("/reject/{rno}")
-    public CommonResult<Object> reportReject(@PathVariable("rno") @NotNull Long rno) {
-        reportService.reportReject(rno);
+    @PostMapping("/reject")
+    public CommonResult<Object> reportReject(@RequestBody @NotNull ReportDTO report) {
+        reportService.reportReject(report.getRno(), report.getReply());
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
+
     @SaCheckRole("admin")
     @GetMapping
     public CommonResult<List<Report>> getUnprocessedReport() {
         List<Report> unprocessedReport = reportService.getUnprocessedReport();
         return CommonResult.Result(CodeAndMessage.SUCCESS, unprocessedReport);
     }
+
     @SaCheckRole("admin")
     @GetMapping("/{rno}")
     public CommonResult<Report> getReportByRno(@PathVariable("rno") Long rno) {

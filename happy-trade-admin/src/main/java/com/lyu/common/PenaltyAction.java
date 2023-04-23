@@ -11,15 +11,15 @@ public enum PenaltyAction {
     /**
      * 删除处理
      */
-    DELETE(2, "删除"),
+    DELETE(2, "DELETE"),
     /**
      * 下架处理
      */
-    DOWN(1, "下架"),
+    DOWN(1, "DOWN"),
     /**
      * 封号处理
      */
-    BAN(0, "封禁账户");
+    BAN(0, "BAN");
     @EnumValue
     private final Integer id;
     @JsonValue

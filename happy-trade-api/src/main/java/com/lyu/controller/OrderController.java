@@ -112,6 +112,14 @@ public class OrderController {
     }
 
 
+    @ApiOperation("卖家关闭订单")
+    @PostMapping("/close/{oid}")
+    public CommonResult<Object> closeOrder(@PathVariable("oid") Long oid) {
+        orderService.cancelOrder(oid);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, null);
+    }
+
+
 
 
 }

@@ -3,7 +3,6 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -14,7 +13,6 @@ import java.time.LocalDateTime;
  * @TableName t_browsing_history
  */
 @TableName(value = "t_user_view_history")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserViewHistory implements Serializable {
 
@@ -34,6 +32,30 @@ public class UserViewHistory implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getCid() {
+        return cid;
+    }
+
+    public void setCid(Long cid) {
+        this.cid = cid;
+    }
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
 
     @Override
     public boolean equals(Object that) {

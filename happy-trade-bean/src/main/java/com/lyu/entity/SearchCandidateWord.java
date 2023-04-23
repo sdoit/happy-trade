@@ -3,7 +3,6 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
@@ -16,7 +15,6 @@ import java.io.Serializable;
  * @TableName t_search_candidate_word
  */
 @TableName(value ="t_search_candidate_word")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SearchCandidateWord implements Serializable {
 
@@ -35,5 +33,19 @@ public class SearchCandidateWord implements Serializable {
     @ApiModelProperty("搜索指数，搜索次数越多搜索指数越大")
     private Long searchIndex;
 
+    public String getKeyword() {
+        return keyword;
+    }
 
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public Long getSearchIndex() {
+        return searchIndex;
+    }
+
+    public void setSearchIndex(Long searchIndex) {
+        this.searchIndex = searchIndex;
+    }
 }

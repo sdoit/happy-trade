@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
  * @TableName t_user_collection
  */
 @TableName(value = "t_user_favorites")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFavorite implements Serializable {
 
@@ -37,6 +35,62 @@ public class UserFavorite implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
+    public Long getFid() {
+        return fid;
+    }
+
+    public void setFid(Long fid) {
+        this.fid = fid;
+    }
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getCid() {
+        return cid;
+    }
+
+    public void setCid(Long cid) {
+        this.cid = cid;
+    }
+
+    public Long getRid() {
+        return rid;
+    }
+
+    public void setRid(Long rid) {
+        this.rid = rid;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public Boolean getRequest() {
+        return isRequest;
+    }
+
+    public void setRequest(Boolean request) {
+        isRequest = request;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -53,7 +107,7 @@ public class UserFavorite implements Serializable {
                 && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
                 && (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-                && (this.getIsRequest() == null ? other.getIsRequest() == null : this.getIsRequest().equals(other.getIsRequest()));
+                && (this.getRequest() == null ? other.getRequest() == null : this.getRequest().equals(other.getRequest()));
     }
 
     @Override
@@ -64,7 +118,7 @@ public class UserFavorite implements Serializable {
         result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
-        result = prime * result + ((getIsRequest() == null) ? 0 : getIsRequest().hashCode());
+        result = prime * result + ((getRequest() == null) ? 0 : getRequest().hashCode());
         return result;
     }
 

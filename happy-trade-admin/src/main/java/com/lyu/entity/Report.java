@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.lyu.common.TargetType;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -24,26 +25,32 @@ public class Report implements Serializable {
     /**
      * 举报发起人
      */
+
     private Long uid;
 
     /**
      * 被举报主体人
      */
+    @NotNull
     private Long uidTarget;
 
     /**
      * 被举报对象类型
      */
+    @NotNull
+
     private TargetType target;
 
     /**
      * 被举报对象id
      */
+    @NotNull
     private Long targetId;
 
     /**
      * 举报理由
      */
+    @NotNull
     private String reason;
 
     /**

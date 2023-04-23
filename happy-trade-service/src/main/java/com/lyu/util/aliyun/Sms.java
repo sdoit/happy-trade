@@ -48,6 +48,27 @@ public class Sms {
          * 求购被下架或删除
          */
         RequestCancel,
+
+        /**
+         * 退货消息
+         */
+        ReturnNews,
+        /**
+         * 退货申请被同意
+         */
+        ReturnAgree,
+        /**
+         * 退货申请被拒绝
+         */
+        ReturnReject,
+        /**
+         * 退货完成
+         */
+        ReturnCompleted,
+        /**
+         * 买家已回寄
+         */
+        ReturnShipped,
         /**
          * 新的违规消息
          */

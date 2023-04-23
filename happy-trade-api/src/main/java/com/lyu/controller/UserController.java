@@ -77,7 +77,6 @@ public class UserController {
         User newUser = new User();
         newUser.setUid(user.getUid());
         newUser.setNickname(user.getNickname());
-        newUser.setPhone(user.getPhone());
         newUser.setIntroduction(user.getIntroduction());
         userService.update(newUser);
         //移除缓存

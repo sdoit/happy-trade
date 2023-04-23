@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.lyu.common.ContentType;
-import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "t_user_message")
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
 public class UserMessage implements Serializable {
     /**
      * 消息id
@@ -86,6 +84,102 @@ public class UserMessage implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getMid() {
+        return mid;
+    }
+
+    public void setMid(Long mid) {
+        this.mid = mid;
+    }
+
+    public Long getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
+    }
+
+    public void setContentType(ContentType contentType) {
+        this.contentType = contentType;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public Boolean getSystemNotify() {
+        return systemNotify;
+    }
+
+    public void setSystemNotify(Boolean systemNotify) {
+        this.systemNotify = systemNotify;
+    }
+
+    public String getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(String messageType) {
+        this.messageType = messageType;
+    }
+
+    public Long getUidSend() {
+        return uidSend;
+    }
+
+    public void setUidSend(Long uidSend) {
+        this.uidSend = uidSend;
+    }
+
+    public Long getUidReceive() {
+        return uidReceive;
+    }
+
+    public void setUidReceive(Long uidReceive) {
+        this.uidReceive = uidReceive;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public Boolean getRead() {
+        return read;
+    }
+
+    public void setRead(Boolean read) {
+        this.read = read;
+    }
 
     @Override
     public boolean equals(Object that) {

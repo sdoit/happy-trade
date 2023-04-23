@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -16,7 +15,6 @@ import java.time.LocalDateTime;
  * @TableName t_commodity_bid
  */
 @TableName(value = "t_commodity_bid")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommodityBid implements Serializable {
     /**
@@ -118,6 +116,166 @@ public class CommodityBid implements Serializable {
     private User seller;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getBid() {
+        return bid;
+    }
+
+    public void setBid(Long bid) {
+        this.bid = bid;
+    }
+
+    public Long getCid() {
+        return cid;
+    }
+
+    public void setCid(Long cid) {
+        this.cid = cid;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Long getUidBuyer() {
+        return uidBuyer;
+    }
+
+    public void setUidBuyer(Long uidBuyer) {
+        this.uidBuyer = uidBuyer;
+    }
+
+    public Long getUidSeller() {
+        return uidSeller;
+    }
+
+    public void setUidSeller(Long uidSeller) {
+        this.uidSeller = uidSeller;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public String getMessageBuyer() {
+        return messageBuyer;
+    }
+
+    public void setMessageBuyer(String messageBuyer) {
+        this.messageBuyer = messageBuyer;
+    }
+
+    public String getReplySeller() {
+        return replySeller;
+    }
+
+    public void setReplySeller(String replySeller) {
+        this.replySeller = replySeller;
+    }
+
+    public Boolean getAgree() {
+        return agree;
+    }
+
+    public void setAgree(Boolean agree) {
+        this.agree = agree;
+    }
+
+    public LocalDateTime getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(LocalDateTime timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public LocalDateTime getTimeReply() {
+        return timeReply;
+    }
+
+    public void setTimeReply(LocalDateTime timeReply) {
+        this.timeReply = timeReply;
+    }
+
+    public String getTradeId() {
+        return tradeId;
+    }
+
+    public void setTradeId(String tradeId) {
+        this.tradeId = tradeId;
+    }
+
+    public LocalDateTime getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(LocalDateTime payTime) {
+        this.payTime = payTime;
+    }
+
+    public String getBuyerAlipayId() {
+        return buyerAlipayId;
+    }
+
+    public void setBuyerAlipayId(String buyerAlipayId) {
+        this.buyerAlipayId = buyerAlipayId;
+    }
+
+    public Long getAid() {
+        return aid;
+    }
+
+    public void setAid(Long aid) {
+        this.aid = aid;
+    }
+
+    public Long getFormalOrder() {
+        return formalOrder;
+    }
+
+    public void setFormalOrder(Long formalOrder) {
+        this.formalOrder = formalOrder;
+    }
+
+    public LocalDateTime getRefundTime() {
+        return refundTime;
+    }
+
+    public void setRefundTime(LocalDateTime refundTime) {
+        this.refundTime = refundTime;
+    }
+
+    public Boolean getCancel() {
+        return cancel;
+    }
+
+    public void setCancel(Boolean cancel) {
+        this.cancel = cancel;
+    }
+
+    public User getBuyer() {
+        return buyer;
+    }
+
+    public void setBuyer(User buyer) {
+        this.buyer = buyer;
+    }
+
+    public User getSeller() {
+        return seller;
+    }
+
+    public void setSeller(User seller) {
+        this.seller = seller;
+    }
 
     @Override
     public boolean equals(Object that) {

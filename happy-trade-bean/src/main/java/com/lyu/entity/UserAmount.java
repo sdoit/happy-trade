@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -15,7 +14,6 @@ import java.math.BigDecimal;
  * @TableName t_user_amount
  */
 @TableName(value ="t_user_amount")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserAmount implements Serializable {
     /**
@@ -41,6 +39,38 @@ public class UserAmount implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public BigDecimal getAmountEffective() {
+        return amountEffective;
+    }
+
+    public void setAmountEffective(BigDecimal amountEffective) {
+        this.amountEffective = amountEffective;
+    }
+
+    public BigDecimal getAmountFrozen() {
+        return amountFrozen;
+    }
+
+    public void setAmountFrozen(BigDecimal amountFrozen) {
+        this.amountFrozen = amountFrozen;
+    }
+
+    public String getAlipayUid() {
+        return alipayUid;
+    }
+
+    public void setAlipayUid(String alipayUid) {
+        this.alipayUid = alipayUid;
+    }
 
     @Override
     public boolean equals(Object that) {

@@ -1,7 +1,6 @@
 package com.lyu.entity;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
@@ -10,9 +9,7 @@ import javax.validation.constraints.NotBlank;
  * @author LEE
  * @time 2023/1/12 20:45
  */
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-
 public class AliPay {
     /**
      * 商户订单号。
@@ -39,4 +36,55 @@ public class AliPay {
      * 订单类型
      */
     private String type;
+
+    public String getTraceNo() {
+        return traceNo;
+    }
+
+    public void setTraceNo(String traceNo) {
+        this.traceNo = traceNo;
+    }
+
+    public double getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(double totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
+    }
+
+    public void setReturnUrl(String returnUrl) {
+        this.returnUrl = returnUrl;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "AliPay{" +
+                "traceNo='" + traceNo + '\'' +
+                ", totalAmount=" + totalAmount +
+                ", subject='" + subject + '\'' +
+                ", returnUrl='" + returnUrl + '\'' +
+                ", type='" + type + '\'' +
+                '}';
+    }
 }

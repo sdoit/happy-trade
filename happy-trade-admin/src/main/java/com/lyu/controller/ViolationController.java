@@ -52,4 +52,11 @@ public class ViolationController {
         List<Violation> allViolation = violationService.getAllViolation();
         return CommonResult.Result(CodeAndMessage.SUCCESS, allViolation);
     }
+
+    @SaCheckRole("admin")
+    @GetMapping("/{vno}")
+    public CommonResult<Violation> getViolationByVno(@PathVariable("vno") Long vno) {
+        Violation violationByVno = violationService.getViolationByVno(vno);
+        return CommonResult.Result(CodeAndMessage.SUCCESS, violationByVno);
+    }
 }

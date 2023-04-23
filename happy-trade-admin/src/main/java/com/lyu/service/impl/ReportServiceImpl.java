@@ -6,7 +6,6 @@ import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Message;
 import com.lyu.common.PenaltyAction;
 import com.lyu.common.TargetType;
-import com.lyu.common.reason.Reason;
 import com.lyu.entity.*;
 import com.lyu.exception.ReportException;
 import com.lyu.mapper.CommodityMapper;
@@ -53,23 +52,54 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public Violation reportPass(Long rno, PenaltyAction penaltyAction, Integer duration, Reason reason, Integer complaintCount) {
+    public void reportPass(Long rno, PenaltyAction penaltyAction, Integer durationLevel, String reason, Integer complaintCount) {
         Report report = reportMapper.selectById(rno);
-        User user = userMapper.selectById(report.getUid());
+        User user = userMapper.selectById(report.getUidTarget());
+        int duration = 0;
+        if (durationLevel != null) {
+            switch (durationLevel) {
+                case 0:
+                    duration = 24;
+                    break;
+                case 1:
+                    duration = 24 * 7;
+                    break;
+                case 2:
+                    duration = 24 * 7 * 2;
+                    break;
+                case 3:
+                    duration = 24 * 30;
+                    break;
+                case 4:
+                    duration = 24 * 30 * 3;
+                    break;
+                case 5:
+                    duration = 24 * 30 * 6;
+                    break;
+                case 6:
+                    duration = 24 * 365;
+                    break;
+                case 7:
+                    duration = -1;
+                    break;
+                default:
+                    break;
+            }
+        }
         report.setValid(true);
         reportMapper.updateById(report);
-        Violation violation = violationService.dispose(report.getTarget(), report.getTargetId(), user.getUid(), penaltyAction, duration, reason.toString(), complaintCount);
+        Violation violation = violationService.dispose(report.getTarget(), report.getTargetId(), user.getUid(), penaltyAction, duration, reason, complaintCount);
         //通知举报人举报成功
         userMessageService.sendNotification(Message.REPORT_PASS, null, user.getUid());
-        return violation;
 
     }
 
     @Override
-    public void reportReject(Long rno) {
+    public void reportReject(Long rno, String reply) {
         Report report = reportMapper.selectById(rno);
         User user = userMapper.selectById(report.getUid());
         report.setValid(false);
+        report.setReply(reply);
         reportMapper.updateById(report);
         //通知举报人举报失败
         userMessageService.sendNotification(Message.REPORT_FAILED, null, user.getUid());

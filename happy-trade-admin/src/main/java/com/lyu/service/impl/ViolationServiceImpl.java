@@ -6,10 +6,11 @@ import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Message;
 import com.lyu.common.PenaltyAction;
 import com.lyu.common.TargetType;
-import com.lyu.common.reason.*;
 import com.lyu.entity.User;
 import com.lyu.entity.Violation;
 import com.lyu.exception.ViolationException;
+import com.lyu.mapper.CommodityMapper;
+import com.lyu.mapper.RequestMapper;
 import com.lyu.mapper.UserMapper;
 import com.lyu.mapper.ViolationMapper;
 import com.lyu.service.*;
@@ -40,6 +41,10 @@ public class ViolationServiceImpl implements ViolationService {
     private Sms sms;
     @Resource
     private UserMapper userMapper;
+    @Resource
+    private CommodityMapper commodityMapper;
+    @Resource
+    private RequestMapper requestMapper;
 
     @Override
     public Violation dispose(TargetType targetType, Long id, Long uid, PenaltyAction penaltyAction, Integer banDuration, String reason, Integer complaintCount) throws ViolationException {
@@ -50,10 +55,10 @@ public class ViolationServiceImpl implements ViolationService {
         switch (targetType) {
             case COMMODITY:
                 if (penaltyAction == PenaltyAction.DOWN) {
-                    commodityManageService.getDownCommodityForce(id, GetDownCommodityReason.valueOf(reason));
+                    commodityManageService.getDownCommodityForce(id, reason);
                     message = Message.COMMODITY_ARE_FORCED_DOWN;
                 } else if (penaltyAction == PenaltyAction.DELETE) {
-                    commodityManageService.deleteCommodityForce(id, DeleteCommodityReason.valueOf(reason));
+                    commodityManageService.deleteCommodityForce(id, reason);
                     message = Message.COMMODITY_ARE_FORCED_DELETE;
                 } else {
                     //异常
@@ -63,10 +68,10 @@ public class ViolationServiceImpl implements ViolationService {
                 break;
             case REQUEST:
                 if (penaltyAction == PenaltyAction.DOWN) {
-                    requestManageService.getDownRequestForce(id, GetDownRequestReason.valueOf(reason));
+                    requestManageService.getDownRequestForce(id, reason);
                     message = Message.REQUEST_ARE_FORCED_DOWN;
                 } else if (penaltyAction == PenaltyAction.DELETE) {
-                    requestManageService.deleteRequestForce(id, DeleteRequestReason.valueOf(reason));
+                    requestManageService.deleteRequestForce(id, reason);
                     message = Message.REQUEST_ARE_FORCED_DELETE;
                 } else {
                     //异常
@@ -75,12 +80,24 @@ public class ViolationServiceImpl implements ViolationService {
                 break;
             case USER:
                 if (penaltyAction == PenaltyAction.BAN) {
-                    userManageService.banUser(uid, banDuration, BanUserReason.valueOf(reason));
+                    userManageService.banUser(uid, banDuration, reason);
                 } else {
                     throw new ViolationException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
                 }
             default:
                 throw new ViolationException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
+        }
+        if (banDuration != null) {
+            userManageService.banUser(uid, banDuration, reason);
+            Violation violation = new Violation();
+            violation.setAction(PenaltyAction.BAN);
+            violation.setTarget(TargetType.USER);
+            violation.setReason(reason);
+            violation.setUid(uid);
+            violation.setTargetId(uid);
+            violation.setTime(LocalDateTime.now());
+            violationMapper.insert(violation);
+
         }
         User user = userMapper.selectById(uid);
         //保存触发记录
@@ -120,7 +137,7 @@ public class ViolationServiceImpl implements ViolationService {
                 } else {
                     throw new ViolationException(CodeAndMessage.WRONG_REQUEST_PARAMETER.getCode(), CodeAndMessage.WRONG_REQUEST_PARAMETER.getMessage());
                 }
-
+                break;
             case REQUEST:
                 if (PenaltyAction.DOWN == violation.getAction()) {
                     //重新上架
@@ -141,6 +158,32 @@ public class ViolationServiceImpl implements ViolationService {
     @Override
     public List<Violation> getAllViolation() {
         List<Violation> violations = violationMapper.selectList(new QueryWrapper<Violation>().last("where 1=1"));
+        violations.forEach(violation -> {
+            User user = userMapper.selectById(violation.getUid());
+            violation.setUser(user);
+            if (violation.getTarget() == TargetType.COMMODITY) {
+                violation.setCommodity(commodityMapper.selectById(violation.getTargetId()));
+            } else if (violation.getTarget() == TargetType.REQUEST) {
+                violation.setRequest(requestMapper.selectById(violation.getTargetId()));
+            }
+        });
         return violations;
+    }
+
+    @Override
+    public Violation getViolationByVno(Long vno) {
+        Violation violation = violationMapper.selectById(vno);
+        if (violation == null) {
+            throw new ViolationException(CodeAndMessage.NO_SUCH_VIOLATION.getCode(), CodeAndMessage.NO_SUCH_VIOLATION.getMessage());
+        }
+        if (violation.getTarget() == TargetType.COMMODITY) {
+            violation.setCommodity(commodityMapper.selectById(violation.getTargetId()));
+        } else if (violation.getTarget() == TargetType.REQUEST) {
+            violation.setRequest(requestMapper.selectById(violation.getTargetId()));
+        }
+        User user = userMapper.selectById(violation.getUid());
+        user.setPassword(null);
+        violation.setUser(user);
+        return violation;
     }
 }

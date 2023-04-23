@@ -3,7 +3,6 @@ package com.lyu.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -17,7 +16,6 @@ import java.io.Serializable;
  * @TableName t_order_rating
  */
 @TableName(value ="t_order_rating")
-@Data
 public class OrderRating implements Serializable {
     /**
      * 
@@ -57,6 +55,54 @@ public class OrderRating implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public Boolean getSeller() {
+        return seller;
+    }
+
+    public void setSeller(Boolean seller) {
+        this.seller = seller;
+    }
+
+    public Long getTarget() {
+        return target;
+    }
+
+    public void setTarget(Long target) {
+        this.target = target;
+    }
 
     @Override
     public boolean equals(Object that) {

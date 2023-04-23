@@ -3,20 +3,14 @@ package com.lyu.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.lyu.common.AlipayConstant;
-import com.lyu.common.CodeAndMessage;
-import com.lyu.common.Constant;
-import com.lyu.common.Message;
+import com.lyu.common.*;
 import com.lyu.entity.*;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.entity.dto.RequestDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.OrderException;
 import com.lyu.exception.UserException;
-import com.lyu.mapper.CommodityBidMapper;
-import com.lyu.mapper.CommodityMapper;
-import com.lyu.mapper.OrderMapper;
-import com.lyu.mapper.OrderRateMapper;
+import com.lyu.mapper.*;
 import com.lyu.service.*;
 import com.lyu.util.IDUtil;
 import com.lyu.util.RedisUtil;
@@ -58,12 +52,13 @@ public class OrderServiceImpl implements OrderService {
     private OrderRateMapper orderRateMapper;
     @Resource
     private ExpressService expressService;
-@Resource
-private RequestService requestService;
     @Resource
-    private SseService sseService;
+    private RequestService requestService;
+
     @Resource
     private UserMessageService userMessageService;
+    @Resource
+    private OrderReturnMapper orderReturnMapper;
     @Resource
     private IDUtil idUtil;
 
@@ -89,7 +84,7 @@ private RequestService requestService;
         //检查是否为求购下的商品
         if (commodity.getRequestId() != null) {
             //如果时求购下的商品，只能时求购发起者购买
-            RequestDTO request= requestService.getRequestById(commodity.getRequestId());
+            RequestDTO request = requestService.getRequestById(commodity.getRequestId());
             if (uidLogin != request.getUid()) {
                 throw new UserException(CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getCode(), CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getMessage());
             }
@@ -132,6 +127,8 @@ private RequestService requestService;
             throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INVALID_ORDER_ID.getMessage());
         }
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
+        OrderReturn orderReturn = orderReturnMapper.selectById(oid);
+        orderDTO.setOrderReturn(orderReturn);
         //如果交易对方已评价，但用户未评价。那么就隐藏对方评价
         if (orderDTO.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
             if (orderDTO.getOrderRatingToBuyer() == null || orderDTO.getOrderRatingToBuyer().getScore() == null) {
@@ -207,10 +204,18 @@ private RequestService requestService;
 
     }
 
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
-    public Integer cancelOrder(Order order) {
+    public void cancelOrder(Long oid) {
+        Order order = orderMapper.selectById(oid);
+        if (order == null) {
+            throw new OrderException(CodeAndMessage.INVALID_ORDER_ID.getCode(), CodeAndMessage.INCONCLUSIVE_RESULT.getMessage());
+        }
+        if (!order.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
+            throw new OrderException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
+        }
         //检查订单状态
-        if (LocalDateTime.now().isAfter(order.getCompleteTime())) {
+        if (order.getCompleteTime() != null && LocalDateTime.now().isAfter(order.getCompleteTime())) {
             //订单已完成不可取消
             throw new OrderException(CodeAndMessage.NON_CANCELLABLE_ORDER.getCode(), CodeAndMessage.NON_CANCELLABLE_ORDER.getMessage());
         }
@@ -219,7 +224,14 @@ private RequestService requestService;
         commodity.setSold(false);
         commodityMapper.updateById(commodity);
         order.setStatus(AlipayConstant.ORDER_STATUS_CLOSED);
-        return orderMapper.updateById(order);
+        order.setCancelTime(LocalDateTime.now());
+        orderMapper.updateById(order);
+        //如果已经支付，则发起退款
+        if (order.getTradeId() != null) {
+            alipayService.refund(order.getTradeId(), order.getTotalAmount(), String.valueOf(order.getOid()), AlipayConstant.SELLER_CLOSE_ORDER, AlipayConstant.ALIPAY_PAY_TYPE_ORDER);
+        }
+        //通知买家
+        userMessageService.sendNotification(Message.ORDER_HAS_BEEN_CLOSED, "buyer/order/" + order.getOid(), order.getUidBuyer());
     }
 
     @Override
@@ -234,10 +246,8 @@ private RequestService requestService;
         //取消其他用户的所有出价并退款
         commodityBidService.cancelBidByCid(order.getCid());
         //发起其他用户的退款
-        commodityBidRefundList.forEach((commodityBidRefund) -> {
-            alipayService.refund(commodityBidRefund.getTradeId(), commodityBidRefund.getPrice(),
-                    String.valueOf(commodityBidRefund.getBid()), AlipayConstant.REFUND_DUE_TO_DIRECT_PURCHASE, AlipayConstant.ALIPAY_PAY_TYPE_BID);
-        });
+        commodityBidRefundList.forEach((commodityBidRefund) -> alipayService.refund(commodityBidRefund.getTradeId(), commodityBidRefund.getPrice(),
+                String.valueOf(commodityBidRefund.getBid()), AlipayConstant.REFUND_DUE_TO_DIRECT_PURCHASE, AlipayConstant.ALIPAY_PAY_TYPE_BID));
         //记录日志
         UserAmountLog userAmountLog = new UserAmountLog();
         userAmountLog.setAmount(order.getTotalAmount());
@@ -296,6 +306,7 @@ private RequestService requestService;
 
         }
     }
+
 
     @Override
     public void expressOrder(Long oid, String expressId, String shipId) {

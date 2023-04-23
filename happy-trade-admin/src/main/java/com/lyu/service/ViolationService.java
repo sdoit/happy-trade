@@ -40,4 +40,10 @@ public interface ViolationService {
      * @return
      */
     List<Violation> getAllViolation();
+
+    /**
+     * 获取指定违规记录
+     * @return
+     */
+    Violation getViolationByVno(Long vno);
 }

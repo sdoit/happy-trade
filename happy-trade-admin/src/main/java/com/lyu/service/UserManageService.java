@@ -1,7 +1,5 @@
 package com.lyu.service;
 
-import com.lyu.common.reason.BanUserReason;
-
 /**
  * @author LEE
  * @time 2023/4/9 19:20
@@ -14,7 +12,7 @@ public interface UserManageService {
      * @param duration 封禁时长 （h）
      * @param reason   封禁原因
      */
-    void banUser(Long uid, Integer duration, BanUserReason reason);
+    void banUser(Long uid, Integer duration, String reason);
 
     /**
      * 提前解除封禁

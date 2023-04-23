@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -17,7 +16,6 @@ import java.time.LocalDateTime;
  * @TableName t_order
  */
 @TableName(value = "t_order")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order implements Serializable {
     /**
@@ -108,6 +106,158 @@ public class Order implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getOid() {
+        return oid;
+    }
+
+    public void setOid(Long oid) {
+        this.oid = oid;
+    }
+
+    public Long getCid() {
+        return cid;
+    }
+
+    public void setCid(Long cid) {
+        this.cid = cid;
+    }
+
+    public Long getUidSeller() {
+        return uidSeller;
+    }
+
+    public void setUidSeller(Long uidSeller) {
+        this.uidSeller = uidSeller;
+    }
+
+    public Long getUidBuyer() {
+        return uidBuyer;
+    }
+
+    public void setUidBuyer(Long uidBuyer) {
+        this.uidBuyer = uidBuyer;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getTradeId() {
+        return tradeId;
+    }
+
+    public void setTradeId(String tradeId) {
+        this.tradeId = tradeId;
+    }
+
+    public LocalDateTime getOrderTime() {
+        return orderTime;
+    }
+
+    public void setOrderTime(LocalDateTime orderTime) {
+        this.orderTime = orderTime;
+    }
+
+    public LocalDateTime getPayTime() {
+        return payTime;
+    }
+
+    public void setPayTime(LocalDateTime payTime) {
+        this.payTime = payTime;
+    }
+
+    public LocalDateTime getShipTime() {
+        return shipTime;
+    }
+
+    public void setShipTime(LocalDateTime shipTime) {
+        this.shipTime = shipTime;
+    }
+
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
+
+    public void setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+    }
+
+    public String getBuyerAlipayId() {
+        return buyerAlipayId;
+    }
+
+    public void setBuyerAlipayId(String buyerAlipayId) {
+        this.buyerAlipayId = buyerAlipayId;
+    }
+
+    public LocalDateTime getRefundTime() {
+        return refundTime;
+    }
+
+    public void setRefundTime(LocalDateTime refundTime) {
+        this.refundTime = refundTime;
+    }
+
+    public LocalDateTime getCancelTime() {
+        return cancelTime;
+    }
+
+    public void setCancelTime(LocalDateTime cancelTime) {
+        this.cancelTime = cancelTime;
+    }
+
+    public LocalDateTime getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(LocalDateTime completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    public String getExpressId() {
+        return expressId;
+    }
+
+    public void setExpressId(String expressId) {
+        this.expressId = expressId;
+    }
+
+    public String getShipId() {
+        return shipId;
+    }
+
+    public void setShipId(String shipId) {
+        this.shipId = shipId;
+    }
+
+    public Long getAid() {
+        return aid;
+    }
+
+    public void setAid(Long aid) {
+        this.aid = aid;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public Long getSsid() {
+        return ssid;
+    }
+
+    public void setSsid(Long ssid) {
+        this.ssid = ssid;
+    }
 
     @Override
     public boolean equals(Object that) {

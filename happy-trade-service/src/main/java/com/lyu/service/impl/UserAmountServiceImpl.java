@@ -27,7 +27,6 @@ public class UserAmountServiceImpl implements UserAmountService {
 
     @Override
     public Integer updateUserAmount(UserAmount userAmount) {
-
         return userAmountMapper.updateById(userAmount);
     }
 

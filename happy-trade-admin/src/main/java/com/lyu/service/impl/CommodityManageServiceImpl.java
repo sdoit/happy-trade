@@ -2,8 +2,6 @@ package com.lyu.service.impl;
 
 import cn.hutool.core.util.BooleanUtil;
 import com.lyu.common.CodeAndMessage;
-import com.lyu.common.reason.DeleteCommodityReason;
-import com.lyu.common.reason.GetDownCommodityReason;
 import com.lyu.entity.Commodity;
 import com.lyu.exception.CommodityException;
 import com.lyu.mapper.CommodityMapper;
@@ -22,7 +20,7 @@ public class CommodityManageServiceImpl implements CommodityManageService {
     private CommodityMapper commodityMapper;
 
     @Override
-    public void getDownCommodityForce(Long cid, GetDownCommodityReason reason) {
+    public void getDownCommodityForce(Long cid, String reason) {
         Commodity commodity = commodityMapper.selectById(cid);
         if (commodity == null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
@@ -36,7 +34,7 @@ public class CommodityManageServiceImpl implements CommodityManageService {
     }
 
     @Override
-    public void deleteCommodityForce(Long cid, DeleteCommodityReason reason) {
+    public void deleteCommodityForce(Long cid, String reason) {
         Commodity commodity = commodityMapper.selectById(cid);
         if (commodity == null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());

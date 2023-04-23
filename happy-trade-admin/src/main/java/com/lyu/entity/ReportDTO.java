@@ -1,7 +1,6 @@
 package com.lyu.entity;
 
 import com.lyu.common.PenaltyAction;
-import com.lyu.common.reason.Reason;
 
 /**
  * @author LEE
@@ -11,7 +10,9 @@ public class ReportDTO {
     private Long rno;
     private PenaltyAction penaltyAction;
     private Integer duration;
-    private Reason reason;
+    private Integer durationLevel;
+    private String reason;
+    private String reply;
     private Integer complaintCount;
 
     public Long getRno() {
@@ -38,11 +39,11 @@ public class ReportDTO {
         this.duration = duration;
     }
 
-    public Reason getReason() {
+    public String getReason() {
         return reason;
     }
 
-    public void setReason(Reason reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 
@@ -52,6 +53,23 @@ public class ReportDTO {
 
     public void setComplaintCount(Integer complaintCount) {
         this.complaintCount = complaintCount;
+    }
+
+    public String getReply() {
+        return reply;
+    }
+
+    public void setReply(String reply) {
+        this.reply = reply;
+    }
+
+    public Integer getDurationLevel() {
+
+        return durationLevel;
+    }
+
+    public void setDurationLevel(Integer durationLevel) {
+        this.durationLevel = durationLevel;
     }
 
     @Override

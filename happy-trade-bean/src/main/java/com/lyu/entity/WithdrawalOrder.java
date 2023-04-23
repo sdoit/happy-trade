@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -17,7 +16,6 @@ import java.time.LocalDateTime;
  * @TableName t_withdrawal_order
  */
 @TableName(value ="t_withdrawal_order")
-@Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WithdrawalOrder implements Serializable {
     /**
@@ -64,6 +62,70 @@ public class WithdrawalOrder implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    public Long getWid() {
+        return wid;
+    }
+
+    public void setWid(Long wid) {
+        this.wid = wid;
+    }
+
+    public Long getUid() {
+        return uid;
+    }
+
+    public void setUid(Long uid) {
+        this.uid = uid;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
+    public String getAlipayOrderId() {
+        return alipayOrderId;
+    }
+
+    public void setAlipayOrderId(String alipayOrderId) {
+        this.alipayOrderId = alipayOrderId;
+    }
+
+    public String getAlipayFundOrderId() {
+        return alipayFundOrderId;
+    }
+
+    public void setAlipayFundOrderId(String alipayFundOrderId) {
+        this.alipayFundOrderId = alipayFundOrderId;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getTransDate() {
+        return transDate;
+    }
+
+    public void setTransDate(LocalDateTime transDate) {
+        this.transDate = transDate;
+    }
 
     @Override
     public boolean equals(Object that) {

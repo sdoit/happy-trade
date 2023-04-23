@@ -4,6 +4,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Message;
+import com.lyu.common.TargetType;
 import com.lyu.entity.Complaint;
 import com.lyu.entity.User;
 import com.lyu.entity.Violation;
@@ -59,6 +60,14 @@ public class ComplaintServiceImpl implements ComplaintService {
             User user = userMapper.selectById(complaint.getUid());
             user.setPassword(null);
             complaint.setUser(user);
+
+            Violation violation = violationMapper.selectById(complaint.getVno());
+            if (violation.getTarget() == TargetType.COMMODITY) {
+                violation.setCommodity(commodityMapper.selectById(violation.getTargetId()));
+            } else if (violation.getTarget() == TargetType.REQUEST) {
+                violation.setRequest(requestMapper.selectById(violation.getTargetId()));
+            }
+            complaint.setViolation(violation);
         });
         return complaints;
     }

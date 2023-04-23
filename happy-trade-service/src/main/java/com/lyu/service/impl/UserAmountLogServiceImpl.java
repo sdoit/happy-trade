@@ -18,6 +18,7 @@ import java.util.List;
 public class UserAmountLogServiceImpl implements UserAmountLogService {
     @Resource
     private UserAmountLogMapper userAmountLogMapper;
+
     @Override
     public Integer logUserAmount(UserAmountLog userAmountLog) {
         userAmountLog.setTime(LocalDateTime.now());
@@ -26,6 +27,6 @@ public class UserAmountLogServiceImpl implements UserAmountLogService {
 
     @Override
     public List<UserAmountLog> getUserAmountLogsByUid(Long uid) {
-        return userAmountLogMapper.selectList(new QueryWrapper<UserAmountLog>().eq("uid",uid).orderByAsc("time"));
+        return userAmountLogMapper.selectList(new QueryWrapper<UserAmountLog>().eq("uid", uid).orderByDesc("time"));
     }
 }
