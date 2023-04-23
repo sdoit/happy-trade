@@ -166,20 +166,18 @@ public class WithdrawalOrder implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getClass().getSimpleName());
-        sb.append(" [");
-        sb.append("Hash = ").append(hashCode());
-        sb.append(", wid=").append(wid);
-        sb.append(", uid=").append(uid);
-        sb.append(", amount=").append(amount);
-        sb.append(", time=").append(time);
-        sb.append(", alipayOrderId=").append(alipayOrderId);
-        sb.append(", alipayFundOrderId=").append(alipayFundOrderId);
-        sb.append(", status=").append(status);
-        sb.append(", transDate=").append(transDate);
-        sb.append(", serialVersionUID=").append(serialVersionUID);
-        sb.append("]");
-        return sb.toString();
+        return getClass().getSimpleName() +
+                " [" +
+                "Hash = " + hashCode() +
+                ", wid=" + wid +
+                ", uid=" + uid +
+                ", amount=" + amount +
+                ", time=" + time +
+                ", alipayOrderId=" + alipayOrderId +
+                ", alipayFundOrderId=" + alipayFundOrderId +
+                ", status=" + status +
+                ", transDate=" + transDate +
+                ", serialVersionUID=" + serialVersionUID +
+                "]";
     }
 }

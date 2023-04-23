@@ -6,6 +6,7 @@ import com.lyu.mapper.CommodityTypeMapper;
 import com.lyu.service.CommodityTypeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,5 +29,19 @@ public class CommodityTypeServiceImpl implements CommodityTypeService {
     @Override
     public List<CommodityType> getRootTypes() {
         return commodityTypeMapper.selectList(new QueryWrapper<CommodityType>().eq("p_tid", 0));
+    }
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public List<CommodityType> getAllTypes() {
+        List<CommodityType> rootTypes = this.getRootTypes();
+        rootTypes.forEach(rootType -> {
+            List<CommodityType> subTypes = this.getSubTypes(rootType.getTid());
+            subTypes.forEach(subType -> {
+                List<CommodityType> leafTypes = this.getSubTypes(subType.getTid());
+                subType.setCommodityTypes(leafTypes);
+            });
+            rootType.setCommodityTypes(subTypes);
+        });
+        return rootTypes;
     }
 }

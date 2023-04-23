@@ -83,11 +83,11 @@ public class UserFavorite implements Serializable {
         this.time = time;
     }
 
-    public Boolean getRequest() {
+    public Boolean getIsRequest() {
         return isRequest;
     }
 
-    public void setRequest(Boolean request) {
+    public void setIsRequest(Boolean request) {
         isRequest = request;
     }
 
@@ -107,7 +107,7 @@ public class UserFavorite implements Serializable {
                 && (this.getUid() == null ? other.getUid() == null : this.getUid().equals(other.getUid()))
                 && (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-                && (this.getRequest() == null ? other.getRequest() == null : this.getRequest().equals(other.getRequest()));
+                && (this.getIsRequest() == null ? other.getIsRequest() == null : this.getIsRequest().equals(other.getIsRequest()));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class UserFavorite implements Serializable {
         result = prime * result + ((getUid() == null) ? 0 : getUid().hashCode());
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
-        result = prime * result + ((getRequest() == null) ? 0 : getRequest().hashCode());
+        result = prime * result + ((getIsRequest() == null) ? 0 : getIsRequest().hashCode());
         return result;
     }
 

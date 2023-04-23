@@ -3,7 +3,10 @@ package com.lyu.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.lyu.common.*;
+import com.lyu.common.AlipayConstant;
+import com.lyu.common.CodeAndMessage;
+import com.lyu.common.Constant;
+import com.lyu.common.Message;
 import com.lyu.entity.*;
 import com.lyu.entity.dto.OrderDTO;
 import com.lyu.entity.dto.RequestDTO;
@@ -42,6 +45,9 @@ public class OrderServiceImpl implements OrderService {
     private AlipayService alipayService;
     @Resource
     private UserAddressService userAddressService;
+
+    @Resource
+    private UserAddressMapper userAddressMapper;
     @Resource
     private UserAmountLogService userAmountLogService;
     @Resource
@@ -128,7 +134,13 @@ public class OrderServiceImpl implements OrderService {
         }
         checkAccess(orderDTO.getUidSeller(), orderDTO.getUidBuyer());
         OrderReturn orderReturn = orderReturnMapper.selectById(oid);
-        orderDTO.setOrderReturn(orderReturn);
+        if (orderReturn != null) {
+            orderDTO.setOrderReturn(orderReturn);
+            if (orderReturn.getAid() != null) {
+
+                orderReturn.setUserAddress(userAddressMapper.getAddressByAid(orderReturn.getAid()));
+            }
+        }
         //如果交易对方已评价，但用户未评价。那么就隐藏对方评价
         if (orderDTO.getUidSeller().equals(StpUtil.getLoginIdAsLong())) {
             if (orderDTO.getOrderRatingToBuyer() == null || orderDTO.getOrderRatingToBuyer().getScore() == null) {

@@ -35,6 +35,7 @@ public class OrderReturnServiceImpl implements OrderReturnService {
     private UserAddressMapper userAddressMapper;
     @Resource
     private UserAmountService userAmountService;
+    @Resource
     private UserAmountLogService userAmountLogService;
 
     @Resource
@@ -141,6 +142,7 @@ public class OrderReturnServiceImpl implements OrderReturnService {
             throw new UserException(CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getCode(), CodeAndMessage.ACTIONS_WITHOUT_ACCESS.getMessage());
         }
         order.setStatus(AlipayConstant.ORDER_STATUS_REFUNDED);
+        order.setRefundTime(LocalDateTime.now());
         orderMapper.updateById(order);
         //发起退款
         alipayService.refund(order.getTradeId(), order.getTotalAmount(), String.valueOf(order.getOid()), AlipayConstant.REFUND_DUE_USER_RETURN_ORDER, AlipayConstant.ALIPAY_PAY_TYPE_ORDER);

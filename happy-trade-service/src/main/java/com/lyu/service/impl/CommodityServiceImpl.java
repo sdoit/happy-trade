@@ -223,7 +223,8 @@ public class CommodityServiceImpl implements CommodityService {
             if (typeRecommend.size() < Constant.HOME_RECOMMENDED_CATEGORY_COUNT) {
                 //如果用户浏览过于单一，甚至5个品类也没有，就在后面追加上近期较热的商品分类
                 List<CommodityType> typeHotRecent = commodityMapper.getTypeHotRecent(LocalDateTime.now());
-                for (int i = 0; i < Constant.HOME_RECOMMENDED_CATEGORY_COUNT - typeRecommend.size(); i++) {
+                int initSize = typeRecommend.size();
+                for (int i = 0; i < Constant.HOME_RECOMMENDED_CATEGORY_COUNT - initSize; i++) {
                     typeRecommend.add(typeHotRecent.get(i));
                 }
 

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author LEE
@@ -17,7 +18,7 @@ public class CommodityType {
     private Integer tid;
     private String typeName;
     private Integer pTid;
-
+    private String img;
     @TableField(exist = false)
     private Integer[] typePath;
     @TableField(exist = false)
@@ -26,6 +27,8 @@ public class CommodityType {
     @TableField(exist = false)
     @JsonIgnore
     private Integer tidMiddle;
+    @TableField(exist = false)
+    List<CommodityType> commodityTypes;
 
     public Integer getTid() {
         return tid;
@@ -75,6 +78,22 @@ public class CommodityType {
         this.tidMiddle = tidMiddle;
     }
 
+    public List<CommodityType> getCommodityTypes() {
+        return commodityTypes;
+    }
+
+    public void setCommodityTypes(List<CommodityType> commodityTypes) {
+        this.commodityTypes = commodityTypes;
+    }
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
     @Override
     public String toString() {
         return "CommodityType{" +
@@ -84,6 +103,7 @@ public class CommodityType {
                 ", typePath=" + Arrays.toString(typePath) +
                 ", tidRoot=" + tidRoot +
                 ", tidMiddle=" + tidMiddle +
+                ", commodityTypes=" + commodityTypes +
                 '}';
     }
 }

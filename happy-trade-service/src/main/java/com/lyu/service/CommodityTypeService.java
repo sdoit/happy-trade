@@ -23,4 +23,10 @@ public interface CommodityTypeService {
      * @return
      */
     List<CommodityType> getRootTypes();
+
+    /**
+     * 获取全部分类
+     * @return
+     */
+    List<CommodityType> getAllTypes();
 }

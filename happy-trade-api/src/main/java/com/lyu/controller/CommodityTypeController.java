@@ -34,4 +34,8 @@ public class CommodityTypeController {
     public CommonResult<List<CommodityType>> getCommodityRootTypes() {
         return CommonResult.Result(CodeAndMessage.SUCCESS, commodityTypeService.getRootTypes());
     }
+    @GetMapping("/all")
+    public CommonResult<List<CommodityType>> getAllCommodityTypes() {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityTypeService.getAllTypes());
+    }
 }
