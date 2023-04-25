@@ -1,8 +1,10 @@
 package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.UserChat;
 import com.lyu.service.impl.UserChatDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.List;
 * @Entity com.lyu.entity.UserChatList
 */
 @Mapper
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 public interface UserChatMapper extends BaseMapper<UserChat> {
     /**
      * 获取用户的聊天用户列表

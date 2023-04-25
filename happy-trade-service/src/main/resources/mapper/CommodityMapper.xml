@@ -179,9 +179,9 @@
                t_user.nickname,
                t_user.username,
                t_user.avatar
-        FROM t_commodity,
-             t_commodity_type,
-             t_user,
+        FROM db_happy_trade.t_commodity,
+             db_happy_trade.t_commodity_type,
+             db_happy_trade.t_user,
              (SELECT count(b.tid) `count`,
                      C.tid        `tid`
               FROM t_user_view_history,
@@ -191,7 +191,7 @@
                        LEFT JOIN t_commodity_type C ON B.tid = C.p_tid
               WHERE t_user_view_history.uid = #{uid}
                 AND t_user_view_history.id = t_commodity.cid
-                AND t_user_view_history.request=0
+                AND t_user_view_history.request = 0
                 AND t_commodity.type_id = A.tid
               GROUP BY C.tid
               LIMIT 1000) as temp
@@ -232,19 +232,19 @@
     <select id="getTypeRecommend" resultType="com.lyu.entity.CommodityType">
         SELECT B.tid,
                concat_ws('/', C.type_name, B.type_name) 'typeName'
-        FROM t_user_view_history,
-             t_commodity,
-             t_commodity_type A
-                 left join t_commodity_type B on A.p_tid = B.tid
-                 left join t_commodity_type C on B.p_tid = C.tid
+        FROM db_happy_trade.t_user_view_history,
+             db_happy_trade.t_commodity,
+             db_happy_trade.t_commodity_type A
+                 left join db_happy_trade.t_commodity_type B on A.p_tid = B.tid
+                 left join db_happy_trade.t_commodity_type C on B.p_tid = C.tid
         WHERE t_user_view_history.uid = #{uid}
           AND t_user_view_history.id = t_commodity.cid
-          AND t_user_view_history.request=0
+          AND t_user_view_history.request = 0
           AND t_commodity.type_id = A.tid
           AND timestampdiff(day, t_user_view_history.time, #{now}) &lt; 30
         group by B.tid
         order by count(A.tid) desc
-        limit 5
+        limit 6
     </select>
     <select id="getTypeHotRecent" resultType="com.lyu.entity.CommodityType">
         SELECT B.tid,
@@ -261,7 +261,7 @@
           and timestampdiff(day, t_user_view_history.time, #{now}) &lt; 30
         group by B.tid
         order by count(A.tid) desc
-        limit 5
+        limit 6
     </select>
     <select id="getCommoditiesByType" resultMap="baseMap">
         (select t_commodity.cid,

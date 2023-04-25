@@ -8,7 +8,7 @@ public class Constant {
     public static final Long COMMODITY_GROUP_ID = 1L;
     public static final Long ORDER_GROUP_ID = 2L;
 
-    public static final Integer HOME_RECOMMENDED_CATEGORY_COUNT = 5;
+    public static final Integer HOME_RECOMMENDED_CATEGORY_COUNT = 6;
     /**
      * 商品类别 根分类最大值
      */
@@ -28,6 +28,7 @@ public class Constant {
      */
     public static final String REDIS_ORDER_UNPAID_KEY_PRE = "oid:unpaid:";
     public static final String REDIS_ORDER_MAP_COMMODITY_KEY_PRE = "oid:unpaid:commodity:";
+    public static final String REDIS_COMMODITY_KEY_PRE = "commodity:";
 
     public static final String ORDER_LAST_MARK_KEY = "mark:order:last";
     public static final long ID_OFFSET = -600000000000L;

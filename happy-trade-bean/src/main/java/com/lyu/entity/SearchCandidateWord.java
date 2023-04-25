@@ -1,5 +1,6 @@
 package com.lyu.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModelProperty;
@@ -21,6 +22,7 @@ public class SearchCandidateWord implements Serializable {
     /**
      * 候选词
      */
+    @TableId
     @NotBlank(message = "[候选词]不能为空")
     @Size(max = 20, message = "编码长度不能超过20")
     @ApiModelProperty("候选词")

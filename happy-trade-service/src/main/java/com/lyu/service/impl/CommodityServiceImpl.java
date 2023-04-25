@@ -2,6 +2,7 @@ package com.lyu.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -15,8 +16,10 @@ import com.lyu.entity.dto.RequestDTO;
 import com.lyu.exception.CommodityException;
 import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
+import com.lyu.mapper.CommodityTypeMapper;
 import com.lyu.service.*;
 import com.lyu.util.IDUtil;
+import com.lyu.util.RedisUtil;
 import com.lyu.util.aliyun.Sms;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -43,6 +46,10 @@ public class CommodityServiceImpl implements CommodityService {
     @Lazy
     @Resource
     private RequestService requestService;
+    @Resource
+    private SearchCandidateWordService searchCandidateWordService;
+    @Resource
+    private CommodityTypeMapper commodityTypeMapper;
     @Resource
     private Sms sms;
     @Resource
@@ -147,10 +154,16 @@ public class CommodityServiceImpl implements CommodityService {
         if (StpUtil.isLogin()) {
             commodityDTO = userViewHistoryService.saveViewHistory(cid);
         } else {
-            commodityDTO = commodityMapper.getCommodityById(cid);
+            //先从缓存获取
+            Object obj = RedisUtil.get(Constant.REDIS_COMMODITY_KEY_PRE + cid);
+            if (obj == null) {
+                commodityDTO = commodityMapper.getCommodityById(cid);
+                RedisUtil.set(Constant.REDIS_COMMODITY_KEY_PRE + cid,commodityDTO);
+
+            } else {
+                commodityDTO = (CommodityDTO) obj;
+            }
         }
-
-
         //设置typePath
         CommodityType commodityType = commodityDTO.getType();
         commodityType.setTypePath(new Integer[]{commodityDTO.getType().getTidRoot(),
@@ -162,7 +175,6 @@ public class CommodityServiceImpl implements CommodityService {
     @Override
     public List<CommodityDTO> getCommodityForRequest(Long rid) {
         return commodityMapper.getCommodityForRequest(rid);
-
     }
 
 
@@ -175,6 +187,9 @@ public class CommodityServiceImpl implements CommodityService {
     public List<CommodityDTO> getCommoditiesByKeyWordsPage(String words, IPage<CommodityDTO> page) {
         String[] s = words.split(" ");
         IPage<CommodityDTO> commoditiesByKeyWords = commodityMapper.getCommoditiesByKeyWords(page, s);
+        for (String ss : s) {
+            searchCandidateWordService.saveOrUpdateCandidateWord(ss);
+        }
         return commoditiesByKeyWords.getRecords();
     }
 
@@ -218,8 +233,9 @@ public class CommodityServiceImpl implements CommodityService {
 
     @Override
     public List<CommodityType> getTypeRecommend() {
+        List<CommodityType> typeRecommend;
         if (StpUtil.isLogin()) {
-            List<CommodityType> typeRecommend = commodityMapper.getTypeRecommend(StpUtil.getLoginIdAsLong(), LocalDateTime.now());
+            typeRecommend = commodityMapper.getTypeRecommend(StpUtil.getLoginIdAsLong(), LocalDateTime.now());
             if (typeRecommend.size() < Constant.HOME_RECOMMENDED_CATEGORY_COUNT) {
                 //如果用户浏览过于单一，甚至5个品类也没有，就在后面追加上近期较热的商品分类
                 List<CommodityType> typeHotRecent = commodityMapper.getTypeHotRecent(LocalDateTime.now());
@@ -229,9 +245,23 @@ public class CommodityServiceImpl implements CommodityService {
                 }
 
             }
-            return typeRecommend;
+
+        } else {
+            typeRecommend = commodityMapper.getTypeHotRecent(LocalDateTime.now());
         }
-        return commodityMapper.getTypeHotRecent(LocalDateTime.now());
+
+        //填充图片
+        typeRecommend.forEach(type -> {
+            Commodity commodityForType;
+            for (CommodityType subType : commodityTypeMapper.selectList(new QueryWrapper<CommodityType>().eq("p_tid", type.getTid()).last("limit 5"))) {
+                commodityForType = commodityMapper.selectOne(new QueryWrapper<Commodity>().eq("type_id", subType.getTid()).last("limit 1"));
+                if (commodityForType != null && commodityForType.getCover() != null) {
+                    type.setImg(commodityForType.getCover());
+                    break;
+                }
+            }
+        });
+        return typeRecommend;
     }
 
     @Override

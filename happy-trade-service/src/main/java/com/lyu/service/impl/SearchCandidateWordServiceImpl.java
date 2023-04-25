@@ -38,15 +38,21 @@ public class SearchCandidateWordServiceImpl implements SearchCandidateWordServic
     }
 
     @Override
-    public Integer saveCandidateWord(String keyword) {
+    public void saveOrUpdateCandidateWord(String keyword) {
         //安全检查，关键词不能包含敏感词
         if (badWordUtil.hasBadWord(keyword)) {
-            return -1;
+            return;
         }
-        SearchCandidateWord searchCandidateWord = new SearchCandidateWord();
-        searchCandidateWord.setSearchIndex(0L);
-        searchCandidateWord.setKeyword(keyword);
-        return searchCandidateWordMapper.insert(searchCandidateWord);
+        SearchCandidateWord searchCandidateWord = searchCandidateWordMapper.selectById(keyword);
+        if (searchCandidateWord == null) {
+            searchCandidateWord = new SearchCandidateWord();
+            searchCandidateWord.setKeyword(keyword);
+            searchCandidateWord.setSearchIndex(1L);
+            searchCandidateWordMapper.insert(searchCandidateWord);
+        } else {
+            searchCandidateWord.setSearchIndex(searchCandidateWord.getSearchIndex() + 1);
+            searchCandidateWordMapper.updateById(searchCandidateWord);
+        }
     }
 
     @Override

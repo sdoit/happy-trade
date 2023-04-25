@@ -1,9 +1,11 @@
 package com.lyu.mapper;
 
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.address.Area;
 import com.lyu.entity.address.City;
 import com.lyu.entity.address.Province;
 import com.lyu.entity.address.Street;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
  * @time 2023/2/10 15:15
  * @see UserAddressMapper
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
+
 @Mapper
 public interface AddressMapper {
     /**

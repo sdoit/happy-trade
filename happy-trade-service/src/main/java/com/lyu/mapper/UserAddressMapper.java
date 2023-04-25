@@ -1,8 +1,10 @@
 package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.UserAddress;
 import com.lyu.entity.dto.UserAddressDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -11,6 +13,7 @@ import java.util.List;
  * @author LEE
  * @time 2023/2/2 19:57
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserAddressMapper extends BaseMapper<UserAddress> {
     /**

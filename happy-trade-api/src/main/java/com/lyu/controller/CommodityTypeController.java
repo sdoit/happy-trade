@@ -34,8 +34,15 @@ public class CommodityTypeController {
     public CommonResult<List<CommodityType>> getCommodityRootTypes() {
         return CommonResult.Result(CodeAndMessage.SUCCESS, commodityTypeService.getRootTypes());
     }
+
     @GetMapping("/all")
     public CommonResult<List<CommodityType>> getAllCommodityTypes() {
         return CommonResult.Result(CodeAndMessage.SUCCESS, commodityTypeService.getAllTypes());
     }
+
+    @GetMapping("/t/{tid}")
+    public CommonResult<CommodityType> getCommodityTypeByTid(@PathVariable("tid") Integer tid) {
+        return CommonResult.Result(CodeAndMessage.SUCCESS, commodityTypeService.getType(tid));
+    }
+
 }

@@ -3,10 +3,12 @@ package com.lyu.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.Commodity;
 import com.lyu.entity.CommodityType;
 import com.lyu.entity.CommodityTypeViewCount;
 import com.lyu.entity.dto.CommodityDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.time.LocalDateTime;
@@ -15,6 +17,7 @@ import java.util.List;
 /**
  * @author LEE
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface CommodityMapper extends BaseMapper<Commodity> {
     /**

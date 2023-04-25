@@ -16,6 +16,13 @@ public interface CommodityTypeService {
      * @return
      */
     List<CommodityType> getSubTypes(Integer tid);
+    /**
+     * 获取type
+     *
+     * @param tid
+     * @return
+     */
+    CommodityType getType(Integer tid);
 
     /**
      * 获取根type节点

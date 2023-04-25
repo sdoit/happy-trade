@@ -1,12 +1,15 @@
 package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.User;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author LEE
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
     /**

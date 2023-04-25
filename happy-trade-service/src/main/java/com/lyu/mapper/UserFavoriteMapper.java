@@ -2,14 +2,17 @@ package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.UserFavorite;
 import com.lyu.entity.dto.UserFavoriteDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author LEE
  * @time 2023/2/11 14:54
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserFavoriteMapper extends BaseMapper<UserFavorite> {
 

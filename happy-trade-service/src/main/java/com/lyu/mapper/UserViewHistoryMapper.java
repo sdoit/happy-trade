@@ -3,14 +3,17 @@ package com.lyu.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.UserViewHistory;
 import com.lyu.entity.dto.UserViewHistoryDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author LEE
  * @time 2023/1/31 19:23
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserViewHistoryMapper extends BaseMapper<UserViewHistory> {
     /**

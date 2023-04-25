@@ -3,8 +3,10 @@ package com.lyu.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.UserMessage;
 import com.lyu.entity.dto.UserMessageDTO;
+import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  * @author LEE
  * @time 2023/2/19 19:01
  */
+@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserMessageMapper extends BaseMapper<UserMessage> {
     /**

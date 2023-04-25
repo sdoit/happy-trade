@@ -1,6 +1,7 @@
 package com.lyu.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -15,6 +16,7 @@ import java.util.List;
 @TableName(value = "t_commodity_type")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CommodityType {
+    @TableId
     private Integer tid;
     private String typeName;
     private Integer pTid;

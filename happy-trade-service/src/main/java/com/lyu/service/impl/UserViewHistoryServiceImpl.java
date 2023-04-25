@@ -5,6 +5,7 @@ import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lyu.common.CodeAndMessage;
+import com.lyu.common.Constant;
 import com.lyu.entity.UserViewHistory;
 import com.lyu.entity.dto.CommodityDTO;
 import com.lyu.entity.dto.UserViewHistoryDTO;
@@ -13,6 +14,7 @@ import com.lyu.exception.UserException;
 import com.lyu.mapper.CommodityMapper;
 import com.lyu.mapper.UserViewHistoryMapper;
 import com.lyu.service.UserViewHistoryService;
+import com.lyu.util.RedisUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -31,11 +33,20 @@ public class UserViewHistoryServiceImpl implements UserViewHistoryService {
     @Resource
     private CommodityMapper commodityMapper;
 
+
     @Override
     public CommodityDTO saveViewHistory(Long cid) {
         long uid = StpUtil.getLoginIdAsLong();
-        CommodityDTO commodity = commodityMapper.getCommodityById(cid);
-        if (commodity == null || commodity.getCid()==null) {
+        CommodityDTO commodity;
+        //先从缓存获取
+        Object obj = RedisUtil.get(Constant.REDIS_COMMODITY_KEY_PRE + cid);
+        if (obj == null) {
+            commodity = commodityMapper.getCommodityById(cid);
+            RedisUtil.set(Constant.REDIS_COMMODITY_KEY_PRE + cid, commodity);
+        } else {
+            commodity = (CommodityDTO) obj;
+        }
+        if (commodity == null || commodity.getCid() == null) {
             throw new CommodityException(CodeAndMessage.NO_SUCH_COMMODITY.getCode(), CodeAndMessage.NO_SUCH_COMMODITY.getMessage());
         }
         UserViewHistory userViewHistory = new UserViewHistory();
@@ -43,9 +54,11 @@ public class UserViewHistoryServiceImpl implements UserViewHistoryService {
         userViewHistory.setCid(cid);
         userViewHistory.setTime(LocalDateTime.now());
         Boolean exist = this.existViewHistory(userViewHistory);
-        if (!BooleanUtil.isTrue(exist)) {
+        if (BooleanUtil.isFalse(exist)) {
             commodity.setViewCount(commodity.getViewCount() + 1);
             commodityMapper.updateById(commodity);
+            commodity.setViewCount(commodity.getViewCount() + 1);
+            RedisUtil.set(Constant.REDIS_COMMODITY_KEY_PRE + cid, commodity);
         }
         userViewHistoryMapper.insertOrUpdate(userViewHistory);
         return commodity;
