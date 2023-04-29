@@ -3,6 +3,7 @@ package com.lyu.service.impl;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.BooleanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.lyu.common.AlipayConstant;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.Constant;
@@ -60,7 +61,8 @@ public class OrderServiceImpl implements OrderService {
     private ExpressService expressService;
     @Resource
     private RequestService requestService;
-
+    @Resource
+    private UserAmountLogMapper userAmountLogMapper;
     @Resource
     private UserMessageService userMessageService;
     @Resource
@@ -273,6 +275,7 @@ public class OrderServiceImpl implements OrderService {
         orderMapper.insert(order);
     }
 
+    @Transactional(rollbackFor = RuntimeException.class)
     @Override
     public void completeAndRateOrder(Long oid, Integer rating, String comment) {
         long uidLogin = StpUtil.getLoginIdAsLong();
@@ -306,6 +309,8 @@ public class OrderServiceImpl implements OrderService {
             userMessageService.sendNotification(Message.BUYER_HAS_CONFIRMED_RECEIPT_OF_GOODS, "/seller/order/" + order.getOid(), order.getUidSeller());
             //解除冻结金额
             userAmountService.thawAmount(order.getUidSeller(), order.getTotalAmount(), order.getOid());
+            //修改账户金额日志
+            userAmountLogMapper.update(null, new UpdateWrapper<UserAmountLog>().set("effective", 1).eq("uid", order.getUidSeller()).eq("source_id", order.getOid()));
         } else if ((order.getUidSeller().equals(uidLogin))) {
             if (!order.getStatus().equals(AlipayConstant.ORDER_STATUS_COMPLETED)) {
                 throw new OrderException(CodeAndMessage.ORDER_IS_NOT_COMPLETED.getCode(), CodeAndMessage.ORDER_IS_NOT_COMPLETED.getMessage());

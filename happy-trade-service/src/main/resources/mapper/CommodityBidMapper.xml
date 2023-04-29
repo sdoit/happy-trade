@@ -6,7 +6,7 @@
         <result column="uid" property="uid" jdbcType="BIGINT"/>
         <result column="name" property="name" jdbcType="VARCHAR"/>
         <result column="quality" property="quality" jdbcType="FLOAT"/>
-        <result column="price" property="price" jdbcType="DECIMAL"/>
+        <result column="cprice" property="price" jdbcType="DECIMAL"/>
         <result column="fare" property="fare" jdbcType="DECIMAL"/>
         <result column="freight_collect" property="freightCollect" jdbcType="TINYINT"/>
         <result column="free_shipping" property="freeShipping" jdbcType="TINYINT"/>
