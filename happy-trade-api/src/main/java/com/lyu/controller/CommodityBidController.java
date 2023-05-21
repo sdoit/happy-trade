@@ -29,7 +29,7 @@ import java.util.List;
 public class CommodityBidController {
 
 
-    @Value("${hostname}")
+    @Value("${pay-server}")
     private String hostname;
     @Value("${protocol}")
     private String protocol;

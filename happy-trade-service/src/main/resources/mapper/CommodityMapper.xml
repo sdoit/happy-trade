@@ -149,7 +149,7 @@
         GROUP BY t_commodity.cid
     </select>
     <select id="getRecentlyViewedCommodityType" resultType="com.lyu.entity.CommodityTypeViewCount">
-        select count(b.tid) `count`,
+        select count(B.tid) `count`,
                B.tid        `tip`
         from t_user_view_history,
              t_commodity,
@@ -159,7 +159,7 @@
           and t_user_view_history.id = t_commodity.cid
           AND t_user_view_history.request=0
           and t_commodity.type_id = A.tid
-        group by b.tid
+        group by B.tid
         limit 100
     </select>
     <select id="getCommodityRecommend" resultMap="baseMap">
@@ -182,7 +182,7 @@
         FROM db_happy_trade.t_commodity,
              db_happy_trade.t_commodity_type,
              db_happy_trade.t_user,
-             (SELECT count(b.tid) `count`,
+             (SELECT count(B.tid) `count`,
                      C.tid        `tid`
               FROM t_user_view_history,
                    t_commodity,

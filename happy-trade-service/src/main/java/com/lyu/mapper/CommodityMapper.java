@@ -17,7 +17,6 @@ import java.util.List;
 /**
  * @author LEE
  */
-@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface CommodityMapper extends BaseMapper<Commodity> {
     /**

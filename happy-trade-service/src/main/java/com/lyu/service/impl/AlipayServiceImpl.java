@@ -146,7 +146,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public boolean alipayNotify(Map<String, String> alipayParamMap) throws Exception {
-
+        log.debug("notify");
         // 支付宝验签
         if (Factory.Payment.Common().verifyNotify(alipayParamMap)) {
             // 验签通过

@@ -13,7 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @author LEE
  * @time 2023/1/31 19:23
  */
-@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface UserViewHistoryMapper extends BaseMapper<UserViewHistory> {
     /**

@@ -1,12 +1,14 @@
 package com.lyu.util;
 
-import cn.hutool.core.io.file.FileReader;
+import cn.hutool.core.codec.Base64;
+import cn.hutool.core.io.resource.ClassPathResource;
 import cn.hutool.dfa.SensitiveUtil;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -19,9 +21,12 @@ public class BadWordUtil {
 
     public BadWordUtil(@Value("${badWord.filename}") String badWordFileName) throws IOException {
         ClassPathResource classPathResource = new ClassPathResource(badWordFileName);
-        FileReader fileReader = new FileReader(classPathResource.getFile());
-        List<String> badWords = fileReader.readLines();
-        SensitiveUtil.init(badWords, true);
+        String s = classPathResource.readUtf8Str();
+        String[] split = s.split("\r\n");
+        List<String> list = new ArrayList<>();
+        List<String> listRaw = Arrays.asList(split);
+        listRaw.forEach(s1 -> list.add(Base64.decodeStr(s1)));
+        SensitiveUtil.init(list, true);
     }
 
     public String sensitiveProcess(String text) {
@@ -43,6 +48,7 @@ public class BadWordUtil {
         }
         return String.valueOf(textChar);
     }
+
     public boolean hasBadWord(String text) {
         return SensitiveUtil.containsSensitive(text);
     }

@@ -2,17 +2,14 @@ package com.lyu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.lyu.cache.MybatisRedisCache;
 import com.lyu.entity.CommodityBid;
 import com.lyu.entity.dto.CommodityBidDTO;
-import org.apache.ibatis.annotations.CacheNamespace;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @author LEE
  * @time 2023/1/31 11:37
  */
-@CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
 @Mapper
 public interface CommodityBidMapper extends BaseMapper<CommodityBid> {
     /**

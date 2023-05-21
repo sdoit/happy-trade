@@ -14,6 +14,7 @@ import com.lyu.entity.dto.OrderSimpleDTO;
 import com.lyu.service.CommodityBidService;
 import com.lyu.service.OrderService;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +30,14 @@ import java.util.List;
 @Validated
 @RestController
 @RequestMapping("/api/order")
-
+@Slf4j
 @ApiOperation("订单操作接口")
 public class OrderController {
     @Resource
     private OrderService orderService;
     @Resource
     private CommodityBidService commodityBidService;
-    @Value("${hostname}")
+    @Value("${pay-server}")
     private String hostname;
     @Value("${protocol}")
     private String protocol;
@@ -59,7 +60,7 @@ public class OrderController {
         commodity.setCid(orderSimpleDTO.getCid());
         userAddress.setAid(orderSimpleDTO.getAid());
         Order order = orderService.createOrder(commodity, userAddress);
-
+        log.debug(hostname);
         //创建支付链接
         String payUrl = StrUtil.format("{}://{}:{}/api/alipay/pay?traceNo={}&totalAmount={}&subject={}&returnUrl={}",
                 protocol, hostname, port, order.getOid(), order.getTotalAmount(), order.getName(), returnUrl);
@@ -118,8 +119,6 @@ public class OrderController {
         orderService.cancelOrder(oid);
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
-
-
 
 
 }

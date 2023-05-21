@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendCode(String phone) throws UserException {
+    public void sendCode(String phone, boolean forceUser) throws UserException {
         //判断是否已发验证码
         long time = RedisUtil.getTime(UserConstant.REDIS_USER_VALIDATION_CODE_KEY_PRE + phone);
         if (time != UserConstant.REDIS_CODE_EXPIRED_TIME && UserConstant.USER_VALIDATION_CODE_EXPIRATION_TIME - time < UserConstant.GET_CODE_INTERVAL_TIME) {
@@ -95,12 +95,15 @@ public class UserServiceImpl implements UserService {
             throw new UserException(CodeAndMessage.CODE_IS_SEND_TRY_AGAIN_LATER.getCode(), CodeAndMessage.CODE_IS_SEND_TRY_AGAIN_LATER.getMessage());
         }
         User user = userMapper.selectOne(new QueryWrapper<User>().eq("phone", phone));
-        if (user == null) {
-            throw new UserException(CodeAndMessage.USER_NOT_EXIST.getCode(), CodeAndMessage.USER_NOT_EXIST.getMessage());
-        }
-        if (user.getBanedTime() > 0) {
-            //用户已封禁
-            throw new UserException(CodeAndMessage.BANED_USER.getCode(), CodeAndMessage.BANED_USER.getMessage());
+        if (forceUser) {
+
+            if (user == null) {
+                throw new UserException(CodeAndMessage.USER_NOT_EXIST.getCode(), CodeAndMessage.USER_NOT_EXIST.getMessage());
+            }
+            if (user.getBanedTime() > 0) {
+                //用户已封禁
+                throw new UserException(CodeAndMessage.BANED_USER.getCode(), CodeAndMessage.BANED_USER.getMessage());
+            }
         }
         int code = RandomUtil.randomInt(1000, 999999);
         RedisUtil.set(UserConstant.REDIS_USER_VALIDATION_CODE_KEY_PRE + phone, code, UserConstant.USER_VALIDATION_CODE_EXPIRATION_TIME);

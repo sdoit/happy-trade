@@ -27,7 +27,7 @@ public interface UserService {
      * @param phone
      * @throws UserException
      */
-    void sendCode(String phone) throws UserException;
+    void sendCode(String phone,boolean forceUser) throws UserException;
 
     /**
      * 注册用户

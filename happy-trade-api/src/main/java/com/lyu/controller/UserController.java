@@ -1,6 +1,7 @@
 package com.lyu.controller;
 
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.BooleanUtil;
 import com.lyu.common.CodeAndMessage;
 import com.lyu.common.CommonResult;
 import com.lyu.common.UserConstant;
@@ -59,9 +60,9 @@ public class UserController {
     }
 
 
-    @PostMapping("/code/{phone}")
-    public CommonResult<Object> sendCode(@NotNull @PathVariable("phone") String phone) {
-        userService.sendCode(phone);
+    @PostMapping("/code/{phone}/{signUp}")
+    public CommonResult<Object> sendCode(@NotNull @PathVariable("phone") String phone, @PathVariable("signUp") Boolean signUp) {
+        userService.sendCode(phone, !BooleanUtil.isTrue(signUp));
         return CommonResult.Result(CodeAndMessage.SUCCESS, null);
     }
 

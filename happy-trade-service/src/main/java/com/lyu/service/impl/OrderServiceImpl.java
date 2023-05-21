@@ -68,6 +68,8 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private OrderReturnMapper orderReturnMapper;
     @Resource
+    private RequestMapper requestMapper;
+    @Resource
     private IDUtil idUtil;
 
 
@@ -96,6 +98,10 @@ public class OrderServiceImpl implements OrderService {
             if (uidLogin != request.getUid()) {
                 throw new UserException(CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getCode(), CodeAndMessage.COMMODITY_ONLY_FOR_REQUEST.getMessage());
             }
+            //修改此求购为已完成
+            request.setCompleted(Boolean.TRUE);
+            requestMapper.updateById(request);
+
         }
         Boolean exist = commodityBidService.orderOrBidExist(commodity.getCid());
         if (BooleanUtil.isTrue(exist)) {

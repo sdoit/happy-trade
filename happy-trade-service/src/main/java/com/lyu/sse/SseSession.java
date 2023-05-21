@@ -81,7 +81,7 @@ public class SseSession {
         final SseEmitter emitter = SESSION.get(id);
         if (emitter != null) {
             try {
-                emitter.  send(msg);
+                emitter.send(msg);
                 return true;
             } catch (IOException e) {
                 log.error("MSG: SendMessageError-IOException | ID: " + id + " | Date: " + LocalDateTime.now() + " |", e);
@@ -104,7 +104,7 @@ public class SseSession {
             try {
                 emitter.send(msg);
                 return true;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("MSG: SendMessageError-IOException | ID: " + id + " | Date: " + LocalDateTime.now() + " |", e);
                 return false;
             }
@@ -119,7 +119,7 @@ public class SseSession {
      * @param future
      */
     public static void onCompletion(String id, ScheduledFuture<?> future) {
-        SESSION.remove(id);
+//        SESSION.remove(id);
         if (future != null) {
             // SseEmitter断开后需要中断心跳发送
             future.cancel(true);

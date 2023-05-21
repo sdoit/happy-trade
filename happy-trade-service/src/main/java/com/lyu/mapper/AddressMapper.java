@@ -18,7 +18,6 @@ import java.util.List;
  * @see UserAddressMapper
  */
 @CacheNamespace(implementation = MybatisRedisCache.class, eviction = MybatisRedisCache.class)
-
 @Mapper
 public interface AddressMapper {
     /**
